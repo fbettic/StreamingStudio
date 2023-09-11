@@ -1,0 +1,7 @@
+<mat-grid-list cols="6" [rowHeight]="posterHeight" gutterSize="16" class="app-background">
+  <mat-grid-tile
+  *ngFor="let tile of tiles"
+  colspan="1">
+  <app-film-card [filmData]="tile"/>
+</mat-grid-tile>
+</mat-grid-list>

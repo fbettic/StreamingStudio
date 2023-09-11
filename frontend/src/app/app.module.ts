@@ -3,14 +3,22 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { FilmsGridComponent } from './components/films-grid/films-grid.component';
+import { FilmCardComponent } from './components';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    ToolbarComponent,
+    FilmsGridComponent,
+    FilmCardComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

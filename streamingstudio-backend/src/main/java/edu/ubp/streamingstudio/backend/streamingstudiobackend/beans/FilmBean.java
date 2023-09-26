@@ -2,28 +2,26 @@ package edu.ubp.streamingstudio.backend.streamingstudiobackend.beans;
 
 public class FilmBean {
 
-    private Integer id;
-    private String name;
+    private String id;
+    private String title;
     private String overview;
-    private Integer relaseDate;
-    private String posterPath;
-    private Float popularity;
-    private Integer[] genere_ids;
+    private Integer year;
+    private String image;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getOverview() {
@@ -34,36 +32,20 @@ public class FilmBean {
         this.overview = overview;
     }
 
-    public Integer getRelaseDate() {
-        return relaseDate;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setRelaseDate(Integer relaseDate) {
-        this.relaseDate = relaseDate;
+    public void setYear(Integer year) {
+        this.year = year;
     }
 
-    public String getPosterPath() {
-        return posterPath;
+    public String getImage() {
+        return image;
     }
 
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
-    }
-
-    public Float getPopularity() {
-        return popularity;
-    }
-
-    public void setPopularity(Float popularity) {
-        this.popularity = popularity;
-    }
-
-    public Integer[] getGenere_ids() {
-        return genere_ids;
-    }
-
-    public void setGenere_ids(Integer[] genere_ids) {
-        this.genere_ids = genere_ids;
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

@@ -1,4 +1,4 @@
-package edu.ubp.streamingstudio.repositories;
+package edu.ubp.streamingstudio.backend.streamingstudiobackend.repositories;
 
 import java.util.List;
 

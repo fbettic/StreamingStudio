@@ -1,17 +1,15 @@
 <div class="card">
   <div class="ratio-container">
     <img
-    [src]="
-      'https://image.tmdb.org/t/p/w220_and_h330_face' +
-      filmData.poster_path"
+    [src]="filmData.image"
     alt="Póster de la Película"
   />
   </div>
   
   <div class="card-info">
     <h2>{{filmData.title}}</h2>
-    <p>Año: 2023</p>
+    <p>Año: {{filmData.year}}</p>
     <p>Director: Director de la Película</p>
-    <p>Género: Género de la Película</p>
+    <p>{{filmData.overview}}</p>
   </div>
 </div>

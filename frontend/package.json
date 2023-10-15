@@ -23,6 +23,7 @@
     "@kkoehn/ngx-resource-core": "^14.0.1",
     "@kkoehn/ngx-resource-handler-ngx-http": "^14.0.1",
     "rxjs": "~7.8.0",
+    "swiper": "^10.3.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },

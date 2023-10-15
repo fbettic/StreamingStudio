@@ -14,7 +14,7 @@ import { Film } from '../models';
   providedIn: 'root'
 })
 @ResourceParams({
-  patPrefix: `${environment.apiUrl}/api/films`
+  pathPrefix: `${environment.apiUrl}/api`
 })
 export class FilmsResourceService extends Resource {
 

@@ -5,19 +5,17 @@ import { FilmsResourceService } from 'src/app/services/films-resource.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  films:Film[] = [];
+  films: Film[] = [];
 
-  constructor(private _service: FilmsResourceService){
-
-  }
+  constructor(private _service: FilmsResourceService) {}
 
   ngOnInit(): void {
-      this._service.getFilms().subscribe((films)=>{
-        console.log({films})
-        this.films = films
-      })
+    this._service.getFilms().subscribe((films) => {
+      console.log({ films });
+      this.films = films;
+    });
   }
 }

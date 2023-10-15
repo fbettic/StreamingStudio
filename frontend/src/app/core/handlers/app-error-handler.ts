@@ -1,18 +1,42 @@
-import { ErrorHandler, Injectable, Injector, NgZone } from "@angular/core";
-import { environment } from "src/environments/environment";
-import { IMessage } from "../models/i-message";
-import { AppMessageService } from "../services/utils/app-message.service";
+import { ErrorHandler, Injectable, Injector, NgZone } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { IMessage } from '../models/i-message';
+import { AppMessageService } from '../services/utils/app-message.service';
 
 @Injectable()
 export class AppErrorHandler implements ErrorHandler {
+  private _service: AppMessageService | undefined;
 
-    private _service: AppMessageService | undefined;
-  
-    constructor(private _injector: Injector, private _ngZone: NgZone) { }
-  
-    handleError(error: any): void {
-      let message: IMessage;
-  
+  constructor(private _injector: Injector, private _ngZone: NgZone) {}
+
+  handleError(error: any): void {
+    let message: IMessage;
+
+    if (!this._service) {
+      this._service = this._injector.get(AppMessageService);
+    }
+
+    if (error.rejection) {
+      error = error.rejection;
+    }
+
+    message = {
+      text:
+        error.body?.message ||
+        error.body?.error ||
+        (error.status === 0
+          ? 'Error al conectarse al servicio'
+          : error.body || error.error || error.message || error),
+      num: error.status,
+    };
+
+    !environment.production ? console.log(error) : null;
+
+    this._ngZone.run(() => this._service?.showMessage(message), 0);
+  }
+}
+
+/*
       if (!this._service) {
         this._service = this._injector.get(AppMessageService);
       }
@@ -45,12 +69,4 @@ export class AppErrorHandler implements ErrorHandler {
       }
       else {
         message = { text: error, num: error.status };
-      }
-      
-      !environment.production ? console.log(error) : null;
-  
-      this._ngZone.run(() => this._service?.showMessage(message), 0);
-    }
-  
-  }
-  
+      }*/

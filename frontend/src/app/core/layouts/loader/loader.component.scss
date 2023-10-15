@@ -6,9 +6,9 @@
 }
 
 .loader {
-    border: 16px solid #f3f3f3;
+    border: 10px solid #303030;
     border-radius: 50%;
-    border-top: 16px solid #ff751a;
+    border-top: 10px solid #c2185b;
     width: 120px;
     height: 120px;
     -webkit-animation: spin 2s linear infinite; /* Safari */
@@ -26,7 +26,7 @@
     right:0;
     top:0;
     bottom:0;
-    background-color: rgba(white,.75);
+    background-color: rgba(black,.75);
     z-index:9999;
     display:none;
     display: -webkit-box;

@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModalModule }
+import { MatDialogModule} from '@angular/material/dialog';
 
-import { LoaderComponent } from './layouts/loader/loader.component';
-import { MessageDialogComponent } from './layouts/message-dialog/message-dialog.component';
+import { LoaderComponent } from './layouts';
+import { MessageDialogComponent } from './layouts';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -12,10 +13,8 @@ import { MessageDialogComponent } from './layouts/message-dialog/message-dialog.
   ],
   imports: [
     CommonModule,
-    NgbModalModule
-  ],
-  entryComponents: [
-    MessageDialogComponent
+    MatDialogModule,
+    MatButtonModule
   ],
   exports: [
     LoaderComponent

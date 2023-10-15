@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
+import { NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import { HomeRoutingModule } from './home-routing.module';
-import { FilmsGridComponent } from 'src/app/components';
+import { FilmsGridComponent, FilmsCarouselComponent } from 'src/app/components';
 
 
 @NgModule({
@@ -12,7 +12,8 @@ import { FilmsGridComponent } from 'src/app/components';
   imports: [
     CommonModule,
     HomeRoutingModule,
-    FilmsGridComponent
-  ]
+    FilmsGridComponent,
+    FilmsCarouselComponent
+  ],
 })
 export class HomeModule { }

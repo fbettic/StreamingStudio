@@ -1,8 +1,7 @@
 import { NgFor } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { Film } from 'src/app/models';
-import { Films } from 'src/assets/placeholder';
 import { FilmCardComponent } from '../film-card';
 
 @Component({
@@ -14,11 +13,12 @@ import { FilmCardComponent } from '../film-card';
 })
 
 export class FilmsGridComponent {
-  tiles: Film[]
+  @Input() films: Film[] = []
+  
   posterHeight = 450
   posterWidth = 300
 
+
   constructor() {
-    this.tiles = Films
   }
 }

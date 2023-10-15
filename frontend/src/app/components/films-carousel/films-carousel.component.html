@@ -1,0 +1,3 @@
+<swiper-container *ngFor="let film of films" slides-per-view="3" speed="500" loop="true" navigation>
+  <swiper-slide><app-film-card [filmData]="film" lazy="true" /></swiper-slide>
+</swiper-container>

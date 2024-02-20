@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(path = "rest/anunciantes", produces = { MediaType.APPLICATION_JSON_VALUE })
 public class AnunciantesController {
     @Autowired
     AnunciantesRestRepository repository;

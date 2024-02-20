@@ -1,0 +1,12 @@
+ar\edu\ubp\soap\beans\ServiceConnectionBean.class
+ar\edu\ubp\soap\beans\WeeklyPriorityReportBean.class
+ar\edu\ubp\soap\repositories\AnunciantesSoapRepository.class
+ar\edu\ubp\soap\beans\WeeklyReportBean.class
+ar\edu\ubp\soap\beans\AdvertisingWithBannerBean.class
+ar\edu\ubp\soap\beans\BannerBean.class
+ar\edu\ubp\soap\beans\PriorityBean.class
+ar\edu\ubp\soap\ws\AnunciantesWS.class
+ar\edu\ubp\soap\beans\WeeklyAdvertisingReportBean.class
+ar\edu\ubp\soap\app\Server.class
+ar\edu\ubp\soap\beans\AdvertisingBean.class
+ar\edu\ubp\soap\repositories\IAnunciantesSoapRepository.class

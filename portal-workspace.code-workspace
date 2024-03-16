@@ -1,0 +1,10 @@
+{
+    "folders": [
+		{
+			"path": "portal/portal-backend"
+		},
+		{
+			"path": "portal/portal-frontend"
+		}
+	]
+}

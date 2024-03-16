@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+    color-scheme: light dark;
+}
+
+.nav-padding{
+    padding-top: 70px;
+}
+
+
+.ng-valid:not(form).ng-touched{
+    border-left: 5px solid #198754
+}
+
+.ng-invalid:not(form).ng-touched{
+    border-left: 5px solid #dc3545
+}
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';

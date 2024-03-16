@@ -1,0 +1,55 @@
+[
+    {
+      "advertiserId": 1,
+      "agentFirstname": "Nombre1",
+      "agentLastname": "Apellido1",
+      "companyName": "Compañía1",
+      "bussinesName": "NombreComercial1",
+      "email": "correo1@dominio.com",
+      "phone": "123-456-7890",
+      "password": "contraseña1",
+      "apiUrl": "http://url-api.com/1",
+      "authToken": "token_de_autenticación1",
+      "serviceType": "TipoDeServicio1"
+    },
+    {
+      "advertiserId": 2,
+      "agentFirstname": "Nombre2",
+      "agentLastname": "Apellido2",
+      "companyName": "Compañía2",
+      "bussinesName": "NombreComercial2",
+      "email": "correo2@dominio.com",
+      "phone": "123-456-7891",
+      "password": "contraseña2",
+      "apiUrl": "http://url-api.com/2",
+      "authToken": "token_de_autenticación2",
+      "serviceType": "TipoDeServicio2"
+    },
+    {
+      "advertiserId": 3,
+      "agentFirstname": "Nombre3",
+      "agentLastname": "Apellido3",
+      "companyName": "Compañía3",
+      "bussinesName": "NombreComercial3",
+      "email": "correo3@dominio.com",
+      "phone": "123-456-7892",
+      "password": "contraseña3",
+      "apiUrl": "http://url-api.com/3",
+      "authToken": "token_de_autenticación3",
+      "serviceType": "TipoDeServicio3"
+    },
+    {
+      "advertiserId": 4,
+      "agentFirstname": "Nombre4",
+      "agentLastname": "Apellido4",
+      "companyName": "Compañía4",
+      "bussinesName": "NombreComercial4",
+      "email": "correo4@dominio.com",
+      "phone": "123-456-7893",
+      "password": "contraseña4",
+      "apiUrl": "http://url-api.com/4",
+      "authToken": "token_de_autenticación4",
+      "serviceType": "TipoDeServicio4"
+    }
+  ]
+  

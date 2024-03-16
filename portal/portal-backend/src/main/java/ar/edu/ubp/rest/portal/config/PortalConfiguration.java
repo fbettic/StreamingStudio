@@ -11,13 +11,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import ar.edu.ubp.rest.portal.repository.SubscriberRepository;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class PortalConfiguration {
-    private final SubscriberRepository userRepository;
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -38,8 +38,8 @@ public class PortalConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailService() {
-        return email -> userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("Email not found"));
+    public UserDetailsService userDetailService()throws UsernameNotFoundException {
+        return email -> userDetailsService.loadUserByUsername(email);
     }
     
 }

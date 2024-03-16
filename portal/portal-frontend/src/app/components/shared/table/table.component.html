@@ -1,0 +1,54 @@
+<input
+  type="text"
+  (input)="filterAdvertisers(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-modal-form modalTitle="New advertiser">
+  <app-advertiser-form
+    [advertiser]="itemSelected"
+    (doRefresh)="refreshList()"
+  ></app-advertiser-form>
+</app-modal-form>
+<table class="table table-striped border rounded">
+  <thead>
+    <tr>
+      <th>Company Name</th>
+      <th>Bussines Name</th>
+      <th>Service Type</th>
+      <th>API URL</th>
+      <th>Actions</th>
+      <!-- Agrega otros encabezados de tabla según sea necesario -->
+    </tr>
+  </thead>
+  <tbody>
+    @for (advertiser of filteredList; track advertiser.id ) {
+    <tr>
+      <td>{{ advertiser.companyName }}</td>
+      <td>{{ advertiser.bussinesName }}</td>
+      <td>{{ advertiser.serviceType }}</td>
+      <td>{{ advertiser.apiUrl ? advertiser.apiUrl : "-" }}</td>
+      <td>
+        <div class="row justify-content-start">
+          <div class="col-auto">
+            <button
+              class="btn btn-sm"
+              [ngClass]="{
+                'btn-outline-primary': isEditable(advertiser),
+                'btn-outline-secondary': !isEditable(advertiser)
+              }"
+              (click)="editValues(advertiser)"
+              [disabled]="!isEditable(advertiser)"
+            >
+              Edit
+            </button>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteItem(advertiser.id)">Delete</button>
+          </div>
+        </div>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>

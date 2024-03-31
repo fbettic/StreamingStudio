@@ -1,5 +1,6 @@
 package ar.edu.ubp.rest.portal.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class PortalConfiguration {
+    @Autowired
     private final CustomUserDetailsService userDetailsService;
 
     @Bean

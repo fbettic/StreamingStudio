@@ -4,14 +4,16 @@ import java.util.List;
 
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
-import ar.edu.ubp.rest.portal.models.Advertiser;
+import ar.edu.ubp.rest.portal.models.users.Advertiser;
 
 public interface IAdvertiserRepository {
-    public AdvertiserDTO save(Advertiser advertiser);
+    public AdvertiserDTO createAdvertiser(Advertiser advertiser);
     
-    public AdvertiserDTO findAdvertiserByEmail(String email);
+    public AdvertiserDTO getAdvertiserByEmail(String email);
 
-    public List<AdvertiserDTO> findAdvertisers();
+    public List<AdvertiserDTO> getAllAdvertisers();
+
+    public AdvertiserDTO getAdvertiserById(Integer id);
 
     public Integer deleteAdvertiserById(Integer id);
 

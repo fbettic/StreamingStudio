@@ -31,7 +31,7 @@ GO
 CREATE TABLE ServiceConnection (
   serviceId INT NOT NULL IDENTITY(1,1),
   name VARCHAR(255) NOT NULL UNIQUE,
-  authToken NVARCHAR(MAX) NOT NULL,
+  authToken NVARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (serviceId)
 );
 GO

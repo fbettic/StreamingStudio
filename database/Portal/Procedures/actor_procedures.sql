@@ -76,10 +76,3 @@ BEGIN
 END
 GO
 
-/*
-EXEC GetAllFilmActorRelations
-
-DECLARE @actors VARCHAR(MAX);
-EXEC GetActorsByFilmId 1, @actors OUTPUT
-SELECT @actors
-*/

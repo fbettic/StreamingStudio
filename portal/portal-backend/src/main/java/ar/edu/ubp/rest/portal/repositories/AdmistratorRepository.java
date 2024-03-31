@@ -1,6 +1,5 @@
 package ar.edu.ubp.rest.portal.repositories;
 
-import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.AdministratorDTO;
-import ar.edu.ubp.rest.portal.models.Administrator;
+import ar.edu.ubp.rest.portal.models.users.Administrator;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IAdministratorRepository;
 
 @Repository
@@ -22,27 +21,27 @@ public class AdmistratorRepository implements IAdministratorRepository {
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public AdministratorDTO findAdministratorByEmail(String email) {
+	public AdministratorDTO getAdministratorByEmail(String email) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'findAdministratorByEmail'");
+		throw new UnsupportedOperationException("Unimplemented method 'getAdministratorByEmail'");
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public AdministratorDTO save(Administrator administrator) {
-		SqlParameterSource in = new MapSqlParameterSource()
+	public AdministratorDTO createAdministrator(Administrator administrator) {
+		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("firstname", administrator.getFirstname())
 				.addValue("lastname", administrator.getLastname())
 				.addValue("email", administrator.getEmail())
 				.addValue("password", administrator.getPassword());
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("InsertAdministrator")
+				.withProcedureName("CreateAdministrator")
 				.withSchemaName("dbo")
 				.returningResultSet("administrator", BeanPropertyRowMapper.newInstance(AdministratorDTO.class));
 
-		Map<String, Object> out = jdbcCall.execute(in);
-		return ((List<AdministratorDTO>) out.get("administrator")).get(0);
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<AdministratorDTO>) output.get("administrator")).get(0);
 	}
 
 }

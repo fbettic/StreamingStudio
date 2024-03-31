@@ -76,6 +76,15 @@ BEGIN
 END
 GO
 
+-- DROP PROCEDURE IF EXISTS GetAllBanners
+CREATE OR ALTER PROCEDURE GetAllBanners
+AS
+BEGIN
+    SELECT bannerId, text, imageUrl, redirectUrl
+    FROM Banner
+END
+GO
+
 ------------------- Advertising procedures -------------------
 
 -- DROP PROCEDURE IF EXISTS CreateAdvertising
@@ -105,9 +114,22 @@ CREATE OR ALTER PROCEDURE GetAdvertisingById
     @advertisingId INT
 AS
 BEGIN
-    SELECT advertisingId, bannerId, serviceId, priorityTitle, fromDate, toDate
+    SELECT advertisingId, a.bannerId, text, imageUrl, redirectUrl, serviceId, priorityTitle, fromDate, toDate
     FROM Advertising a
-    JOIN Priorty p ON priorityId = priorityId
+    JOIN Priorty p ON p.priorityId = a.priority
+    JOIN Banner b ON b.bannerId = a.bannerId
     WHERE advertisingId = @advertisingId
 END
 GO
+
+-- DROP PROCEDURE IF EXISTS GetAllAdvertisings
+CREATE OR ALTER PROCEDURE GetAllAdvertisings
+    @serviceId INT
+AS
+BEGIN
+    SELECT advertisingId, a.bannerId, text, imageUrl, redirectUrl, serviceId, priorityTitle, fromDate, toDate
+    FROM Advertising a
+    JOIN Priorty p ON p.priorityId = a.priority
+    JOIN Banner b ON b.bannerId = a.bannerId
+    WHERE serviceId = @serviceId
+END

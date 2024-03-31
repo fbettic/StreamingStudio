@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,10 @@ import ar.edu.ubp.rest.portal.dto.request.AuthRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
 import ar.edu.ubp.rest.portal.enums.ServiceType;
-import ar.edu.ubp.rest.portal.models.Administrator;
-import ar.edu.ubp.rest.portal.models.Advertiser;
-import ar.edu.ubp.rest.portal.models.CustomUserDetails;
-import ar.edu.ubp.rest.portal.models.Subscriber;
+import ar.edu.ubp.rest.portal.models.users.Administrator;
+import ar.edu.ubp.rest.portal.models.users.Advertiser;
+import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
+import ar.edu.ubp.rest.portal.models.users.Subscriber;
 import ar.edu.ubp.rest.portal.repositories.AdmistratorRepository;
 import ar.edu.ubp.rest.portal.repositories.AdvertiserRepository;
 import ar.edu.ubp.rest.portal.repositories.SubscriberRepository;
@@ -26,16 +27,22 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final AdmistratorRepository admistratorRepository;
+    @Autowired
     private final AdvertiserRepository advertiserRepository;
+    @Autowired
     private final SubscriberRepository subscriberRepository;
+    @Autowired
     private final JwtService jwtService;
 
     private final PasswordEncoder passwordEncoder;
 
     public AuthResponseDTO login(AuthRequestDTO request) {
-        CustomUserDetails user = userRepository.findUserByEmail(request.getEmail());
+        CustomUserDetails user = userRepository.getUserByEmail(request.getEmail());
 
         String token = jwtService.getToken(user);
 
@@ -60,7 +67,7 @@ public class AuthService {
                 .validated(true)
                 .build();
 
-        subscriberRepository.save(user);
+        subscriberRepository.createSubscriber(user);
 
         return buildAuthResponse(user);
     }
@@ -74,7 +81,7 @@ public class AuthService {
                 .build();
         
 
-        admistratorRepository.save(user);
+        admistratorRepository.createAdministrator(user);
 
         return buildAuthResponse(user);
     }
@@ -101,7 +108,7 @@ public class AuthService {
             System.out.println("ServiceType desconocido: " + serviceType);
         }
 
-        advertiserRepository.save(user);
+        advertiserRepository.createAdvertiser(user);
 
         return buildAuthResponse(user);
     }

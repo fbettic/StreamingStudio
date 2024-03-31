@@ -21,14 +21,11 @@ GO
 
 -- DROP PROCEDURE IF EXISTS CreateServiceConnection
 CREATE OR ALTER PROCEDURE CreateServiceConnection
-    @name VARCHAR(255)
+    @name VARCHAR(255),
+    @authToken NVARCHAR(MAX)
 AS
 BEGIN
     DECLARE @serviceId INT
-    DECLARE @authToken NVARCHAR(MAX)
-
-    -- Generar un token para la nueva conexión
-    EXEC GetToken @authToken OUTPUT
 
     -- Insertar la nueva conexión en la tabla
     INSERT INTO ServiceConnection (name, authToken)
@@ -58,6 +55,8 @@ BEGIN
 END
 GO
 
+
+
 -- DROP PROCEDURE IF EXISTS GetServiceConnectionById
 CREATE OR ALTER PROCEDURE GetServiceConnectionById
     @serviceId INT
@@ -66,5 +65,16 @@ BEGIN
     SELECT serviceId, name, authToken
     FROM ServiceConnection
     WHERE serviceId = @serviceId
+END
+GO
+
+-- DROP PROCEDURE IF EXISTS GetServiceConnectionByToken
+CREATE OR ALTER PROCEDURE GetServiceConnectionByToken
+    @authToken NVARCHAR(MAX)
+AS
+BEGIN
+    SELECT serviceId, name, authToken
+    FROM ServiceConnection
+    WHERE authToken = @authToken
 END
 GO

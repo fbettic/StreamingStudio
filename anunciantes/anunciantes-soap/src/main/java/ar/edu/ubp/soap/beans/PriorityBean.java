@@ -1,22 +1,15 @@
 package ar.edu.ubp.soap.beans;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PriorityBean {
     private int priorityId;
     private String priorityTitle;
-
-    public int getPriorityId() {
-        return priorityId;
-    }
-
-    public void setPriorityId(int priorityId) {
-        this.priorityId = priorityId;
-    }
-
-    public String getPriorityTitle() {
-        return priorityTitle;
-    }
-
-    public void setPriorityTitle(String priorityTitle) {
-        this.priorityTitle = priorityTitle;
-    }
 }

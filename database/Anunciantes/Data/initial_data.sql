@@ -6,7 +6,7 @@ USE anunciante1_db
 GO
 
 -- Inicialización de datos para Conexiones de Servicio
-EXEC CreateServiceConnection 'Streaming Studio'
+EXEC CreateServiceConnection 'Streaming Studio', 'STREAMING_STUDIO_SECRET_KEY'
 GO
 
 -- Inicialización de datos para Prioridades
@@ -41,7 +41,7 @@ USE anunciante2_db
 GO
 
 -- Inicialización de datos para Conexiones de Servicio
-EXEC CreateServiceConnection 'Streaming Studio'
+EXEC CreateServiceConnection 'Streaming Studio', 'STREAMING_STUDIO_SECRET_KEY'
 GO
 
 -- Inicialización de datos para Prioridades
@@ -81,7 +81,7 @@ USE anunciante3_db
 GO
 
 -- Inicialización de datos para Conexiones de Servicio
-EXEC CreateServiceConnection 'Streaming Studio'
+EXEC CreateServiceConnection 'Streaming Studio', 'STREAMING_STUDIO_SECRET_KEY'
 GO
 
 -- Inicialización de datos para Prioridades

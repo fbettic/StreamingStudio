@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IFilmRepository;
@@ -29,10 +28,10 @@ public class FilmRepository implements IFilmRepository {
 
 
     @Override
-    public String loadAllCountries(List<CountryDTO> countries) {
-        String sql = "EXEC InsertCountries @countryCode = ?, @countryName = ?";
+    public Integer loadAllCountries(List<CountryDTO> countries) {
+        String sql = "EXEC CreateCountries @countryCode = ?, @countryName = ?";
 
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 CountryDTO country = countries.get(i);
@@ -46,21 +45,26 @@ public class FilmRepository implements IFilmRepository {
             }
         });
         
-        return "hello";
+        int totalAffectedRows = 0;
+        for (int rows : affectedRows) {
+            totalAffectedRows += rows;
+        }
+        
+        return totalAffectedRows;
     }
 
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<FilmDTO> findFilms() {
+    public List<FilmDTO> getAllFilms() {
         SqlParameterSource input = new MapSqlParameterSource();
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("GetAllFilms")
 				.withSchemaName("dbo")
 				.returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmDTO.class));
 
-		Map<String, Object> out = jdbcCall.execute(input);
-		return (List<FilmDTO>) out.get("films");
+		Map<String, Object> output = jdbcCall.execute(input);
+		return (List<FilmDTO>) output.get("films");
     }
 
 }

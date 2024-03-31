@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
-import ar.edu.ubp.rest.portal.models.Advertiser;
+import ar.edu.ubp.rest.portal.models.users.Advertiser;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IAdvertiserRepository;
 
 @Repository
@@ -24,8 +24,8 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public AdvertiserDTO save(Advertiser advertiser) {
-		SqlParameterSource in = new MapSqlParameterSource()
+	public AdvertiserDTO createAdvertiser(Advertiser advertiser) {
+		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("agentFirstname", advertiser.getAgentFirstname())
 				.addValue("agentLastname", advertiser.getAgentLastname())
 				.addValue("bussinesName", advertiser.getBussinesName())
@@ -38,31 +38,47 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 				.addValue("serviceType", advertiser.getServiceType().toString());
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("InsertAdvertiser")
+				.withProcedureName("CreateAdvertiser")
 				.withSchemaName("dbo")
 				.returningResultSet("advertiser", BeanPropertyRowMapper.newInstance(AdvertiserDTO.class));
 
-		Map<String, Object> out = jdbcCall.execute(in);
-		return ((List<AdvertiserDTO>) out.get("advertiser")).get(0);
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<AdvertiserDTO>) output.get("advertiser")).get(0);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<AdvertiserDTO> findAdvertisers() {
-		SqlParameterSource in = new MapSqlParameterSource();
+	public List<AdvertiserDTO> getAllAdvertisers() {
+		SqlParameterSource input = new MapSqlParameterSource();
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("GetAllAdvertisers")
 				.withSchemaName("dbo")
 				.returningResultSet("advertisers", BeanPropertyRowMapper.newInstance(AdvertiserDTO.class));
 
-		Map<String, Object> out = jdbcCall.execute(in);
-		return (List<AdvertiserDTO>) out.get("advertisers");
+		Map<String, Object> output = jdbcCall.execute(input);
+		return (List<AdvertiserDTO>) output.get("advertisers");
 	}
 
 	@Override
-	public AdvertiserDTO findAdvertiserByEmail(String email) {
+	public AdvertiserDTO getAdvertiserByEmail(String email) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'findAdvertiserByEmail'");
+		throw new UnsupportedOperationException("Unimplemented method 'getAdvertiserByEmail'");
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public AdvertiserDTO getAdvertiserById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("advertiserId", id);
+				
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetAdvertiserById")
+				.withSchemaName("dbo")
+				.returningResultSet("advertiser", BeanPropertyRowMapper.newInstance(AdvertiserDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<AdvertiserDTO>) output.get("advertiser")).get(0);
 	}
 
 	@Override
@@ -78,8 +94,8 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 				.withSchemaName("dbo")
 				.returningResultSet("advertiserId", BeanPropertyRowMapper.newInstance(Integer.class));
 
-		Map<String, Object> out = jdbcCall.execute(input);
-		return ((List<Integer>) out.get("advertiserId")).get(0);
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<Integer>) output.get("advertiserId")).get(0);
 	}
 
 	@Override
@@ -104,8 +120,8 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 				.withSchemaName("dbo")
 				.returningResultSet("advertiser", BeanPropertyRowMapper.newInstance(AdvertiserDTO.class));
 
-		Map<String, Object> out = jdbcCall.execute(input);
-		return ((List<AdvertiserDTO>) out.get("advertiser")).get(0);
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<AdvertiserDTO>) output.get("advertiser")).get(0);
 	}
 
 }

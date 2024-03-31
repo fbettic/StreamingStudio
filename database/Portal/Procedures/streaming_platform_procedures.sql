@@ -119,14 +119,3 @@ BEGIN
     WHERE deletedAt IS NULL
 END
 GO
-
-/*
-    EXEC CreateStreamingPlatform 'Netflix', 'netflix@gmail.com', 'netflix.com', 'SECRET_TOKEN_NETFLIX', 2, 1, 'REST'
-EXEC CreateStreamingPlatform 'Prime', 'prime@gmail.com', 'prime.com', 'SECRET_TOKEN_PRIME', 2, 1, 'REST'
-EXEC CreateStreamingPlatform 'MAX', 'max@gmail.com', 'max.com', 'SECRET_TOKEN_MAX', 2, 1, 'SOAP'
-EXEC GetAllStreamingPlatforms
-
-EXEC SoftDeleteRecord 'StreamingPlatform', 'platformId', 2
-
-*/
-

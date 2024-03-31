@@ -9,6 +9,7 @@ DROP PROCEDURE IF EXISTS SetUserToken
 DROP PROCEDURE IF EXISTS CancelAssociationRequest
 DROP PROCEDURE IF EXISTS FinalizeAssociationRequest
 DROP PROCEDURE IF EXISTS GetLastOpenAssociationRequest
+DROP PROCEDURE IF EXISTS GetAssociationRequestById
 DROP PROCEDURE IF EXISTS GetUserToken
 DROP PROCEDURE IF EXISTS CreateSession
 DROP PROCEDURE IF EXISTS MarkSessionAsUsed
@@ -22,50 +23,56 @@ DROP PROCEDURE IF EXISTS GetSession
 
 -- DROP PROCEDURE IF EXISTS CreateAssociationRequest
 CREATE OR ALTER PROCEDURE CreateAssociationRequest
-    @userId INT,
     @serviceId INT,
     @associationType VARCHAR(255),
-    @authUrl VARCHAR(255),
+    @uuid VARCHAR(255),
     @redirectUrl VARCHAR(255),
     @requestedAt DATETIME
 AS
 BEGIN
-    INSERT INTO AssociationRequest
-        (userId, serviceId, associationType, state, authUrl, redirectUrl, requestedAt)
-    VALUES
-        ( @userId, @serviceId, @associationType, 'OPEN', @authUrl, @redirectUrl, @requestedAt);
+    DECLARE @associationId INT
 
-    SELECT * FROM AssociationRequest WHERE associationId = SCOPE_IDENTITY()
+    INSERT INTO AssociationRequest
+        (serviceId, associationType, state, uuid, redirectUrl, requestedAt)
+    VALUES
+        (@serviceId, @associationType, 'OPEN', @uuid, @redirectUrl, @requestedAt);
+
+    SET @associationId = SCOPE_IDENTITY()
+    EXEC GetAssociationRequestById @associationId
 END;
 GO
 
 -- DROP PROCEDURE IF EXISTS SetUserToken
 CREATE OR ALTER PROCEDURE SetUserToken
     @userId INT,
-    @serviceId INT,
-    @userToken NVARCHAR(MAX)
+    @uuid VARCHAR(255)
 AS
 BEGIN
+    DECLARE @userToken NVARCHAR(255);
+
+    EXEC GetToken @userToken OUTPUT
+
     UPDATE AssociationRequest
-    SET userToken=@userToken
-    WHERE userId = @userId
-        AND serviceId = @serviceId
+    SET userId = @userId,
+    userToken = @userToken,
+    state = 'FINALIZED'
+    WHERE uuid = @uuid
         AND state = 'OPEN'
 
-    EXEC FinalizeAssociationRequest @userId, @serviceId
+     SELECT *
+    FROM AssociationRequest
+    WHERE uuid = @uuid
 END
 GO
 
 -- DROP PROCEDURE IF EXISTS CancelAssociationRequest
 CREATE OR ALTER PROCEDURE CancelAssociationRequest
-    @userId INT,
-    @serviceId INT
+    @associationId INT
 AS
 BEGIN
     UPDATE AssociationRequest
     SET state = 'CANCELED', canceledAt = GETDATE()
-    WHERE userId = @userId
-        AND serviceId = @serviceId
+    WHERE associationId = @associationId
         AND (state = 'OPEN' OR state = 'FINALIZED')
 END;
 GO
@@ -73,14 +80,12 @@ GO
 
 -- DROP PROCEDURE IF EXISTS FinalizeAssociationRequest
 CREATE OR ALTER PROCEDURE FinalizeAssociationRequest
-    @userId INT,
-    @serviceId INT
+    @associationId INT
 AS
 BEGIN
     UPDATE AssociationRequest
     SET state = 'FINALIZED'
-    WHERE userId = @userId
-        AND serviceId = @serviceId
+    WHERE associationId = @associationId
         AND state = 'OPEN'
 END;
 GO
@@ -99,6 +104,17 @@ BEGIN
 END
 GO
 
+-- DROP PROCEDURE IF EXISTS GetAssociationRequestById
+CREATE OR ALTER PROCEDURE GetAssociationRequestById
+    @associationId INT
+AS
+BEGIN
+    SELECT *
+    FROM AssociationRequest
+    WHERE associationId = @associationId
+END
+GO
+
 -- DROP PROCEDURE IF EXISTS GetUserToken
 CREATE OR ALTER PROCEDURE GetUserToken
     @userId INT,
@@ -113,40 +129,61 @@ BEGIN
 END
 GO
 
+
+
+
 ------------------- Session procedures -------------------
 
 -- DROP PROCEDURE IF EXISTS CreateSession
 CREATE OR ALTER PROCEDURE CreateSession
-    @associationId INT,
-    @filmCode INT,
-    @sessionUrl NVARCHAR(MAX),
+    @serviceId INT,
+    @userId INT,
+    @filmCode CHAR(9),
     @createdAt DATETIME
 AS
 BEGIN
     DECLARE @canceledAt DATE;
+    DECLARE @associationId INT;
     DECLARE @filmId INT;
+    DECLARE @sessionUrl VARCHAR(255) ;
     DECLARE @sessionId INT;
 
-    SELECT @createdAt = canceledAt
+
+    SELECT @canceledAt = canceledAt,
+        @associationId = associationId
     FROM AssociationRequest
-    WHERE associationId = associationId;
+    WHERE serviceId = @serviceId
+        AND userId = @userId
+        AND state = 'FINALIZED'
 
-    SELECT @filmId = filmId 
-    FROM Film 
-    WHERE filmCode = @filmCode 
+    SELECT @filmId = filmId,
+    @sessionUrl = url
+    FROM Film
+    WHERE filmCode = @filmCode
 
-    IF @canceledAt IS NULL
-    BEGIN
-        INSERT INTO Sessions
-            (usedAt, filmId, sessionUrl, createdAt, expired)
-        VALUES
-            (NULL, @filmId, @sessionUrl, @createdAt, 0);
+    IF @canceledAt IS NOT NULL OR @associationId IS NULL
+    BEGIN;
+        THROW 50005, 'The user does not exist', 1;
+    END
 
-        SET @sessionId = SCOPE_IDENTITY()
-        EXEC GetSessionById  @sessionId
-    END;
+    IF @filmId IS NULL OR @sessionUrl IS NULL
+    BEGIN;
+        THROW 50006, 'The film does not exist', 1;
+    END
+
+
+    INSERT INTO Sessions
+        (usedAt, associationId, filmId, sessionUrl, createdAt, expired)
+    VALUES
+        (NULL, @associationId, @filmId, @sessionUrl, @createdAt, 0);
+
+    SET @sessionId = SCOPE_IDENTITY()
+    EXEC GetSessionById  @sessionId
+    
 END;
 GO
+
+select * from PlatformUser
 
 -- DROP PROCEDURE IF EXISTS MarkSessionAsUsed
 CREATE OR ALTER PROCEDURE MarkSessionAsUsed
@@ -175,8 +212,15 @@ CREATE OR ALTER PROCEDURE GetSessionById
     @sessionId INT
 AS
 BEGIN
-    SELECT * 
-    FROM Sessions
+    SELECT sessionId, 
+        associationId, 
+        filmCode, 
+        sessionUrl, 
+        createdAt, 
+        usedAt, 
+        expired
+    FROM Sessions s
+    JOIN Film f ON f.filmId = s.filmId
     WHERE sessionId = @sessionId
 END;
 GO
@@ -190,11 +234,14 @@ AS
 BEGIN
     SELECT *
     FROM Sessions s
-    JOIN AssociationRequest ar ON ar.associationId = s.associationId
-    JOIN Film f ON f.filmId = s.filmId
+        JOIN AssociationRequest ar ON ar.associationId = s.associationId
+        JOIN Film f ON f.filmId = s.filmId
     WHERE filmCode = @filmCode
         AND userId = @userId
         AND serviceId = @serviceId
         AND usedAt IS NULL
         AND expired = 0
 END;
+
+
+EXEC GetAssociationRequestById 1

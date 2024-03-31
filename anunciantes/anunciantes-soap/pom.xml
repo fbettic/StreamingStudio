@@ -41,6 +41,13 @@
         <version>11.2.3.jre17</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.32</version>
+        <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -95,21 +102,25 @@
       </plugins>
     </pluginManagement>
     <plugins>
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <executions>
-        <execution>
-          <id>my-execution</id>
-          <phase>package</phase>
-          <goals>
-            <goal>java</goal>
-          </goals>
-        </execution>
-      </executions>
-      <configuration>
-        <mainClass>ar.edu.ubp.soap.app.Server</mainClass>
-      </configuration>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>my-execution</id>
+            <phase>package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>ar.edu.ubp.soap.app.Server</mainClass>
+          <arguments>
+            <argument>${databaseName}</argument>
+            <argument>${port}</argument>
+          </arguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>

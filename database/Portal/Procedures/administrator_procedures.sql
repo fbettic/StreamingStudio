@@ -75,8 +75,3 @@ BEGIN
     WHERE administratorId = @administratorId
     AND deletedAt IS NULL
 END
-
-
---EXEC CreateAdministrator 'admin', 'admin', 'federicobettic@gmail.com', '$2a$10$VE1fyuP3SL9yK1i1NkRHweB76XI1o6qjzJoLUnUzdKBhibqt2H8MK'
-
--- TRUNCATE TABLE Administrator

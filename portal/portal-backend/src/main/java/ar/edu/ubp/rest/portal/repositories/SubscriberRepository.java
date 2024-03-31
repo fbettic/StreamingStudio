@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.SubscriberDTO;
-import ar.edu.ubp.rest.portal.models.Subscriber;
+import ar.edu.ubp.rest.portal.models.users.Subscriber;
 import ar.edu.ubp.rest.portal.repositories.interfaces.ISubscriberRepository;
 
 @Repository
@@ -21,14 +21,14 @@ public class SubscriberRepository implements ISubscriberRepository {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public SubscriberDTO findSubscriberByEmail(String email) {
+    public SubscriberDTO getSubscriberByEmail(String email) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findSubscriberByEmail'");
+        throw new UnsupportedOperationException("Unimplemented method 'getSubscriberByEmail'");
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public SubscriberDTO save(Subscriber subscriber) {
+    public SubscriberDTO createSubscriber(Subscriber subscriber) {
         SqlParameterSource input = new MapSqlParameterSource()
                 .addValue("firstname", subscriber.getFirstname())
                 .addValue("lastname", subscriber.getLastname())
@@ -39,12 +39,12 @@ public class SubscriberRepository implements ISubscriberRepository {
                 .addValue("validated", 1);
 
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("InsertSubscriber")
+                .withProcedureName("CreateSubscriber")
                 .withSchemaName("dbo")
                 .returningResultSet("subscriber", BeanPropertyRowMapper.newInstance(SubscriberDTO.class));
 
-        Map<String, Object> out = jdbcCall.execute(input);
-        return ((List<SubscriberDTO>) out.get("subscriber")).get(0);
+        Map<String, Object> output = jdbcCall.execute(input);
+        return ((List<SubscriberDTO>) output.get("subscriber")).get(0);
     }
 
 }

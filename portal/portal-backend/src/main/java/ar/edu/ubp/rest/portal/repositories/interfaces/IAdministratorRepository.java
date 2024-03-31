@@ -1,12 +1,12 @@
 package ar.edu.ubp.rest.portal.repositories.interfaces;
 
 import ar.edu.ubp.rest.portal.dto.AdministratorDTO;
-import ar.edu.ubp.rest.portal.models.Administrator;
+import ar.edu.ubp.rest.portal.models.users.Administrator;
 
 public interface IAdministratorRepository {
 
-    public AdministratorDTO findAdministratorByEmail(String email);
+    public AdministratorDTO getAdministratorByEmail(String email);
 
-    public AdministratorDTO save(Administrator administrator);
+    public AdministratorDTO createAdministrator(Administrator administrator);
 
 }

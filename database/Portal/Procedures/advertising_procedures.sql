@@ -102,9 +102,9 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        advertisingId 
+        advertisingId,
         advertiserId,
-        sizeType
+        sizeType,
         sizeValue,
         af_st.feeValue AS sizeFee,
         af.feeValue AS allPagesFee,
@@ -128,6 +128,7 @@ BEGIN
 END
 GO
 
+
 -- DROP PROCEDURE IF EXISTS GetAdvertisingById
 CREATE OR ALTER PROCEDURE GetAllAdvertisingsByAdvertiser
     @advertiserId INT
@@ -140,9 +141,9 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        advertisingId 
+        advertisingId,
         advertiserId,
-        sizeType
+        sizeType,
         sizeValue,
         af_st.feeValue AS sizeFee,
         af.feeValue AS allPagesFee,
@@ -166,14 +167,59 @@ BEGIN
 END
 GO
 
-/*
-EXEC CreateAdvertising 1, 1, 7, 1, 'asdasdasd', 'asdasdasd', 'asdasdasd', 1, '2024-01-11', '2025-01-11'
+EXEC GetAllAdvertisings
+GO
+-- DROP PROCEDURE IF EXISTS GetAdvertisingById
+CREATE OR ALTER PROCEDURE GetAllAdvertisings
 
-EXEC UpdateAdvertising 1, 1, 2, 7, 3, 'aaaaaaaaaa', 'asdasdasd', 'asdasdasd', 1, '2024-01-11', '2025-01-11'
+AS
+BEGIN
+    DECLARE @AllFees AS dbo.AllFees
 
-EXEC CreateAdvertising 1, 3, 7, 3, 'asdasdasd', 'asdasdasd', 'asdasdasd', 1, '2024-01-11', '2025-01-11'
+    INSERT INTO @AllFees
+        (feeId, feeType, feeValue)
+    EXEC GetAllFees
 
-EXEC GetAllAdvertisingsByAdvertiser 1
+    SELECT
+        advertisingId,
+        advertiserId,
+        sizeType,
+        sizeValue,
+        af_st.feeValue AS sizeFee,
+        af.feeValue AS allPagesFee,
+        priorityType,
+        priorityValue,
+        af_bp.feeValue AS priorityFee,
+        redirectUrl,
+        imageUrl,
+        bannerText,
+        bannerId,
+        fromDate,
+        toDate
+    FROM Advertising a
+    INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
+    INNER JOIN SizeType st ON st.sizeId = a.sizeId
+    INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
+    INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
+    INNER JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+    AND a.deletedAt IS NULL
+END
+GO
 
-EXEC GetAdvertisingById 1
-*/
+-- DROP PROCEDURE IF EXISTS UpdateAdvertisingBanner
+CREATE OR ALTER PROCEDURE UpdateAdvertisingBanner
+    @advertiserId INT,
+    @bannerId INT,
+    @redirectUrl VARCHAR(255),
+    @imageUrl VARCHAR(255),
+    @bannerText VARCHAR(255)
+AS
+BEGIN
+    UPDATE Advertising 
+    SET redirectUrl = @redirectUrl,
+    imageUrl = @imageUrl,
+    bannerText = @bannerText
+    WHERE bannerId = @bannerId 
+    AND advertiserId = @advertiserId
+END
+

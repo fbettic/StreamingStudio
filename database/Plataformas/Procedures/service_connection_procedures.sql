@@ -15,24 +15,23 @@ CREATE OR ALTER PROCEDURE GetToken
     @token NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-    SET @token = CAST(NEWID() AS VARCHAR(255)) -- Generar un token aleatorio
+    SET @token = CAST(NEWID() AS VARCHAR(255))
+-- Generar un token aleatorio
 END
 GO
 
 -- DROP PROCEDURE IF EXISTS CreateServiceConnection
 CREATE OR ALTER PROCEDURE CreateServiceConnection
-    @name VARCHAR(255)
+    @name VARCHAR(255),
+    @authToken NVARCHAR(MAX)
 AS
 BEGIN
     DECLARE @serviceId INT
-    DECLARE @authToken NVARCHAR(MAX)
-
-    -- Generar un token para la nueva conexión
-    EXEC GetToken @authToken OUTPUT
-
     -- Insertar la nueva conexión en la tabla
-    INSERT INTO ServiceConnection (name, authToken)
-    VALUES (@name, @authToken)
+    INSERT INTO ServiceConnection
+        (name, authToken)
+    VALUES
+        (@name, @authToken)
 
     -- Obtener el ID de la conexión creada
     SET @serviceId = SCOPE_IDENTITY()
@@ -68,3 +67,15 @@ BEGIN
     WHERE serviceId = @serviceId
 END
 GO
+
+-- DROP PROCEDURE IF EXISTS GetServiceConnectionByToken
+CREATE OR ALTER PROCEDURE GetServiceConnectionByToken
+    @authToken NVARCHAR(MAX)
+AS
+BEGIN
+    SELECT serviceId, name, authToken
+    FROM ServiceConnection
+    WHERE authToken = @authToken
+END
+GO
+

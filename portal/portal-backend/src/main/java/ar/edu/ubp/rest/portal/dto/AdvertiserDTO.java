@@ -19,4 +19,5 @@ public class AdvertiserDTO {
     String phone;
     String apiUrl;
     String serviceType;
+    String authToken;
 }

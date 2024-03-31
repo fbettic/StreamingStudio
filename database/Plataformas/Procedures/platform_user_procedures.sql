@@ -20,8 +20,10 @@ CREATE OR ALTER PROCEDURE CreatePlatformUser
 AS
 BEGIN
     -- Insertar el nuevo usuario en la tabla
-    INSERT INTO PlatformUser (firstname, lastname, email, password, phone)
-    VALUES (@firstname, @lastname, @email, @password, @phone)
+    INSERT INTO PlatformUser
+        (firstname, lastname, email, password, phone)
+    VALUES
+        (@firstname, @lastname, @email, @password, @phone)
 
     -- Obtener el ID del usuario creado
     DECLARE @userId INT
@@ -66,3 +68,28 @@ BEGIN
     WHERE userId = @userId
 END
 GO
+
+-- DROP PROCEDURE IF EXISTS GetPlatformUserByEmail
+CREATE OR ALTER PROCEDURE GetPlatformUserByEmail
+    @email VARCHAR(255)
+AS
+BEGIN
+    SELECT userId, firstname, lastname, email, password, phone
+    FROM PlatformUser
+    WHERE email = @email
+END
+GO
+
+-- DROP PROCEDURE IF EXISTS GetUserByToken
+CREATE OR ALTER PROCEDURE GetUserByToken
+    @userToken NVARCHAR(MAX)
+AS
+BEGIN
+    SELECT ar.userId, firstname, lastname, email, password, phone
+    FROM AssociationRequest ar
+    JOIN PlatformUser pu ON pu.userId = ar.userId
+    WHERE userToken = @userToken
+    AND [state] != 'CANCELED'
+END
+GO
+

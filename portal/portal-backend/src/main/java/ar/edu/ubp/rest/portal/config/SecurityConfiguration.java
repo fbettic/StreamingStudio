@@ -1,6 +1,6 @@
 package ar.edu.ubp.rest.portal.config;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,25 +20,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationProvider authProvider;
+        @Autowired
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        @Autowired
+        private final AuthenticationProvider authProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(
-                        authRequest -> authRequest
-                                //.requestMatchers(HttpMethod.GET).permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                .requestMatchers("api/v1/auth/**").permitAll()
-                                .requestMatchers("api/v1/admin/**").hasAuthority(Role.ADMINISTRATOR.name())
-                                .anyRequest()
-                                .authenticated())
-                .sessionManagement(
-                        sessionManagement -> sessionManagement
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                return http.csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(
+                                                authRequest -> authRequest
+                                                                // .requestMatchers(HttpMethod.GET).permitAll()
+                                                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                                                                .requestMatchers("api/v1/auth/**").permitAll()
+                                                                .requestMatchers("api/v1/admin/**")
+                                                                .hasAuthority(Role.ADMINISTRATOR.name())
+                                                                .anyRequest()
+                                                                .authenticated())
+                                .sessionManagement(
+                                                sessionManagement -> sessionManagement
+                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authProvider)
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .build();
+        }
 }

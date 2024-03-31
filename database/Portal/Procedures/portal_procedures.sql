@@ -212,14 +212,3 @@ BEGIN
 END;
 GO
 
-/*
-  EXEC GetUserByEmail "federicobettic@gmail.com"
-
-  DECLARE @Email VARCHAR(255) = 'federicobettic@gmail.com'; 
-  DECLARE @EmailExists BIT; 
-  EXEC CheckEmailExists @Email, @EmailExists OUTPUT;
-  SELECT @EmailExists
-
-
-  EXEC SoftDeleteRecord Administrator, administratorId, 1
-*/

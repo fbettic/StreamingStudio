@@ -88,8 +88,4 @@ END
 
 
 
-/*
-EXEC CreateSubscriber 'federico', 'bettic', 'fbettic@gmail.com', '1111111111111', '1998-07-11', '$2y$10$Y5/QxW.Z4DfN0YQlPwaCk.9/Le1ZhpDRLWffX9rV7gtcMl2gYpRO2', 1;
-EXEC GetSubscriberById 1
-*/
 

@@ -1,7 +1,7 @@
 package ar.edu.ubp.rest.portal.repositories.interfaces;
 
-import ar.edu.ubp.rest.portal.models.CustomUserDetails;
+import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 
 public interface IUserRepository {
-    public CustomUserDetails findUserByEmail(String email);
+    public CustomUserDetails getUserByEmail(String email);
 }

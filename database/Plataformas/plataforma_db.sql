@@ -32,8 +32,8 @@ DROP TABLE IF EXISTS ServiceConnection
 
 CREATE TABLE ServiceConnection (
   serviceId INT NOT NULL IDENTITY(1,1),
-  name VARCHAR(255) NOT NULL,
-  authToken NVARCHAR(MAX) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  authToken NVARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (serviceId)
 );
 GO
@@ -54,7 +54,7 @@ CREATE TABLE PlatformUser (
   userId INT NOT NULL IDENTITY(1,1),
   firstname VARCHAR(255) NOT NULL,
   lastname VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   phone VARCHAR(255) NOT NULL,
   PRIMARY KEY (userId)
@@ -63,20 +63,20 @@ GO
 
 CREATE TABLE AssociationRequest (
   associationId INT NOT NULL IDENTITY(1,1),
-  userId INT NOT NULL,
+  userId INT,
   serviceId INT NOT NULL,
   associationType VARCHAR(255) NOT NULL,
   "state" VARCHAR(255) NOT NULL,
-  authUrl VARCHAR(255) NOT NULL,
+  uuid VARCHAR(255) NOT NULL,
   redirectUrl VARCHAR(255) NOT NULL,
   requestedAt DATETIME NOT NULL,
-  userToken NVARCHAR(MAX) NOT NULL,
+  userToken NVARCHAR(MAX),
   canceledAt DATETIME,
   PRIMARY KEY (associationId),
   FOREIGN KEY (serviceId) REFERENCES ServiceConnection(serviceId),
   FOREIGN KEY (userId) REFERENCES PlatformUser(userId),
-  CONSTRAINT chk_state_association_request CHECK (state = 'OPEN' OR state = 'CANCELED' OR state = 'FINALICED'),
-  CONSTRAINT chk_association_type_association_request CHECK (state = 'SIGNUP' OR state = 'LOGIN')
+  CONSTRAINT chk_state_association_request CHECK (state = 'OPEN' OR state = 'CANCELED' OR state = 'FINALIZED'),
+  CONSTRAINT chk_association_type_association_request CHECK (associationType = 'SIGNUP' OR associationType = 'LOGIN')
 );
 GO
 
@@ -108,6 +108,7 @@ CREATE TABLE Film (
   countryCode CHAR(3) NOT NULL,
   directorId INT NOT NULL,
   year INT NOT NULL,
+  url VARCHAR(255) NOT NULL,
   PRIMARY KEY (filmId),
   FOREIGN KEY (countryCode) REFERENCES Country(countryCode),
   FOREIGN KEY (directorId) REFERENCES Director(directorId)
@@ -118,7 +119,7 @@ CREATE TABLE Sessions (
   sessionId INT NOT NULL IDENTITY(1,1),
   associationId INT NOT NULL,
   filmId INT,
-  sessionUrl NVARCHAR(MAX) NOT NULL,
+  sessionUrl VARCHAR(255) NOT NULL,
   createdAt DATE NOT NULL,
   usedAt DATETIME,
   expired BIT NOT NULL,

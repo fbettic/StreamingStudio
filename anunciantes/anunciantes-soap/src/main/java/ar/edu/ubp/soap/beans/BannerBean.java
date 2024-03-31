@@ -1,40 +1,17 @@
 package ar.edu.ubp.soap.beans;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BannerBean {
     private int bannerId;
     private String text;
     private String imageUrl;
     private String redirectUrl;
-
-    public int getBannerId() {
-        return bannerId;
-    }
-
-    public void setBannerId(int bannerId) {
-        this.bannerId = bannerId;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getRedirectUrl() {
-        return redirectUrl;
-    }
-
-    public void setRedirectUrl(String redirectUrl) {
-        this.redirectUrl = redirectUrl;
-    }
 }

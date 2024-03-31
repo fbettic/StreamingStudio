@@ -115,19 +115,6 @@ GO
 
 
 
-/*
-EXEC CreatePlatformFilm 1,1,1,1
-EXEC CreatePlatformFilm 2,1,1,0
-EXEC CreatePlatformFilm 3,1,0,1
-EXEC CreatePlatformFilm 1,2,1,1
-EXEC CreatePlatformFilm 2,2,1,0
-EXEC CreatePlatformFilm 1,3,0,0
-EXEC CreatePlatformFilm 1002,1,0,0
 
-EXEC UpdatePlatformFilm 1002,1,0,1
-
-EXEC GetAllPlatformFilmRelations
-
-*/
 
 

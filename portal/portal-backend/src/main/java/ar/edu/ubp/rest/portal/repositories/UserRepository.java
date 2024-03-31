@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import ar.edu.ubp.rest.portal.models.CustomUserDetails;
+import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IUserRepository;
 
 @Repository
@@ -21,7 +21,7 @@ public class UserRepository implements IUserRepository {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public CustomUserDetails findUserByEmail(String email) {
+	public CustomUserDetails getUserByEmail(String email) {
 		SqlParameterSource input = new MapSqlParameterSource().addValue("email", email);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
@@ -29,9 +29,9 @@ public class UserRepository implements IUserRepository {
 				.withSchemaName("dbo")
 				.returningResultSet("user", BeanPropertyRowMapper.newInstance(CustomUserDetails.class));
 
-		Map<String, Object> result = jdbcCall.execute(input);
+		Map<String, Object> output = jdbcCall.execute(input);
 
-		return ((List<CustomUserDetails>) result.get("user")).get(0);
+		return ((List<CustomUserDetails>) output.get("user")).get(0);
 	}
 
 }

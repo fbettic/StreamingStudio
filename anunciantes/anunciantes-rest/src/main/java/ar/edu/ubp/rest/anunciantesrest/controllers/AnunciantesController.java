@@ -1,34 +1,54 @@
 package ar.edu.ubp.rest.anunciantesrest.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
-import ar.edu.ubp.rest.anunciantesrest.repositories.AnunciantesRestRepository;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.ubp.rest.anunciantesrest.beans.AdvertisingBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.AuthTokenRequestBean;
+import ar.edu.ubp.rest.anunciantesrest.services.AdvertiserServices;
 
 @RestController
-@RequestMapping(path = "rest/anunciantes", produces = { MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(path = "rest/anunciante", produces = { MediaType.APPLICATION_JSON_VALUE })
 public class AnunciantesController {
     @Autowired
-    AnunciantesRestRepository repository;
+    AdvertiserServices advertiserServices;
 
-    @GetMapping(path = "/banner/{bannerId}")
-    public ResponseEntity<BannerBean> getBanner(@PathVariable("bannerId") String bannerId) {
-        System.out.println("-----------------------> "+ bannerId +" <-----------------------");
-        return new ResponseEntity<>(repository.getBanner(Integer.valueOf(bannerId)), HttpStatus.OK);
+    @PostMapping(path = "/banners/{bannerId}")
+    public ResponseEntity<BannerBean> getBannerById(@PathVariable("bannerId") String bannerId,
+            @RequestBody AuthTokenRequestBean authToken) throws NumberFormatException, Exception {
+        return new ResponseEntity<>(
+                advertiserServices.getBannerById(Integer.valueOf(bannerId), authToken.getAuthToken()),
+                HttpStatus.OK);
     }
 
-    @GetMapping(path = "/test1")
-    public ResponseEntity<String> getTest1() {
-        return new ResponseEntity<>("Helloo! :D, este endpoint NO es seguro", HttpStatus.OK);
+    @PostMapping(path = "/advertisings/{advertisingId}")
+    public ResponseEntity<AdvertisingBean> getAdvertisingById(@PathVariable("advertisingId") String advertisingId,
+            @RequestBody AuthTokenRequestBean authToken) throws NumberFormatException, Exception {
+        return new ResponseEntity<>(
+                advertiserServices.getAdvertisingById(Integer.valueOf(advertisingId), authToken.getAuthToken()),
+                HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/advertisings")
+    public ResponseEntity<List<AdvertisingBean>> getBanner(@RequestBody AuthTokenRequestBean authToken)
+            throws NumberFormatException, Exception {
+        return new ResponseEntity<>(advertiserServices.getAllAdvertisings(authToken.getAuthToken()), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/ping")
+    public ResponseEntity<String> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
+        System.out.println("---------------> " + authToken);
+
+        return new ResponseEntity<>(advertiserServices.ping(authToken), HttpStatus.OK);
     }
 }

@@ -1,6 +1,6 @@
 -- USE plataforma1_db
 -- USE plataforma2_db
-USE plataforma11_db
+USE plataforma3_db
 GO
 
 /*
@@ -24,6 +24,7 @@ CREATE TYPE FilmType AS TABLE (
     year INT,
     actors VARCHAR(MAX),
     genres VARCHAR(MAX),
+    url VARCHAR(MAX),
     newContent BIT,
     highlighted BIT
 )
@@ -41,7 +42,8 @@ CREATE OR ALTER PROCEDURE CreateFilmIfNotExists
     @directorName VARCHAR(255),
     @year INT,
     @actorNames VARCHAR(MAX),
-    @genreNames VARCHAR(MAX)
+    @genreNames VARCHAR(MAX),
+    @url VARCHAR(255)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -61,9 +63,9 @@ BEGIN
 
         -- Insertar la película en la tabla Film
         INSERT INTO Film
-            (filmCode, title, cover, description,  newContent, highlighted, countryCode, directorId, year)
+            (filmCode, title, cover, description,  newContent, highlighted, countryCode, directorId, year, url)
         VALUES
-            (@filmCode, @title, @cover, @description,  @newContent, @highlighted, @countryCode, @directorId, @year)
+            (@filmCode, @title, @cover, @description,  @newContent, @highlighted, @countryCode, @directorId, @year, @url)
 
         -- Obtener el ID de la película insertada
         SET @filmId = IDENT_CURRENT('Film')
@@ -140,7 +142,7 @@ BEGIN
     EXEC GetAllFilmGenreRelations
 
     SELECT
-        f.filmId,
+        f.filmId AS filmId,
         filmCode,
         title,
         cover,

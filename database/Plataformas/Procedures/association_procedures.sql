@@ -65,6 +65,9 @@ BEGIN
 END
 GO
 
+select * from PlatformUser
+
+
 -- DROP PROCEDURE IF EXISTS CancelAssociationRequest
 CREATE OR ALTER PROCEDURE CancelAssociationRequest
     @associationId INT
@@ -112,6 +115,17 @@ BEGIN
     SELECT *
     FROM AssociationRequest
     WHERE associationId = @associationId
+END
+GO
+
+-- DROP PROCEDURE IF EXISTS GetAssociationRequestByUuid
+CREATE OR ALTER PROCEDURE GetAssociationRequestByUuid
+    @uuid INT
+AS
+BEGIN
+    SELECT *
+    FROM AssociationRequest
+    WHERE uuid = @uuid
 END
 GO
 
@@ -182,8 +196,6 @@ BEGIN
     
 END;
 GO
-
-select * from PlatformUser
 
 -- DROP PROCEDURE IF EXISTS MarkSessionAsUsed
 CREATE OR ALTER PROCEDURE MarkSessionAsUsed

@@ -3,19 +3,12 @@ package ar.edu.ubp.soap.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.apache.cxf.interceptor.Fault;
 
 public class AuthManager {
-    private DatabaseConnection databaseConnection;
-
-    public AuthManager(DatabaseConnection databaseConnection){
-        this.databaseConnection = databaseConnection;
-    }
-
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        return databaseConnection.getConnection();
+    private Connection getConnection() throws Exception {
+        return DatabaseConnection.getConnection();
     }
 
     private Integer getServiceId(String authToken) throws Fault {
@@ -31,7 +24,7 @@ public class AuthManager {
                     throw new Fault(new Exception("Invalid platform token"));
                 }
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             throw new Fault(e);
         }
     }
@@ -49,7 +42,7 @@ public class AuthManager {
                     throw new Fault(new Exception("Invalid user token"));
                 }
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             throw new Fault(e);
         }
     }

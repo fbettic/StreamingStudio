@@ -27,7 +27,7 @@ public class PortalConfiguration {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -40,8 +40,8 @@ public class PortalConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailService()throws UsernameNotFoundException {
+    public UserDetailsService userDetailService() throws UsernameNotFoundException {
         return email -> userDetailsService.loadUserByUsername(email);
     }
-    
+
 }

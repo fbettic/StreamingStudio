@@ -211,7 +211,8 @@ CREATE TABLE AssociationRequest
   transactionId INT NOT NULL,
   subscriberId INT NOT NULL,
   "state" VARCHAR(255) NOT NULL,
-  redirectUrl VARCHAR(255) NOT NULL,
+  authUrl VARCHAR(255) NOT NULL, -- direccion url a la que debo enviar al usuario
+  uuid VARCHAR(255) NOT NULL UNIQUE, -- identificador que debera enviar la plataforma cuando nod devuelva al usuario
   associationType VARCHAR(255) NOT NULL,
   requestAt DATETIME NOT NULL,
   closedAt DATETIME,
@@ -236,6 +237,7 @@ CREATE TABLE Association
 );
 GO
 
+-- TODO cambiar a Session
 CREATE TABLE Sessions
 (
   sessionId INT NOT NULL IDENTITY(1,1),
@@ -320,7 +322,7 @@ CREATE TABLE Advertising
   sizeId INT NOT NULL,
   allPagesFeeId INT,
   priorityId INT NOT NULL,
-  redirectUrl VARCHAR(255) NOT NULL,
+  authUrl VARCHAR(255) NOT NULL,
   imageUrl VARCHAR(255) NOT NULL,
   bannerText VARCHAR(255) NOT NULL,
   bannerId INT,

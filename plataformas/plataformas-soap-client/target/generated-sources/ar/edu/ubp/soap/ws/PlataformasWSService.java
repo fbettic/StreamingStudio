@@ -17,7 +17,7 @@ import jakarta.xml.ws.WebServiceFeature;
  * Generated source version: 3.0
  * 
  */
-@WebServiceClient(name = "PlataformasWSService", targetNamespace = "http://ws.soap.ubp.edu.ar/", wsdlLocation = "http://localhost:8880/plataformas?wsdl")
+@WebServiceClient(name = "PlataformasWSService", targetNamespace = "http://ws.soap.ubp.edu.ar/", wsdlLocation = "http://localhost:9110/soap/plataforma?wsdl")
 public class PlataformasWSService
     extends Service
 {
@@ -30,7 +30,7 @@ public class PlataformasWSService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://localhost:8880/plataformas?wsdl");
+            url = new URL("http://localhost:9110/soap/plataforma?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

@@ -1,5 +1,4 @@
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\package-info.java
-d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\src\main\java\servlets\IndexServlet.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\LoginRequestBean.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\NewAssociationRequestBean.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CreatePlatformUser.java
@@ -7,12 +6,14 @@ d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\FilmBean.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CreatePlatformUserResponse.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\PlatformUserBean.java
+d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\GetAssociationDataResponse.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\GetAllFilms.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\NewPlatformUserBean.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\NewSessionBean.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\ObjectFactory.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\PlataformasWSService.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\SessionBean.java
+d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\Exception.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CreateAssociationRequest.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CompleteLoginAssociationRequest.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CreateAssociationRequestResponse.java
@@ -20,8 +21,10 @@ d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\GetAllFilmsResponse.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CompleteSignupAssociationRequest.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CompleteLoginAssociationRequestResponse.java
+d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\Exception_Exception.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\PingResponse.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\src\main\java\servlets\LoginServlet.java
+d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\GetAssociationData.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\CreateSessionResponse.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\PlataformasWS.java
 d:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap-client\target\generated-sources\ar\edu\ubp\soap\ws\Ping.java

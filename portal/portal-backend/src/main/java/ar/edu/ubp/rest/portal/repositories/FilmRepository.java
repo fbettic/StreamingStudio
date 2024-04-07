@@ -16,16 +16,16 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
+import ar.edu.ubp.rest.portal.dto.PlatformFilmDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IFilmRepository;
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class FilmRepository implements IFilmRepository {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
 
     @Override
     public Integer loadAllCountries(List<CountryDTO> countries) {
@@ -44,27 +44,102 @@ public class FilmRepository implements IFilmRepository {
                 return countries.size();
             }
         });
-        
+
         int totalAffectedRows = 0;
         for (int rows : affectedRows) {
             totalAffectedRows += rows;
         }
-        
+
         return totalAffectedRows;
     }
 
+    @Override
+    public Integer updateBatchFilm(List<FilmDTO> films) {
+        String sql = "EXEC CreateFilmIfNotExists @filmCode = ?,@title = ?,@cover = ?,@description = ?,@directorName = ?,@countryCode = ?,@year = ?,@actorNames = ?,@genreNames = ?";
+        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                FilmDTO film = films.get(i);
+                ps.setString(1, film.getFilmCode());
+                ps.setString(2, film.getTitle());
+                ps.setString(3, film.getCover());
+                ps.setString(4, film.getDescription());
+                ps.setString(5, film.getDirectorName());
+                ps.setString(6, film.getCountryCode());
+                ps.setInt(7, film.getYear());
+                ps.setString(8, film.getActorNames());
+                ps.setString(9, film.getGenreNames());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return films.size();
+            }
+        });
+
+        int totalAffectedRows = 0;
+        for (int rows : affectedRows) {
+            totalAffectedRows += rows;
+        }
+
+        return totalAffectedRows;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Integer dropAllPlatformFilmRelations() {
+        SqlParameterSource input = new MapSqlParameterSource();
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("DropAllPlatformFilmRelations")
+                .withSchemaName("dbo")
+                .returningResultSet("deleted", BeanPropertyRowMapper.newInstance(Integer.class));
+
+        Map<String, Object> output = jdbcCall.execute(input);
+        return ((List<Integer>) output.get("deleted")).get(0);
+    }
+
+    @Override
+    public Integer updateBatchPlatformFilm(List<PlatformFilmDTO> platformFilms) {
+        String sql = "EXEC CreatePlatformFilm @filmCode = ?, @platformId = ?, @newContent = ?, @highlighted = ?";
+        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                PlatformFilmDTO platformFilm = platformFilms.get(i);
+                ps.setString(1, platformFilm.getFilmCode());
+                ps.setInt(2, platformFilm.getPlatformId());
+                ps.setBoolean(3, platformFilm.getNewContent());
+                ps.setBoolean(4, platformFilm.getHighlighted());
+                
+            }
+
+            @Override
+            public int getBatchSize() {
+                return platformFilms.size();
+            }
+        });
+
+        int totalAffectedRows = 0;
+        for (int rows : affectedRows) {
+            totalAffectedRows += rows;
+        }
+
+        return totalAffectedRows;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<FilmDTO> getAllFilms() {
         SqlParameterSource input = new MapSqlParameterSource();
-		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("GetAllFilms")
-				.withSchemaName("dbo")
-				.returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmDTO.class));
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("GetAllFilms")
+                .withSchemaName("dbo")
+                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmDTO.class));
 
-		Map<String, Object> output = jdbcCall.execute(input);
-		return (List<FilmDTO>) output.get("films");
+        Map<String, Object> output = jdbcCall.execute(input);
+        return (List<FilmDTO>) output.get("films");
     }
+
+
+
 
 }

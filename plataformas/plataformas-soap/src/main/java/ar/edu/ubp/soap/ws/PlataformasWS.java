@@ -30,23 +30,23 @@ public class PlataformasWS {
     private UserManager userManager;
     private FilmManager filmManager;
 
-    public PlataformasWS(DatabaseConnection databaseConnection) {
-        this.authManager = new AuthManager(databaseConnection);
-        this.userManager = new UserManager(databaseConnection);
-        this.filmManager = new FilmManager(databaseConnection);
+    public PlataformasWS() {
+        this.authManager = new AuthManager();
+        this.userManager = new UserManager();
+        this.filmManager = new FilmManager();
     }    
 
     // crear usuario no relacionado a plataforma
     @WebMethod()
     @WebResult(name = "platformUser")
-    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser) throws Fault {
+    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser) throws Exception {
         return userManager.creatPlatformUser(newPlatformUser);
     }
 
     // se crea el usuario y se setea el token
     @WebMethod()
     @WebResult(name = "signupAssociationCompleted")
-    public AssociationRequestBean completeSignupAssociationRequest(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser, @WebParam(name = "uuid") String uuid) throws Fault {
+    public AssociationRequestBean completeSignupAssociationRequest(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser, @WebParam(name = "uuid") String uuid) throws Exception {
         Integer userId = userManager.creatPlatformUser(newPlatformUser).getUserId();
 
         System.out.println("-------------> " + userId);
@@ -61,7 +61,7 @@ public class PlataformasWS {
     // se busca el usuario y se setea el token
     @WebMethod()
     @WebResult(name = "loginAssociationCompleted")
-    public AssociationRequestBean completeLoginAssociationRequest(@WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid) throws Fault {
+    public AssociationRequestBean completeLoginAssociationRequest(@WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid) throws Exception {
         
         System.out.println("-------------> " + loginRequest.toString() + ", " + uuid);
         PlatformUserBean user = userManager.getUserByEmail(loginRequest.getEmail());
@@ -84,8 +84,19 @@ public class PlataformasWS {
     // se abre el proceso de associacion
     @WebMethod()
     @WebResult(name = "associationRequest")
+    public AssociationRequestBean getAssociationData(
+        @WebParam(name = "authToken") String authToken, @WebParam(name = "associationId") Integer associationId) throws Exception {
+        final Integer serviceId = authManager.validateServiceToken(authToken);
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+        return userManager.getAssociationData(associationId);
+    }
+
+    @WebMethod()
+    @WebResult(name = "associationRequest")
     public AssociationRequestBean createAssociationRequest(
-            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest) throws Fault {
+            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest) throws Exception {
         final Integer serviceId = authManager.validateServiceToken(newAssociationRequest.getAuthToken());
         if (serviceId == null || serviceId == 0) {
             throw new Fault(new Exception("Invalid token"));
@@ -93,10 +104,11 @@ public class PlataformasWS {
         return userManager.createAssociationRequest(newAssociationRequest, serviceId);
     }
 
+
     // se obtienen los datos de reproduccion de la pelicula
     @WebMethod()
     @WebResult(name = "session")
-    public SessionBean createSession(@WebParam(name = "newSession") NewSessionBean newSession) throws Fault {
+    public SessionBean createSession(@WebParam(name = "newSession") NewSessionBean newSession) throws Exception {
         final Integer serviceId = authManager.validateServiceToken(newSession.getAuthToken());
         final Integer userId = authManager.validateUserToken(newSession.getUserToken());
         return userManager.createSession(newSession, serviceId, userId);

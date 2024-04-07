@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.portal.dto.request.AdministratorRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
-import ar.edu.ubp.rest.portal.dto.request.AuthRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.AuthUserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
 import ar.edu.ubp.rest.portal.enums.ServiceType;
@@ -41,7 +41,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponseDTO login(AuthRequestDTO request) {
+    public AuthResponseDTO login(AuthUserRequestDTO request) {
         CustomUserDetails user = userRepository.getUserByEmail(request.getEmail());
 
         String token = jwtService.getToken(user);

@@ -93,3 +93,4 @@ BEGIN
 END
 GO
 
+select * from AssociationRequest

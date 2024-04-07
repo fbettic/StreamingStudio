@@ -18,17 +18,11 @@ import ar.edu.ubp.soap.resources.utils.AuthUrlGenerator;
 
 public class UserManager {
 
-    private DatabaseConnection databaseConnection;
-
-    public UserManager(DatabaseConnection databaseConnection){
-        this.databaseConnection = databaseConnection;
+    private Connection getConnection() throws Exception {
+        return DatabaseConnection.getConnection();
     }
 
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        return databaseConnection.getConnection();
-    }
-
-    public PlatformUserBean creatPlatformUser(NewPlatformUserBean newPlatformUser) throws Fault {
+    public PlatformUserBean creatPlatformUser(NewPlatformUserBean newPlatformUser) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL dbo.CreatePlatformUser(?,?,?,?,?)}")) {
 
@@ -71,7 +65,7 @@ public class UserManager {
         }
     }
 
-    public PlatformUserBean getUserByEmail(String email) throws Fault {
+    public PlatformUserBean getUserByEmail(String email) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL dbo.GetPlatformUserByEmail(?)}")) {
 
@@ -100,7 +94,7 @@ public class UserManager {
     }
 
     public AssociationRequestBean createAssociationRequest(NewAssociationRequestBean newAssociationRequest,
-            Integer serviceId) throws Fault {
+            Integer serviceId) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL dbo.CreateAssociationRequest(?,?,?,?,?)}")) {
 
@@ -143,7 +137,7 @@ public class UserManager {
         }
     }
 
-    public AssociationRequestBean completeAssociationRequest(Integer userId, String uuid) throws Fault {
+    public AssociationRequestBean completeAssociationRequest(Integer userId, String uuid) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL SetUserToken(?,?)}")) {
 
@@ -176,7 +170,39 @@ public class UserManager {
         }
     }
 
-    public SessionBean createSession(NewSessionBean newSession, Integer serviceId, Integer userId) throws Fault {
+    public AssociationRequestBean getAssociationData(Integer associationId) throws Exception {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL GetAssociationRequestById(?)}")) {
+
+            stmt.setInt(1, associationId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                AssociationRequestBean associationRequest = null;
+                // Se verifica si hay resultados y se crea el objeto AssociationRequestBean
+                if (rs.next()) {
+                    associationRequest = AssociationRequestBean.builder()
+                            .associationId(rs.getInt("associationId"))
+                            .serviceId(rs.getInt("serviceId"))
+                            .associationType(rs.getString("associationType"))
+                            .state(rs.getString("state"))
+                            .authUrl(AuthUrlGenerator.generateAuthUrl(rs.getString("associationType"),
+                                    rs.getString("uuid")))
+                            .redirectUrl(rs.getString("redirectUrl"))
+                            .requestedAt(rs.getDate("requestedAt"))
+                            .userId(rs.getInt("userId"))
+                            .userToken(rs.getString("userToken"))
+                            .build();
+                }
+
+                return associationRequest;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Fault(e);
+        }
+    }
+
+    public SessionBean createSession(NewSessionBean newSession, Integer serviceId, Integer userId) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL dbo.CreateSession(?,?,?,?)}")) {
 

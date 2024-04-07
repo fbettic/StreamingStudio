@@ -3,7 +3,7 @@ package ar.edu.ubp.rest.portal.repositories.interfaces;
 import java.util.List;
 
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
-import ar.edu.ubp.rest.portal.dto.BannerUpdateDTO;
+import ar.edu.ubp.rest.portal.dto.BannerDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 
 public interface IAdvertisingRepository {
@@ -11,9 +11,13 @@ public interface IAdvertisingRepository {
 
     public List<AdvertisingDTO> getAllAdvertisings();
 
-    public Integer updateBatchBanner(List<BannerUpdateDTO> banners);
+    public Integer updateBatchBanner(List<BannerDTO> banners);
 
-    //public AdvertisingDTO getAdvertisingById(Integer id);
+    public List<AdvertisingDTO> getAllAdvertisingsByAdvertiser(Integer advertiserId);
 
-    //public Integer deleteAdvertisingById(Integer id);
+    public AdvertisingDTO getAdvertisingById(Integer id);
+
+    public AdvertisingDTO updateAdvertisingById(Integer id, AdvertisingRequestDTO advertising);
+
+    public Integer deleteAdvertisingById(Integer id);
 }

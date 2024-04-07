@@ -120,6 +120,7 @@
           <arguments>
             <argument>${databaseName}</argument>
             <argument>${port}</argument>
+            <argument>${frontUrl}</argument>
           </arguments>
         </configuration>
       </plugin>

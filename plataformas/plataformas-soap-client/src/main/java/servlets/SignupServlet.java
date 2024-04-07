@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jakarta.xml.ws.WebServiceException;
 import ar.edu.ubp.soap.ws.AssociationRequestBean;
+import ar.edu.ubp.soap.ws.Exception_Exception;
 import ar.edu.ubp.soap.ws.NewPlatformUserBean;
 import ar.edu.ubp.soap.ws.PlataformasWS;
 import ar.edu.ubp.soap.ws.PlataformasWSService;
@@ -44,9 +45,9 @@ public class SignupServlet extends HttpServlet {
 			System.out.println(result.toString());
 
 			request.setAttribute("id", result.getUserId());
-            this.gotoPage("/index.jsp", request, response);
+            this.gotoExternalPage(result.getRedirectUrl(), response);
 		} 
-		catch (WebServiceException ex) {
+		catch (WebServiceException | Exception_Exception ex) {
 			response.setStatus(400);
 			request.setAttribute("error", ex.getMessage());
 			this.gotoPage("/error.jsp", request, response);
@@ -57,5 +58,10 @@ public class SignupServlet extends HttpServlet {
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
 		                  dispatcher.forward(request, response);
 	}
+
+	private void gotoExternalPage(String address, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(address);
+    }
 
 }

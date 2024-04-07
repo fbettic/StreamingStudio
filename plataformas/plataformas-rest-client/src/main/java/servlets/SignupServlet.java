@@ -46,7 +46,7 @@ public class SignupServlet extends HttpServlet {
 
 		StringEntity stringEntity = new StringEntity(new Gson().toJson(signupRequest));
 
-		URI uri = URI.create("http://localhost:8090/rest/plataformas/associations/signup");
+		URI uri = URI.create("http://localhost:9120/rest/plataforma/associations/signup");
 
 		HttpPost req = new HttpPost();
 		req.setURI(uri);
@@ -76,7 +76,7 @@ public class SignupServlet extends HttpServlet {
 
 			request.setAttribute("id", userId);
 
-			this.gotoPage("/index.jsp", request, response);
+			this.gotoExternalPage(associationRequest.getRedirectUrl(), response);
 		}
 
 	}
@@ -86,5 +86,10 @@ public class SignupServlet extends HttpServlet {
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
 		dispatcher.forward(request, response);
 	}
+
+	private void gotoExternalPage(String address, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(address);
+    }
 
 }

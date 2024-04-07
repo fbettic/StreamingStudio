@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 
 import ar.edu.ubp.soap.ws.AssociationRequestBean;
+import ar.edu.ubp.soap.ws.Exception_Exception;
 import ar.edu.ubp.soap.ws.LoginRequestBean;
 import ar.edu.ubp.soap.ws.PlataformasWS;
 import ar.edu.ubp.soap.ws.PlataformasWSService;
@@ -35,8 +36,8 @@ public class LoginServlet extends HttpServlet {
 
             request.setAttribute("id", result.getUserId());
 
-            this.gotoPage("/index.jsp", request, response);
-        } catch (WebServiceException ex) {
+            this.gotoExternalPage(result.getRedirectUrl(), response);
+        } catch (WebServiceException | Exception_Exception ex) {
             response.setStatus(400);
             request.setAttribute("error", ex.getMessage());
             this.gotoPage("/error.jsp", request, response);
@@ -49,4 +50,9 @@ public class LoginServlet extends HttpServlet {
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
 		                  dispatcher.forward(request, response);
 	}
+
+    private void gotoExternalPage(String address, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(address);
+    }
 }

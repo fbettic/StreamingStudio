@@ -36,8 +36,11 @@ public class ObjectFactory {
     private static final QName _CreateSessionResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "createSessionResponse");
     private static final QName _GetAllFilms_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAllFilms");
     private static final QName _GetAllFilmsResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAllFilmsResponse");
+    private static final QName _GetAssociationData_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAssociationData");
+    private static final QName _GetAssociationDataResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAssociationDataResponse");
     private static final QName _Ping_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "ping");
     private static final QName _PingResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "pingResponse");
+    private static final QName _Exception_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "Exception");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ar.edu.ubp.soap.ws
@@ -167,6 +170,26 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetAssociationData }
+     * 
+     * @return
+     *     the new instance of {@link GetAssociationData }
+     */
+    public GetAssociationData createGetAssociationData() {
+        return new GetAssociationData();
+    }
+
+    /**
+     * Create an instance of {@link GetAssociationDataResponse }
+     * 
+     * @return
+     *     the new instance of {@link GetAssociationDataResponse }
+     */
+    public GetAssociationDataResponse createGetAssociationDataResponse() {
+        return new GetAssociationDataResponse();
+    }
+
+    /**
      * Create an instance of {@link Ping }
      * 
      * @return
@@ -187,13 +210,13 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link LoginRequestBean }
+     * Create an instance of {@link Exception }
      * 
      * @return
-     *     the new instance of {@link LoginRequestBean }
+     *     the new instance of {@link Exception }
      */
-    public LoginRequestBean createLoginRequestBean() {
-        return new LoginRequestBean();
+    public Exception createException() {
+        return new Exception();
     }
 
     /**
@@ -204,6 +227,16 @@ public class ObjectFactory {
      */
     public AssociationRequestBean createAssociationRequestBean() {
         return new AssociationRequestBean();
+    }
+
+    /**
+     * Create an instance of {@link LoginRequestBean }
+     * 
+     * @return
+     *     the new instance of {@link LoginRequestBean }
+     */
+    public LoginRequestBean createLoginRequestBean() {
+        return new LoginRequestBean();
     }
 
     /**
@@ -423,6 +456,32 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetAssociationData }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GetAssociationData }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "getAssociationData")
+    public JAXBElement<GetAssociationData> createGetAssociationData(GetAssociationData value) {
+        return new JAXBElement<>(_GetAssociationData_QNAME, GetAssociationData.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetAssociationDataResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link GetAssociationDataResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "getAssociationDataResponse")
+    public JAXBElement<GetAssociationDataResponse> createGetAssociationDataResponse(GetAssociationDataResponse value) {
+        return new JAXBElement<>(_GetAssociationDataResponse_QNAME, GetAssociationDataResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Ping }{@code >}
      * 
      * @param value
@@ -446,6 +505,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "pingResponse")
     public JAXBElement<PingResponse> createPingResponse(PingResponse value) {
         return new JAXBElement<>(_PingResponse_QNAME, PingResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Exception }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link Exception }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "Exception")
+    public JAXBElement<Exception> createException(Exception value) {
+        return new JAXBElement<>(_Exception_QNAME, Exception.class, null, value);
     }
 
 }

@@ -19,4 +19,5 @@ public class FilmDTO {
     String countryCode;
     Integer year;
     String actorNames;
-    String genreNames;}
+    String genreNames;
+}

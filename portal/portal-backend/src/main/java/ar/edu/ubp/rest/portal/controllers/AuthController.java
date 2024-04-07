@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.portal.dto.request.AdministratorRequestDTO;
-import ar.edu.ubp.rest.portal.dto.request.AuthRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.AuthUserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
 import ar.edu.ubp.rest.portal.services.AuthService;
@@ -29,7 +29,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthUserRequestDTO request) {
 
         this.authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));

@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
 
         StringEntity stringEntity = new StringEntity(new Gson().toJson(loginRequest));
 
-        URI uri = URI.create("http://localhost:8090/rest/plataformas/associations/login");
+        URI uri = URI.create("http://localhost:9120/rest/plataforma/associations/login");
 
         HttpPost req = new HttpPost();
         req.setURI(uri);
@@ -69,7 +69,7 @@ public class LoginServlet extends HttpServlet {
 
             request.setAttribute("id", userId);
 
-            this.gotoPage("/index.jsp", request, response);
+            this.gotoExternalPage(associationRequest.getRedirectUrl(), response);
         }
 
     }
@@ -78,5 +78,10 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
         dispatcher.forward(request, response);
+    }
+
+    private void gotoExternalPage(String address, HttpServletResponse response)
+            throws IOException {
+        response.sendRedirect(address);
     }
 }

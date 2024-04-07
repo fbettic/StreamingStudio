@@ -24,16 +24,16 @@ CREATE OR ALTER PROCEDURE CreateAssociationRequest
     @platformId INT,
     @transactionId INT,
     @subscriberId INT,
-    @state VARCHAR(255),
-    @redirectUrl VARCHAR(255),
+    @authUrl VARCHAR(255),
     @associationType VARCHAR(255),
-    @requestAt DATETIME
+    @requestAt DATETIME,
+    @uuid VARCHAR(255)
 AS
 BEGIN
     INSERT INTO AssociationRequest
-        (platformId, transactionId, subscriberId, state, redirectUrl, associationType, requestAt)
+        (platformId, transactionId, subscriberId, state, authUrl, associationType, requestAt, uuid)
     VALUES
-        (@platformId, @transactionId, @subscriberId, 'OPEN', @redirectUrl, @associationType, @requestAt);
+        (@platformId, @transactionId, @subscriberId, 'OPEN', @authUrl, @associationType, @requestAt, @uuid);
 END;
 GO
 
@@ -49,6 +49,12 @@ BEGIN
     WHERE platformId = @platformId
         AND transactionId = @transactionId
         AND subscriberId = @subscriberId;
+
+    SELECT * 
+    FROM AssociationRequest
+    WHERE  platformId = @platformId
+        AND transactionId = @transactionId
+        AND subscriberId = @subscriberId; 
 END;
 GO
 
@@ -78,6 +84,17 @@ BEGIN
     WHERE platformId = @platformId
         AND subscriberId = @subscriberId
         AND state = 'OPEN'
+END
+GO
+
+-- DROP PROCEDURE IF EXISTS GetAssociationRequestByUuid
+CREATE OR ALTER PROCEDURE GetAssociationRequestByUuid
+    @uuid VARCHAR(255)
+AS
+BEGIN
+    SELECT *
+    FROM AssociationRequest
+    WHERE uuid = @uuid
 END
 GO
 
@@ -122,7 +139,13 @@ BEGIN
     SET leavingDate = GETDATE()
     WHERE platformId = @platformId
         AND transactionId = @transactionId
-        AND subscriberId = @subscriberId;
+        AND subscriberId = @subscriberId;   
+    
+    SELECT * 
+    FROM Association
+    WHERE  platformId = @platformId
+        AND transactionId = @transactionId
+        AND subscriberId = @subscriberId;   
 END;
 GO
 
@@ -220,17 +243,23 @@ CREATE OR ALTER PROCEDURE CreateSession
     @subscriberId INT,
     @platformId INT,
     @transactionId INT,
-    @filmId INT,
+    @filmCode VARCHAR(255),
     @sessionUrl NVARCHAR(MAX),
     @createdAt DATETIME
 AS
 BEGIN
     DECLARE @leavingDate DATE;
+    DECLARE @filmId INT
+    
     SELECT @leavingDate = leavingDate
     FROM Association
     WHERE platformId = @platformId
         AND transactionId = @transactionId
         AND subscriberId = @subscriberId;
+
+    SELECT @filmId = filmId
+    FROM Film
+    WHERE filmCode = @filmCode
 
     IF @leavingDate IS NULL
     BEGIN

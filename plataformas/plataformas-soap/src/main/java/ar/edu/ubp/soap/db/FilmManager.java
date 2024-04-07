@@ -12,15 +12,8 @@ import org.apache.cxf.interceptor.Fault;
 import ar.edu.ubp.soap.beans.FilmBean;
 
 public class FilmManager {
-
-    private DatabaseConnection databaseConnection;
-
-    public FilmManager(DatabaseConnection databaseConnection){
-        this.databaseConnection = databaseConnection;
-    }
-
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        return databaseConnection.getConnection();
+    private Connection getConnection() throws Exception {
+        return DatabaseConnection.getConnection();
     }
 
     public List<FilmBean> getAllFilms() throws Fault {
@@ -51,7 +44,7 @@ public class FilmManager {
                 }
                 return films;
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             throw new Fault(e);
         }
     }

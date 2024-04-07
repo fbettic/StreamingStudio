@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
+import ar.edu.ubp.rest.plataformasrest.beans.AuthTokenRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteLoginAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteSignupAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.FilmBean;
-import ar.edu.ubp.rest.plataformasrest.beans.LoginRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.NewAssociationRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.NewPlatformUserBean;
 import ar.edu.ubp.rest.plataformasrest.beans.NewSessionBean;
@@ -61,6 +61,8 @@ public class PlatformServices {
         }
         AssociationRequestBean response = associationRequestRepository.completeAssociationRequest(user.getUserId(),
                 loginRequest.getUuid());
+
+        System.out.println("------>" + response);
         return response;
     }
 
@@ -72,6 +74,15 @@ public class PlatformServices {
             throw new Exception("Invalid token");
         }
         return associationRequestRepository.createAssociationRequest(newAssociationRequest, serviceId);
+    }
+
+    public AssociationRequestBean getAssociationData(Integer id, AuthTokenRequestBean authToken) throws Exception{
+        final Integer serviceId = serviceConnectionRepository
+                .getServiceConnectionByToken(authToken.getAuthToken()).getServiceId();
+        if (serviceId == null || serviceId == 0) {
+            throw new Exception("Invalid token");
+        }
+        return associationRequestRepository.getAssociationData(id);
     }
 
     public SessionBean createSession(NewSessionBean newSession) throws Exception {

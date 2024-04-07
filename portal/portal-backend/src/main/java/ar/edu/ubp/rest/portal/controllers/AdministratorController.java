@@ -1,6 +1,5 @@
 package ar.edu.ubp.rest.portal.controllers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.edu.ubp.rest.portal.beans.AdvertisingResponseBean;
-import ar.edu.ubp.rest.portal.beans.AuthTokenRequestBean;
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
+import ar.edu.ubp.rest.portal.dto.StreamingPlatformDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.StreamingPlatformRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
 import ar.edu.ubp.rest.portal.services.AdministratorService;
-import ar.edu.ubp.rest.portal.services.AdvertiserClientService;
-import ar.edu.ubp.rest.portal.services.AuthService;
-import ar.edu.ubp.rest.portal.services.BatchService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,89 +33,103 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "http://localhost:4200" })
 public class AdministratorController {
-    @Autowired
-    private final AuthService authService;
-    @Autowired
-    private final AdministratorService administratorServices;
-    @Autowired
-    private final AdvertiserClientService advertiserClientService;
 
     @Autowired
-    private BatchService batchService;
+    private final AdministratorService administratorService;
 
-    @GetMapping("advertisers")
-    public ResponseEntity<List<AdvertiserDTO>> getAllAdvertisers() {
-        return ResponseEntity.ok(administratorServices.getAllAdvertisers());
+    // Advertiser management endpoints
+    @PostMapping("test/advertisers/ping")
+    public ResponseEntity<String> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser) throws Exception {
+        return new ResponseEntity<String>(administratorService.pingAdvertiser(advertiser), HttpStatus.OK);
     }
 
     @PostMapping("advertisers")
     public ResponseEntity<AuthResponseDTO> createAdvertiser(@RequestBody AdvertiserRequestDTO advertiserData)
             throws Exception {
+        return ResponseEntity.ok(administratorService.createAdvertiser(advertiserData));
+    }
 
-        if (!advertiserData.getServiceType().equals("ACCOUNT")) {
-            String result = advertiserClientService.pingAdvertiser(advertiserData.getCompanyName(),
-                    advertiserData.getServiceType(), advertiserData.getApiUrl(),
-                    new AuthTokenRequestBean(advertiserData.getAuthToken()));
-
-            if (!result.equals("pong")) {
-                throw new Exception(
-                        "Failed to establish a connection with the specified API. Please verify the accuracy of the connection details provided.");
-            }
-        }
-
-        return ResponseEntity.ok(authService.createAdvertiser(advertiserData));
+    @GetMapping("advertisers")
+    public ResponseEntity<List<AdvertiserDTO>> getAllAdvertisers() {
+        return ResponseEntity.ok(administratorService.getAllAdvertisers());
     }
 
     @PutMapping(path = "advertisers/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<AdvertiserDTO> updateAdvertiserById(@PathVariable Integer id,
             @RequestBody AdvertiserRequestDTO advertiserData) {
-        return new ResponseEntity<>(administratorServices.updateAdvertiserById(id, advertiserData), HttpStatus.CREATED);
+        return new ResponseEntity<>(administratorService.updateAdvertiserById(id, advertiserData), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "advertisers/{id}")
     public ResponseEntity<Integer> deleteAdvertiserById(@PathVariable Integer id) {
-        return new ResponseEntity<>(administratorServices.deleteAdvertiserById(id), HttpStatus.CREATED);
+        return new ResponseEntity<>(administratorService.deleteAdvertiserById(id), HttpStatus.CREATED);
     }
 
-    @PostMapping("countries")
-    public ResponseEntity<String> loadAllCountryes(@RequestBody List<CountryDTO> countries) {
-        return new ResponseEntity<String>(administratorServices.loadAllCountryes(countries), HttpStatus.CREATED);
-    }
-
-    @GetMapping("films")
-    public ResponseEntity<List<FilmDTO>> getAllFilms() {
-        return ResponseEntity.ok(administratorServices.getAllFilms());
-    }
-
+    // Advertising management endpoints
     @PostMapping("advertisings")
     public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest) {
-        System.out.println("----------------> "+ advertisingRequest.toString());
-        return ResponseEntity.ok(administratorServices.createAdvertising(advertisingRequest));
+        System.out.println("----------------> " + advertisingRequest.toString());
+        return ResponseEntity.ok(administratorService.createAdvertising(advertisingRequest));
     }
 
     @GetMapping("advertisings")
     public ResponseEntity<List<AdvertisingDTO>> getAllAdvertisings() {
-        return ResponseEntity.ok(administratorServices.getAllAdvertisings());
+        return ResponseEntity.ok(administratorService.getAllAdvertisings());
     }
 
-    @PostMapping("ping")
-    public ResponseEntity<String> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
-            IllegalAccessException {
-        return new ResponseEntity<String>(advertiserClientService.pingAdvertiser(advertiser.getCompanyName(),
-                advertiser.getServiceType(), advertiser.getApiUrl(),
-                new AuthTokenRequestBean(advertiser.getAuthToken())), HttpStatus.OK);
+    @GetMapping("batch/advertisings")
+    public ResponseEntity<String> getAllAdvertisingsFromAdvertisers() throws Exception {
+        return new ResponseEntity<String>(administratorService.getAllAdvertisingsFromAdvertisers(),
+                HttpStatus.CREATED);
     }
 
-    @GetMapping("client/advertisings")
-    public ResponseEntity<?> getAllAdvertisingsFromClients() {
-        try {
-            batchService.updateAdvertisings(advertiserClientService.getAllAdvertisingsFromClients());
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                | IllegalAccessException e) {
-            return new ResponseEntity<String>("error", HttpStatus.INTERNAL_SERVER_ERROR);
+    // Platform management endpoints
+    @PostMapping("platforms")
+    public ResponseEntity<StreamingPlatformDTO> createStreamingPlatform(
+            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) {
 
-        }
-        return new ResponseEntity<String>("hello", HttpStatus.CREATED);
+        return ResponseEntity.ok(administratorService.createStreamingPlatform(streamingPlatformRequest));
     }
+
+    @GetMapping("platforms/{id}")
+    public ResponseEntity<StreamingPlatformDTO> getStreamingPlatformById(
+            @PathVariable Integer platformId) {
+        return ResponseEntity.ok(administratorService.getStreamingPlatformById(platformId));
+    }
+
+    @GetMapping("platforms")
+    public ResponseEntity<List<StreamingPlatformDTO>> getAllStreamingPlatforms() {
+        return ResponseEntity.ok(administratorService.getAllStreamingPlatforms());
+    }
+
+    @PostMapping("platforms/{id}")
+    public ResponseEntity<StreamingPlatformDTO> updateStreamingPlatform(@PathVariable Integer platformId,
+            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) {
+        return ResponseEntity
+                .ok(administratorService.updateStreamingPlatfromById(platformId, streamingPlatformRequest));
+    }
+
+    @GetMapping("platforms/{id}")
+    public ResponseEntity<Integer> deleteStreamingPlatformById(
+            @PathVariable Integer platformId) {
+        return ResponseEntity.ok(administratorService.deleteAdvertiserById(platformId));
+    }
+
+    // Film management endpoints
+    @PostMapping("test/countries")
+    public ResponseEntity<String> loadAllCountryes(@RequestBody List<CountryDTO> countries) {
+        return new ResponseEntity<String>(administratorService.loadAllCountries(countries), HttpStatus.CREATED);
+    }
+
+    @GetMapping("test/films")
+    public ResponseEntity<List<FilmDTO>> getAllFilms() {
+        return ResponseEntity.ok(administratorService.getAllFilms());
+    }
+
+    @GetMapping("batch/films")
+    public ResponseEntity<String> getAllFilmsFromPlatforms() throws Exception {
+        return new ResponseEntity<String>(administratorService.getAllFilmsFromPlatforms(),
+                HttpStatus.CREATED);
+    }
+
 }

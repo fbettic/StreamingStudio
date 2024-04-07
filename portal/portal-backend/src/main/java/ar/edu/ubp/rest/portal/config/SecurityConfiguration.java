@@ -20,28 +20,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-        @Autowired
-        private final JwtAuthenticationFilter jwtAuthenticationFilter;
-        @Autowired
-        private final AuthenticationProvider authProvider;
+    @Autowired
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private final AuthenticationProvider authProvider;
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                return http.csrf(csrf -> csrf.disable())
-                                .authorizeHttpRequests(
-                                                authRequest -> authRequest
-                                                                // .requestMatchers(HttpMethod.GET).permitAll()
-                                                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                                                .requestMatchers("api/v1/auth/**").permitAll()
-                                                                .requestMatchers("api/v1/admin/**")
-                                                                .hasAuthority(Role.ADMINISTRATOR.name())
-                                                                .anyRequest()
-                                                                .authenticated())
-                                .sessionManagement(
-                                                sessionManagement -> sessionManagement
-                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authenticationProvider(authProvider)
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                                .build();
-        }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(
+                        authRequest -> authRequest
+                                // .requestMatchers(HttpMethod.GET).permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                                .requestMatchers("api/v1/auth/**").permitAll()
+                                .requestMatchers("api/v1/admin/**")
+                                .hasAuthority(Role.ADMINISTRATOR.name())
+                                .requestMatchers("api/v1/subscriber/**")
+                                .hasAuthority(Role.SUBSCRIBER.name())
+                                .requestMatchers("api/v1/advertiser/**")
+                                .hasAuthority(Role.ADVERTISER.name())
+                                .anyRequest()
+                                .authenticated())
+                .sessionManagement(
+                        sessionManagement -> sessionManagement
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
 }

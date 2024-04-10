@@ -65,7 +65,7 @@ BEGIN
 END
 GO
 
-select * from PlatformUser
+
 
 
 -- DROP PROCEDURE IF EXISTS CancelAssociationRequest

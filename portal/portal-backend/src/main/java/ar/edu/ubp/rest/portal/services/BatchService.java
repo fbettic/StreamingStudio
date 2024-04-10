@@ -3,6 +3,7 @@ package ar.edu.ubp.rest.portal.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +53,15 @@ public class BatchService {
         return;
     }
 
-    public void updateFilms(List<ServiceResponseMapperBean<FilmResponseBean>> clientFilms) {
+    public void updateFilms(List<ServiceResponseMapperBean<FilmResponseBean>> clientFilms) throws Exception {
         List<FilmDTO> allFilms = new ArrayList<>();
         Set<String> filmCodes = new HashSet<>();
 
         List<PlatformFilmDTO> platformFilms = new ArrayList<>();
+
+        if (Objects.isNull(clientFilms) || clientFilms.size()==0) {
+            throw new Exception("No films availables");
+        }
 
         clientFilms.forEach((client) -> {
 
@@ -70,11 +75,11 @@ public class BatchService {
                             .title(film.getTitle())
                             .cover(film.getCover())
                             .description(film.getDescription())
-                            .directorName(film.getDirector())
+                            .director(film.getDirector())
                             .countryCode(film.getCountryCode())
                             .year(film.getYear())
-                            .actorNames(film.getActors())
-                            .genreNames(film.getGenres())
+                            .actors(film.getActors())
+                            .genres(film.getGenres())
                             .build();
 
                     allFilms.add(newFilm);
@@ -92,10 +97,15 @@ public class BatchService {
             });
         });
 
-        Integer filmsCreated = filmRepository.updateBatchFilm(allFilms);
+        System.out.println("---------------> allFilms" + allFilms.toString());
 
-        if (filmsCreated < 0) {
-            filmRepository.dropAllPlatformFilmRelations();
+        int filmsCreated = filmRepository.updateBatchFilm(allFilms);
+
+        
+        if (filmsCreated != 0) {
+            System.out.println("---------------> filmsCreated" + filmsCreated);
+            Integer droped = filmRepository.dropAllPlatformFilmRelations();
+            System.out.println("---------------> droped" + droped);
             filmRepository.updateBatchPlatformFilm(platformFilms);
         }
 

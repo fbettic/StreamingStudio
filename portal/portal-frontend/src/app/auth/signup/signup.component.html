@@ -1,0 +1,129 @@
+<div class="container-fluid d-flex justify-content-center align-items-center">
+    <div class="row">
+      <div class="col">
+        <div class="card p-4">
+          <h2 class="text-center mb-4">StreamingStudio Signup</h2>
+          <div class="text-danger">
+            @if (signupError !== '') {
+            <div>Error al registrarse</div>
+            }
+          </div>
+          <form [formGroup]="signupFormGroup">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                formControlName="email"
+                type="email"
+                class="form-control"
+                id="email"
+                aria-describedby="email"
+                placeholder="example@email.com"
+                autocomplete="true"
+              />
+              <div class="text-danger">
+                @if (email.invalid && (email.dirty || email.touched)) {
+                <div *ngIf="email.errors?.['required']">Email es requerido.</div>
+                <div *ngIf="email.errors?.['email']">Email es inválido.</div>
+                }
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                formControlName="password"
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                autocomplete="true"
+              />
+              <div class="text-danger">
+                @if (password.invalid && (password.dirty || password.touched)) {
+                <div *ngIf="password.errors?.['required']">
+                  Password es requerido.
+                </div>
+                }
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="firstname" class="form-label">Firstname</label>
+              <input
+                formControlName="firstname"
+                type="text"
+                class="form-control"
+                id="firstname"
+                placeholder="Firstname"
+              />
+              <div class="text-danger">
+                @if (firstname.invalid && (firstname.dirty || firstname.touched)) {
+                <div *ngIf="firstname.errors?.['required']">
+                  Firstname es requerido.
+                </div>
+                }
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="lastname" class="form-label">Lastname</label>
+              <input
+                formControlName="lastname"
+                type="text"
+                class="form-control"
+                id="lastname"
+                placeholder="Lastname"
+              />
+              <div class="text-danger">
+                @if (lastname.invalid && (lastname.dirty || lastname.touched)) {
+                <div *ngIf="lastname.errors?.['required']">
+                  Lastname es requerido.
+                </div>
+                }
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input
+                formControlName="phone"
+                type="tel"
+                class="form-control"
+                id="phone"
+                placeholder="Phone"
+              />
+              <div class="text-danger">
+                @if (phone.invalid && (phone.dirty || phone.touched)) {
+                <div *ngIf="phone.errors?.['required']">
+                  Phone es requerido.
+                </div>
+                }
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="birth" class="form-label">Birth</label>
+              <input
+                formControlName="birth"
+                type="date"
+                class="form-control"
+                id="birth"
+              />
+              <div class="text-danger">
+                @if (birth.invalid && (birth.dirty || birth.touched)) {
+                <div *ngIf="birth.errors?.['required']">
+                  Birth es requerido.
+                </div>
+                }
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                (click)="signup()"
+              >
+                Registrarse
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

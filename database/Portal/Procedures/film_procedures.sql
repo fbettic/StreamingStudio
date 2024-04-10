@@ -69,15 +69,9 @@ BEGIN
         -- Insertar géneros asociados a la película
         EXEC CreateFilmGenre @genreNames, @filmId
     END
-    ELSE
-    BEGIN
-        -- Si la película ya existe, devolver su ID
-        SET @filmId = @existingFilmId
-    END
-
-    EXEC GetFilmWithoutPlatformsById @filmId
 END
 GO
+
 
 -- DROP PROCEDURE IF EXISTS GetFilmWithoutPlatformsById
 CREATE OR ALTER PROCEDURE GetFilmWithoutPlatformsById

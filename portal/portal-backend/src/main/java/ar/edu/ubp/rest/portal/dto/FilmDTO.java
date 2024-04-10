@@ -15,9 +15,9 @@ public class FilmDTO {
     String title;
     String cover;
     String description;
-    String directorName;
+    String director;
     String countryCode;
     Integer year;
-    String actorNames;
-    String genreNames;
+    String actors;
+    String genres;
 }

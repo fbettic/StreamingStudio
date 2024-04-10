@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
 
         StringEntity stringEntity = new StringEntity(new Gson().toJson(loginRequest));
 
-        URI uri = URI.create("http://localhost:9120/rest/plataforma/associations/login");
+        URI uri = URI.create("http://localhost:9130/rest/plataforma/associations/login");
 
         HttpPost req = new HttpPost();
         req.setURI(uri);

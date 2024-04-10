@@ -102,14 +102,14 @@ public class AdministratorController {
         return ResponseEntity.ok(administratorService.getAllStreamingPlatforms());
     }
 
-    @PostMapping("platforms/{id}")
+    @PutMapping("platforms/{id}")
     public ResponseEntity<StreamingPlatformDTO> updateStreamingPlatform(@PathVariable Integer platformId,
             @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) {
         return ResponseEntity
                 .ok(administratorService.updateStreamingPlatfromById(platformId, streamingPlatformRequest));
     }
 
-    @GetMapping("platforms/{id}")
+    @DeleteMapping("platforms/{id}")
     public ResponseEntity<Integer> deleteStreamingPlatformById(
             @PathVariable Integer platformId) {
         return ResponseEntity.ok(administratorService.deleteAdvertiserById(platformId));

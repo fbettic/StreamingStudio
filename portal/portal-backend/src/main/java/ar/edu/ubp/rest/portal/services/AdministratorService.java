@@ -108,11 +108,11 @@ public class AdministratorService {
     }
 
     // Film management
-    public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO streamingPlatformRequest){
+    public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO streamingPlatformRequest) {
         return streamingPlatformRepository.createStreamingPlatform(streamingPlatformRequest);
     }
 
-    public List<StreamingPlatformDTO> getAllStreamingPlatforms(){
+    public List<StreamingPlatformDTO> getAllStreamingPlatforms() {
         return streamingPlatformRepository.getAllStreamingPlatfroms();
     }
 
@@ -124,7 +124,8 @@ public class AdministratorService {
         return streamingPlatformRepository.deleteStreamingPlatfromById(id);
     }
 
-    public StreamingPlatformDTO updateStreamingPlatfromById(Integer id, StreamingPlatformRequestDTO streamingPlatformRequest) {
+    public StreamingPlatformDTO updateStreamingPlatfromById(Integer id,
+            StreamingPlatformRequestDTO streamingPlatformRequest) {
         return streamingPlatformRepository.updateStreamingPlatform(streamingPlatformRequest, id);
     }
 
@@ -140,7 +141,9 @@ public class AdministratorService {
     }
 
     public String getAllFilmsFromPlatforms() throws Exception {
+
         try {
+            System.out.println("-----------------------> getAllFilmsFromPlatforms()");
             batchService.updateFilms(platformApiClientService.getAllFilmsFromPlatforms());
         } catch (Exception e) {
             throw new Exception(e);

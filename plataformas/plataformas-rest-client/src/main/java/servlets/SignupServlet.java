@@ -46,7 +46,7 @@ public class SignupServlet extends HttpServlet {
 
 		StringEntity stringEntity = new StringEntity(new Gson().toJson(signupRequest));
 
-		URI uri = URI.create("http://localhost:9120/rest/plataforma/associations/signup");
+		URI uri = URI.create("http://localhost:9130/rest/plataforma/associations/signup");
 
 		HttpPost req = new HttpPost();
 		req.setURI(uri);

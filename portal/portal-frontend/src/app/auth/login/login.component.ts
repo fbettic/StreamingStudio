@@ -45,9 +45,7 @@ export class LoginComponent {
       console.log('🚀 ~ LoginComponent ~ login ~ credentials:', credentials);
 
       this.loginService.login(credentials).subscribe({
-        next: (userData) => {
-
-        },
+        next: (userData) => {},
         error: (userError) => {
           console.log(
             '🚀 ~ LoginComponent ~ this.loginService.login ~ userError:',

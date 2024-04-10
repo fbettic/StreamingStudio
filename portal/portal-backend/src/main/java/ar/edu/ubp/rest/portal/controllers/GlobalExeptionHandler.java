@@ -22,12 +22,18 @@ public class GlobalExeptionHandler {
         return new ResponseEntity<String>(exception.getMessage(), HttpStatus.BAD_GATEWAY);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ex.getMessage());
+    }
+
     @ExceptionHandler(UncategorizedDataAccessException.class)
     public ResponseEntity<String> handleSQLException(UncategorizedDataAccessException exception) {
         if (exception.getRootCause() instanceof SQLException) {
             SQLException sqlException = (SQLException) exception.getRootCause();
             int errorCode = sqlException.getErrorCode();
-            if (errorCode >= 50000) { 
+            if (errorCode >= 50000) {
                 return new ResponseEntity<String>(sqlException.getMessage(), HttpStatus.CONFLICT);
             }
         }

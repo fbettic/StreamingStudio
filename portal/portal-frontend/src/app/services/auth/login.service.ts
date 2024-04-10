@@ -47,6 +47,11 @@ export class LoginService {
       );
   }
 
+  set setCurrentUserData(userData: ILoginResponse){
+    this.currentUserData.next(userData);
+    this.currentUserLoggedIn.next(true);
+  }
+
   logout(): void {
     this.storage.clean()
     this.currentUserLoggedIn.next(false);

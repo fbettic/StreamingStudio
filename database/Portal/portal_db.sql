@@ -487,3 +487,4 @@ CREATE TABLE AdvertisingInvoiceDetail
 );
 GO
 
+select * from StreamingPlatform

@@ -11,12 +11,6 @@ import { IAdministrator } from '../../models/administrator.model';
 export class AdministratorService {
   private http: HttpClient = inject(HttpClient);
 
-  getTest(): Observable<any> {
-    return this.http
-      .get(environment.urlApi + 'admin/gettest', { responseType: 'text' })
-      .pipe(catchError(this.handleError));
-  }
-
   private handleError(error: HttpErrorResponse) {
     console.log('🚀 ~ AdministratorService ~ handleError ~ error:', error);
 

@@ -1,0 +1,18 @@
+<input
+  type="text"
+  (input)="filterAdvertisers(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-modal-form modalTitle="New advertiser" (onClose)="onModalClose()">
+  <app-advertising-form
+    [advertising]="itemSelected"
+    (doRefresh)="refreshList()"
+  />
+</app-modal-form>
+<app-table
+  [headers]="headers"
+  [items]="filteredList"
+  (editClicked)="onEditItem($event)"
+  (deleteClicked)="onDeleteItem($event)"
+/>

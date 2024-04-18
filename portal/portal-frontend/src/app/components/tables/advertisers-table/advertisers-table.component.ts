@@ -1,16 +1,23 @@
 import { Component, ViewChild, inject } from '@angular/core';
-import { AdvertiserFormComponent } from '../../forms/new-advertiser-form/advertiser-form.component';
+import { AdvertiserFormComponent } from '../../forms/advertiser-form/advertiser-form.component';
 import { TableComponent } from '../../shared/table/table.component';
 import { ServiceType } from '../../../enums/service-type.enum';
 import { IAdvertiser } from '../../../models/advertiser.model';
 import { AdvertiserService } from '../../../services/advertiser/advertiser.service';
 import { ModalFormComponent } from '../../shared/modal-form/modal-form.component';
 import { CommonModule } from '@angular/common';
+import { Header } from '../../../models/header.model';
 
 @Component({
   selector: 'app-advertisers-table',
   standalone: true,
-  imports: [CommonModule, TableComponent, AdvertiserFormComponent, ModalFormComponent],
+  imports: [
+    CommonModule,
+    TableComponent,
+    AdvertiserFormComponent,
+    ModalFormComponent,
+    TableComponent,
+  ],
   templateUrl: './advertisers-table.component.html',
   styleUrl: './advertisers-table.component.scss',
 })
@@ -19,10 +26,16 @@ export class AdvertisersTableComponent {
 
   private advertiserServices: AdvertiserService = inject(AdvertiserService);
   private list: IAdvertiser[] = [];
+  headers: Header[] = [
+    { key: 'companyName', label: 'Company Name' },
+    { key: 'bussinesName', label: 'Bussines Name' },
+    { key: 'serviceType', label: 'Service Type' },
+    { key: 'apiUrl', label: 'API URL' },
+  ];
 
   filteredList: IAdvertiser[] = [];
   searchQuery: string = '';
-  itemSelected!: IAdvertiser;
+  itemSelected!: IAdvertiser | null
 
   constructor() {}
 
@@ -37,8 +50,13 @@ export class AdvertisersTableComponent {
           '🚀 ~ TableComponent ~ this.advertiserServices.getAdvertisers ~ res:',
           res
         );
-        this.list = res;
-        this.filteredList = res;
+        const list = res.map((item) => {
+          {
+            return { ...item, canEdit: this.isEditable(item) };
+          }
+        });
+        this.list = list;
+        this.filteredList = list;
       },
       error: (error) => {
         console.log(
@@ -54,14 +72,14 @@ export class AdvertisersTableComponent {
     });
   }
 
-  editValues(advertiser: IAdvertiser): void {
+  onEditItem(advertiser: IAdvertiser): void {
     if (this.isEditable(advertiser)) {
       this.modal.open();
       this.itemSelected = advertiser;
     }
   }
 
-  deleteItem(id: number): void {
+  onDeleteItem(id: number): void {
     this.advertiserServices.deleteAdvertiser(id).subscribe({
       next: (res) => {
         console.log(
@@ -79,6 +97,12 @@ export class AdvertisersTableComponent {
         this.getList();
       },
     });
+  }
+
+  onModalClose(){
+    console.log("🚀 ~ AdvertisersTableComponent ~ onModalClose ~ onModalClose:")
+    
+    this.itemSelected = null
   }
 
   isEditable(advertiser: IAdvertiser): boolean {

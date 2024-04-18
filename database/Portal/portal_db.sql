@@ -322,7 +322,7 @@ CREATE TABLE Advertising
   sizeId INT NOT NULL,
   allPagesFeeId INT,
   priorityId INT NOT NULL,
-  authUrl VARCHAR(255) NOT NULL,
+  redirectUrl VARCHAR(255) NOT NULL,
   imageUrl VARCHAR(255) NOT NULL,
   bannerText VARCHAR(255) NOT NULL,
   bannerId INT,
@@ -487,4 +487,4 @@ CREATE TABLE AdvertisingInvoiceDetail
 );
 GO
 
-select * from StreamingPlatform
+select * from Advertising

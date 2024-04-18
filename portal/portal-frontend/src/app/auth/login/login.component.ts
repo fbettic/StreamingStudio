@@ -23,6 +23,7 @@ export class LoginComponent {
 
   loginFormGroup: FormGroup;
   loginError: string = '';
+  userRole=""
 
   constructor() {
     this.loginFormGroup = this.formBuilder.group({
@@ -45,7 +46,9 @@ export class LoginComponent {
       console.log('🚀 ~ LoginComponent ~ login ~ credentials:', credentials);
 
       this.loginService.login(credentials).subscribe({
-        next: (userData) => {},
+        next: (userData) => {
+          this.userRole=userData.role
+        },
         error: (userError) => {
           console.log(
             '🚀 ~ LoginComponent ~ this.loginService.login ~ userError:',
@@ -55,13 +58,30 @@ export class LoginComponent {
         },
         complete: () => {
           console.log('Success');
-          this.router.navigateByUrl('/admin');
           this.loginFormGroup.reset();
+          this.goToHomepage(this.userRole)
         },
       });
     } else {
       alert('Email y/o contraseña incorrectos');
       this.loginFormGroup.markAllAsTouched();
+    }
+  }
+
+  goToHomepage(role: string){
+    switch (role) {
+      case 'SUBSCRIBER':
+        this.router.navigateByUrl('/home');
+          return 
+        case 'ADMINISTRATOR':
+          this.router.navigateByUrl('/admin');
+          return 
+        case 'ADVERTISER':
+          this.router.navigateByUrl('/advertiser');
+          return 
+        default:
+          this.router.navigateByUrl('/');
+          return 
     }
   }
 }

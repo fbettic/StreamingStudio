@@ -13,10 +13,9 @@ export class LoginService {
   private http: HttpClient = inject(HttpClient);
   private storage: StorageService = inject(StorageService);
 
-  private currentUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false
-  );
-  
+  private currentUserLoggedIn: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+
   private currentUserData: BehaviorSubject<ILoginResponse> =
     new BehaviorSubject<ILoginResponse>({ token: '', id: 0, role: '' });
 
@@ -47,19 +46,20 @@ export class LoginService {
       );
   }
 
-  set setCurrentUserData(userData: ILoginResponse){
-    this.currentUserData.next(userData);
-    this.currentUserLoggedIn.next(true);
-  }
-
   logout(): void {
-    this.storage.clean()
+    this.storage.clean();
     this.currentUserLoggedIn.next(false);
   }
 
   private handleError(error: HttpErrorResponse) {
     console.error('Error', error);
     return throwError(() => error);
+  }
+
+  set setCurrentUserData(userData: ILoginResponse) {
+    this.storage.saveUser(userData);
+    this.currentUserData.next(userData);
+    this.currentUserLoggedIn.next(true);
   }
 
   get userData(): Observable<ILoginResponse> {
@@ -73,4 +73,6 @@ export class LoginService {
   get userToken(): string {
     return this.currentUserData.value.token;
   }
+
+
 }

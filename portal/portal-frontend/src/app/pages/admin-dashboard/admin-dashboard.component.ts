@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { LoginService } from '../../services/auth/login.service';
 import { AdministratorService } from '../../services/administrator/administrator.service';
-import { AdvertiserFormComponent } from '../../components/forms/new-advertiser-form/advertiser-form.component';
+import { AdvertiserFormComponent } from '../../components/forms/advertiser-form/advertiser-form.component';
 import { ModalFormComponent } from '../../components/shared/modal-form/modal-form.component';
 import { AdvertisersTableComponent } from '../../components/tables/advertisers-table/advertisers-table.component';
 
@@ -26,8 +26,6 @@ export class AdminDashboardComponent implements OnInit {
 
   isLoggedIn: boolean = false;
 
-  testGet: string = '';
-
   ngOnInit(): void {
     this.loginService.userLoggedIn.subscribe({
       next: (userLoggedIn) => {
@@ -35,20 +33,5 @@ export class AdminDashboardComponent implements OnInit {
       },
     });
 
-    this.administratorService.getTest().subscribe({
-      next: (text) => {
-        
-        this.testGet = text;
-      },
-      error: (error) => {
-        console.log(
-          '🚀 ~ AdminDashboardComponent ~ this.administratorService.getTest ~ error:',
-          error
-        );
-      },
-      complete: () => {
-        
-      },
-    });
   }
 }

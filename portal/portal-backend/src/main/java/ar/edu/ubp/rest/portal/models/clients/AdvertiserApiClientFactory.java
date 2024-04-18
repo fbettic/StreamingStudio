@@ -30,9 +30,9 @@ public class AdvertiserApiClientFactory {
 
         Class<?> dynamicClass;
         if ("SOAP".equals(serviceType)) {
-            dynamicClass = Class.forName("ar.edu.ubp.rest.portal.models.clients.soap.AdvertiserSoapClient");
+            dynamicClass = Class.forName("ar.edu.ubp.rest.portal.models.clients.soap.AdvertiserSoapApiClient");
         } else if ("REST".equals(serviceType)) {
-            dynamicClass = Class.forName("ar.edu.ubp.rest.portal.models.clients.rest.AdvertiserRestClient");
+            dynamicClass = Class.forName("ar.edu.ubp.rest.portal.models.clients.rest.AdvertiserRestApiClient");
         } else {
             throw new ClassNotFoundException();
         }

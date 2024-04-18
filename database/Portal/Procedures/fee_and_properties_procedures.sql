@@ -236,6 +236,7 @@ BEGIN
         bp.priorityId,
         bp.priorityType,
         bp.priorityValue,
+        bp.priorityFeeId,
         feeValue AS priorityFee
     FROM
         BannerPriority bp
@@ -259,6 +260,7 @@ BEGIN
         bp.priorityId,
         bp.priorityType,
         bp.priorityValue,
+        bp.priorityFeeId,
         feeValue AS priorityFee
     FROM
         BannerPriority bp
@@ -349,10 +351,12 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
+        st.sizeId,
         st.sizeType,
         st.sizeValue,
         st.height,
         st.width,
+        st.sizeFeeId,
         feeValue AS sizeFee
     FROM
         SizeType st
@@ -374,10 +378,12 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
+        st.sizeId,
         st.sizeType,
         st.sizeValue,
         st.height,
         st.width,
+        st.sizeFeeId,
         feeValue AS sizeFee
     FROM
         SizeType st

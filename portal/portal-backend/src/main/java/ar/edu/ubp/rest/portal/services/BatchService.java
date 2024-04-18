@@ -17,15 +17,17 @@ import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.PlatformFilmDTO;
 import ar.edu.ubp.rest.portal.repositories.AdvertisingRepository;
 import ar.edu.ubp.rest.portal.repositories.FilmRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class BatchService {
 
     @Autowired
-    private FilmRepository filmRepository;
+    private final FilmRepository filmRepository;
 
     @Autowired
-    private AdvertisingRepository advertisingRepository;
+    private final AdvertisingRepository advertisingRepository;
 
     public void updateAdvertisings(List<ServiceResponseMapperBean<AdvertisingResponseBean>> clientAdvertisings) {
 

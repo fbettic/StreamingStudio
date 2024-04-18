@@ -1,50 +1,39 @@
-<input
-  type="text"
-  (input)="filterAdvertisers(filter.value)"
-  placeholder="Buscar..."
-  #filter
-/>
-<app-modal-form modalTitle="New advertiser">
-  <app-advertiser-form
-    [advertiser]="itemSelected"
-    (doRefresh)="refreshList()"
-  ></app-advertiser-form>
-</app-modal-form>
 <table class="table table-striped border rounded">
   <thead>
     <tr>
-      <th>Company Name</th>
-      <th>Bussines Name</th>
-      <th>Service Type</th>
-      <th>API URL</th>
+      @for(header of headers; track header ){
+      <th>{{ header.label }}</th>
+      }
       <th>Actions</th>
-      <!-- Agrega otros encabezados de tabla según sea necesario -->
     </tr>
   </thead>
   <tbody>
-    @for (advertiser of filteredList; track advertiser.id ) {
+    @for(item of items; track item.id ){
     <tr>
-      <td>{{ advertiser.companyName }}</td>
-      <td>{{ advertiser.bussinesName }}</td>
-      <td>{{ advertiser.serviceType }}</td>
-      <td>{{ advertiser.apiUrl ? advertiser.apiUrl : "-" }}</td>
+      <td *ngFor="let header of headers">{{ item[header.key] }}</td>
+
       <td>
         <div class="row justify-content-start">
           <div class="col-auto">
             <button
               class="btn btn-sm"
               [ngClass]="{
-                'btn-outline-primary': isEditable(advertiser),
-                'btn-outline-secondary': !isEditable(advertiser)
+                'btn-outline-primary': isEditable(item),
+                'btn-outline-secondary': !isEditable(item)
               }"
-              (click)="editValues(advertiser)"
-              [disabled]="!isEditable(advertiser)"
+              (click)="onEditClick(item)"
+              [disabled]="!isEditable(item)"
             >
               Edit
             </button>
           </div>
           <div class="col-auto">
-            <button class="btn btn-outline-danger btn-sm" (click)="deleteItem(advertiser.id)">Delete</button>
+            <button
+              class="btn btn-outline-danger btn-sm"
+              (click)="onDeleteClick(item.id)"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </td>

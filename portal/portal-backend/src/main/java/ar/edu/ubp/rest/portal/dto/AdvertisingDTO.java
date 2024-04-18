@@ -14,10 +14,13 @@ import lombok.NoArgsConstructor;
 public class AdvertisingDTO {
     private Integer advertisingId;
     private Integer advertiserId;
+    private Integer sizeId;
     private String sizeType;
     private Integer sizeValue;
     private Float sizeFee;
+    private Integer allPagesFeeId; 
     private Float allPagesFee;
+    private Integer priorityId;
     private String priorityType;
     private Integer priorityValue;
     private Float priorityFee;

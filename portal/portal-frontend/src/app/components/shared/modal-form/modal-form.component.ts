@@ -1,6 +1,8 @@
 import {
   Component,
+  EventEmitter,
   Input,
+  Output,
   TemplateRef,
   ViewChild,
   inject,
@@ -22,7 +24,8 @@ export class ModalFormComponent {
   modalReference?: NgbModalRef;
 
   @Input() modalTitle: string = '';
-
+  @Output() onClose: EventEmitter<void> = new EventEmitter<void>();
+  
   open(): void {
     this.modalReference = this.modalService.open(this.content, {
       ariaLabelledBy: 'form-modal',
@@ -31,6 +34,15 @@ export class ModalFormComponent {
   }
 
   close(){
-	this.modalReference?.close()
+	  this.modalReference?.close()
+    this.onClose.emit();
   }
+
+  onCloseButtonClick(modal: any){
+    console.log("🚀 ~ ModalFormComponent ~ onCloseButtonClick ~ modal:", modal)
+    
+    modal.dismiss('Cross click')
+    this.onClose.emit();
+  }
+ 
 }

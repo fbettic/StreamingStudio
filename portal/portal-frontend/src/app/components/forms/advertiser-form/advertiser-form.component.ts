@@ -65,7 +65,7 @@ export class AdvertiserFormComponent {
   }
 
   @Input()
-  set advertiser(advertiser: IAdvertiser) {
+  set advertiser(advertiser: IAdvertiser | null) {
     console.log(
       '🚀 ~ AdvertiserFormComponent ~ setsetAdvertiser ~ advertiser:',
       advertiser
@@ -73,6 +73,8 @@ export class AdvertiserFormComponent {
 
     if (!advertiser) {
       this.id = 0;
+      this.newAdvertiserFormGroup.reset();
+      this.error = '';
       return;
     }
 

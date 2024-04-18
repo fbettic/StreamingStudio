@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.utils.JwtAuthenticationFilter;
@@ -31,16 +33,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         authRequest -> authRequest
                                 // .requestMatchers(HttpMethod.GET).permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                 .requestMatchers("api/v1/auth/**").permitAll()
-                                .requestMatchers("api/v1/admin/**")
-                                .hasAuthority(Role.ADMINISTRATOR.name())
-                                .requestMatchers("api/v1/subscriber/**")
-                                .hasAuthority(Role.SUBSCRIBER.name())
-                                .requestMatchers("api/v1/advertiser/**")
-                                .hasAuthority(Role.ADVERTISER.name())
-                                .anyRequest()
-                                .authenticated())
+                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                                .anyRequest().authenticated())
                 .sessionManagement(
                         sessionManagement -> sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

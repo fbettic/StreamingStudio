@@ -1,38 +1,28 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
-import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.AssociationDTO;
 import ar.edu.ubp.rest.portal.dto.AssociationRequestDTO;
-import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.SessionDTO;
 import ar.edu.ubp.rest.portal.dto.request.NewAssociationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SessionRequestDTO;
-import ar.edu.ubp.rest.portal.repositories.AdvertisingRepository;
 import ar.edu.ubp.rest.portal.repositories.AssociationRepository;
 import ar.edu.ubp.rest.portal.repositories.AssociationRequestRepository;
-import ar.edu.ubp.rest.portal.repositories.FilmRepository;
 import ar.edu.ubp.rest.portal.repositories.SessionRepository;
 import ar.edu.ubp.rest.portal.utils.AuthUrlGenerator;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class SubscriberServices {
-    // Repositories
-    @Autowired
-    private FilmRepository filmRepository;
-    @Autowired
+public class AssociationService {
+
     private SessionRepository sessionRepository;
-    @Autowired
-    private AdvertisingRepository advertisingRepository;
     @Autowired
     private AssociationRepository associationRepository;
     @Autowired
@@ -41,16 +31,7 @@ public class SubscriberServices {
     // Services
     @Autowired
     private PlatformApiClientService platformApiClientService;
-
-    // Film management
-    public List<FilmDTO> getAllFilms() {
-        return filmRepository.getAllFilms();
-    }
-
-    // Advertising management
-    public List<AdvertisingDTO> getAllAdvertisings() {
-        return advertisingRepository.getAllAdvertisings();
-    }
+    
 
     // Association management
     public AssociationRequestDTO createAssociationRequest(NewAssociationRequestDTO newAssociationRequest) {

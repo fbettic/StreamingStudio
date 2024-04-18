@@ -88,7 +88,6 @@ public class FilmRepository implements IFilmRepository {
         return totalAffectedRows;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Integer dropAllPlatformFilmRelations() {
         SqlParameterSource input = new MapSqlParameterSource();

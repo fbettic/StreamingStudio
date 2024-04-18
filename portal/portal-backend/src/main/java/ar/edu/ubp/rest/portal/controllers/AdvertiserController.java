@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,18 +22,22 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
-import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
+import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AdvertiserService;
+import ar.edu.ubp.rest.portal.services.AdvertisingService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/advertiser/")
+@RequestMapping("/api/v1/advertisers")
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "http://localhost:4200" })
 public class AdvertiserController {
     @Autowired
     private final AdvertiserService advertiserService;
+    @Autowired
+    private final AdvertisingService advertisingService;
 
     private Integer getCurrentUserId() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,66 +51,55 @@ public class AdvertiserController {
         }
     }
 
-    @PutMapping(path = "advertisers", consumes = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<AdvertiserDTO> updateAdvertiserById(@RequestBody AdvertiserRequestDTO advertiserData)
+    private Role getCurrentRole() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            Role userId = userDetails.getRole();
+            return userId;
+        } else {
+            throw new Exception("User role not found");
+        }
+    }
+
+    @PostMapping("/ping")
+    public ResponseEntity<String> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser) throws Exception {
+        return new ResponseEntity<String>(advertiserService.pingAdvertiser(advertiser), HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<AuthResponseDTO> createAdvertiser(@RequestBody AdvertiserRequestDTO advertiserData)
             throws Exception {
-        Integer userId = getCurrentUserId();
-        return new ResponseEntity<>(advertiserService.updateAdvertiserById(userId, advertiserData), HttpStatus.CREATED);
+        return ResponseEntity.ok(advertiserService.createAdvertiser(advertiserData));
     }
 
-    @PostMapping("advertisings")
-    public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest)
+    @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<AdvertiserDTO> updateAdvertiserById(@PathVariable Integer id,
+            @RequestBody AdvertiserRequestDTO advertiserData)
             throws Exception {
-        Integer userId = getCurrentUserId();
-        advertisingRequest.setAdvertiserId(userId);
-        return ResponseEntity.ok(advertiserService.createAdvertising(advertisingRequest));
-    }
 
-    @GetMapping("advertisings")
-    public ResponseEntity<List<AdvertisingDTO>> getAllAdvertisings() throws Exception {
-        Integer userId = getCurrentUserId();
-        return ResponseEntity.ok(advertiserService.getAllAdvertisingsByAdvertiser(userId));
-    }
-
-    @GetMapping("advertisings/{id}")
-    public ResponseEntity<AdvertisingDTO> getAdvertisingsById(@PathVariable Integer id) throws Exception {
-        AdvertisingDTO response = advertiserService.getAdvertisingById(id);
-        Integer userId = getCurrentUserId();
-
-        if (response.getAdvertiserId() != userId) {
+        if (getCurrentRole().name() != "ADMINISTRATOR" && id != getCurrentUserId()) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(advertiserService.updateAdvertiserById(id, advertiserData), HttpStatus.CREATED);
     }
 
-    @PutMapping("advertisings/{id}")
-    public ResponseEntity<AdvertisingDTO> updateAdvertisingsById(@PathVariable Integer id,
-            @RequestBody AdvertisingRequestDTO advertisingRequest) throws Exception {
-        
-        AdvertisingDTO advertising = advertiserService.getAdvertisingById(id);
-        Integer userId = getCurrentUserId();
-        
-        if (advertising.getAdvertiserId() != userId) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        advertisingRequest.setAdvertiserId(userId);
-
-        AdvertisingDTO response = advertiserService.updateAdvertisingById(id, advertisingRequest);
-        return ResponseEntity.ok(response);
+    @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AdvertiserDTO>> getAllAdvertisers() {
+        return ResponseEntity.ok(advertiserService.getAllAdvertisers());
     }
 
-    @DeleteMapping("advertisings/{id}")
-    public ResponseEntity<Integer> deleteAdvertisingsById(@PathVariable Integer id) throws Exception {
-        AdvertisingDTO advertising = advertiserService.getAdvertisingById(id);
-        Integer userId = getCurrentUserId();
-        
-        if (advertising.getAdvertiserId() != userId) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-
-        return ResponseEntity.ok(advertiserService.deleteAdvertisingById(id));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Integer> deleteAdvertiserById(@PathVariable Integer id) {
+        return new ResponseEntity<>(advertiserService.deleteAdvertiserById(id), HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}/advertisings/")
+    public ResponseEntity<List<AdvertisingDTO>> getAllAdvertisingsByAdvertiser(@PathVariable Integer id) {
+        return ResponseEntity.ok(advertisingService.getAllAdvertisingsByAdvertiser(id));
+    }
+
 }

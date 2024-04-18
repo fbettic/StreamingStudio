@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IUserRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private IUserRepository iUserRepository;

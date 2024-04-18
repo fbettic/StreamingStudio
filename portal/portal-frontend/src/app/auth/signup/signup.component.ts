@@ -7,6 +7,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SignupService } from '../../services/auth/signup.service';
+import { LoginService } from '../../services/auth/login.service';
+import { ILoginResponse } from '../../models/login-response.model';
 
 @Component({
   selector: 'app-signup',
@@ -16,6 +19,9 @@ import { Router } from '@angular/router';
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent {
+  private signupService: SignupService = inject(SignupService);
+  private loginService: LoginService = inject(LoginService);
+  
   private formBuilder: FormBuilder = inject(FormBuilder);
   private router: Router = inject(Router);
 
@@ -59,11 +65,29 @@ export class SignupComponent {
 
   signup() {
     if (this.signupFormGroup.valid) {
-      const userData = this.signupFormGroup.value;
-      console.log('🚀 ~ SignupComponent ~ signup ~ userData:', userData);
+      const signupData = this.signupFormGroup.value;
+      console.log('🚀 ~ SignupComponent ~ signup ~ signupData:', signupData);
+      this.signupService.signup(signupData).subscribe({
+        next:(userData)=>{
+          this.saveUserData(userData)
+        },
+        error:(error) => {
+          console.log("🚀 ~ SignupComponent ~ this.signupService.signup ~ error:", error)
+          this.signupError=error;
+        },
+        complete: () => {
+          console.log('Success');
+          this.router.navigateByUrl('/admin');
+          this.signupFormGroup.reset();
+        },
+      });
     } else {
       alert('Datos incorrectos');
       this.signupFormGroup.markAllAsTouched();
     }
+  }
+
+  private saveUserData(userData: ILoginResponse) {
+    this.loginService.setCurrentUserData = userData;
   }
 }

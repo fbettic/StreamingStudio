@@ -17,7 +17,7 @@ export class SignupService {
 
   signup(signupData: ISubscriber): Observable<ILoginResponse> {
     return this.http
-      .post<ILoginResponse>(environment.urlApi + 'auth/subscribers', signupData)
+      .post<ILoginResponse>(environment.urlApi + 'auth/signup/subscriber', signupData)
       .pipe(
         tap((userData: ILoginResponse) => {
           console.log('🚀 ~ SignupService ~ signup ~ userData:', userData);

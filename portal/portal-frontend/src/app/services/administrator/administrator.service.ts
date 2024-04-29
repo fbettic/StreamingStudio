@@ -16,4 +16,6 @@ export class AdministratorService {
 
     return throwError(() => error);
   }
+
+  
 }

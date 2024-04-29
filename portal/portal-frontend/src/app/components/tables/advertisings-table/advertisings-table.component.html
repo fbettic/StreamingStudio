@@ -1,15 +1,10 @@
-<input
-  type="text"
-  (input)="filterAdvertisers(filter.value)"
-  placeholder="Buscar..."
-  #filter
-/>
-<app-modal-form modalTitle="New advertiser" (onClose)="onModalClose()">
+<app-custom-modal modalTitle="Advertising form" (onClose)="onModalClose()" [showButton]="showAddNewButton()">
   <app-advertising-form
     [advertising]="itemSelected"
+    [advertiserId]="advertiserId()"
     (doRefresh)="refreshList()"
   />
-</app-modal-form>
+</app-custom-modal>
 <app-table
   [headers]="headers"
   [items]="filteredList"

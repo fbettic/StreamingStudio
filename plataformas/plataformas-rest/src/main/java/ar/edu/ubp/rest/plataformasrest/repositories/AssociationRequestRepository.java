@@ -19,113 +19,164 @@ import ar.edu.ubp.rest.plataformasrest.utils.AuthUrlGenerator;
 
 @Repository
 public class AssociationRequestRepository implements IAssociationRequestRepository {
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-    private AssociationRequestBean mapRowToAssociationRequestBean(ResultSet rs) throws Exception {
+	private AssociationRequestBean mapRowToAssociationRequestBean(ResultSet rs) throws Exception {
 
-        return AssociationRequestBean.builder()
-                .associationId(rs.getInt("associationId"))
-                .serviceId(rs.getInt("serviceId"))
-                .associationType(rs.getString("associationType"))
-                .state(rs.getString("state"))
-                .authUrl(AuthUrlGenerator.generateAuthUrl(rs.getString("associationType"),
-                        rs.getString("uuid")))
-                .redirectUrl(rs.getString("redirectUrl"))
-                .requestedAt(rs.getDate("requestedAt"))
-                .userId(rs.getInt("userId"))
-                .userToken(rs.getString("userToken"))
-                .build();
-    }
+		return AssociationRequestBean.builder()
+				.associationId(rs.getInt("associationId"))
+				.serviceId(rs.getInt("serviceId"))
+				.associationType(rs.getString("associationType"))
+				.state(rs.getString("state"))
+				.authUrl(AuthUrlGenerator.generateAuthUrl(rs.getString("associationType"),
+						rs.getString("uuid")))
+				.redirectUrl(rs.getString("redirectUrl"))
+				.requestedAt(rs.getDate("requestedAt"))
+				.userId(rs.getInt("userId"))
+				.userToken(rs.getString("userToken"))
+				.build();
+	}
 
-    @Override
-    public AssociationRequestBean createAssociationRequest(NewAssociationRequestBean newAssociationRequest,
-            Integer serviceId) {
+	@Override
+	public AssociationRequestBean createAssociationRequest(NewAssociationRequestBean newAssociationRequest,
+			Integer serviceId) {
 
-        String uuid = AuthUrlGenerator.generateUuid();
+		String uuid = AuthUrlGenerator.generateUuid();
 
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("serviceId", serviceId)
-                .addValue("associationType", newAssociationRequest.getAssociationType())
-                .addValue("uuid", uuid)
-                .addValue("redirectUrl", newAssociationRequest.getRedirectUrl())
-                .addValue("requestedAt", new Date());
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("serviceId", serviceId)
+				.addValue("associationType", newAssociationRequest.getAssociationType())
+				.addValue("uuid", uuid)
+				.addValue("redirectUrl", newAssociationRequest.getRedirectUrl())
+				.addValue("requestedAt", new Date());
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("CreateAssociationRequest")
-                .withSchemaName("dbo")
-                .returningResultSet("associationRequest",
-                        (rs, rowNum) -> {
-                            try {
-                                return mapRowToAssociationRequestBean(rs);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        });
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CreateAssociationRequest")
+				.withSchemaName("dbo")
+				.returningResultSet("associationRequest",
+						(rs, rowNum) -> {
+							try {
+								return mapRowToAssociationRequestBean(rs);
+							} catch (Exception e) {
+								return null;
+							}
+						});
 
-        Map<String, Object> out = jdbcCall.execute(input);
+		Map<String, Object> out = jdbcCall.execute(input);
 
-        @SuppressWarnings("unchecked")
-        List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
-                .get("associationRequest");
+		@SuppressWarnings("unchecked")
+		List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
+				.get("associationRequest");
 
-        return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
-                : null;
-    }
+		return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
+				: null;
+	}
 
-    @Override
-    public AssociationRequestBean completeAssociationRequest(Integer userId, String uuid) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("userId", userId)
-                .addValue("uuid", uuid);
+	@Override
+	public AssociationRequestBean completeAssociationRequest(Integer userId, String uuid) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("userId", userId)
+				.addValue("uuid", uuid);
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("SetUserToken")
-                .withSchemaName("dbo")
-                .returningResultSet("associationRequest",
-                        (rs, rowNum) -> {
-                            try {
-                                return mapRowToAssociationRequestBean(rs);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        });
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("SetUserToken")
+				.withSchemaName("dbo")
+				.returningResultSet("associationRequest",
+						(rs, rowNum) -> {
+							try {
+								return mapRowToAssociationRequestBean(rs);
+							} catch (Exception e) {
+								return null;
+							}
+						});
 
-        Map<String, Object> out = jdbcCall.execute(input);
+		Map<String, Object> out = jdbcCall.execute(input);
 
-        @SuppressWarnings("unchecked")
-        List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
-                .get("associationRequest");
+		@SuppressWarnings("unchecked")
+		List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
+				.get("associationRequest");
 
-        return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
-                : null;
-    }
+		return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
+				: null;
+	}
 
-    @Override
-    public AssociationRequestBean getAssociationData(Integer associationId) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("associationId", associationId);
+	@Override
+	public AssociationRequestBean getAssociationData(Integer associationId) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("associationId", associationId);
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("GetAssociationRequestById")
-                .withSchemaName("dbo")
-                .returningResultSet("associationRequest",
-                        (rs, rowNum) -> {
-                            try {
-                                return mapRowToAssociationRequestBean(rs);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        });
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetAssociationRequestById")
+				.withSchemaName("dbo")
+				.returningResultSet("associationRequest",
+						(rs, rowNum) -> {
+							try {
+								return mapRowToAssociationRequestBean(rs);
+							} catch (Exception e) {
+								return null;
+							}
+						});
 
-        Map<String, Object> out = jdbcCall.execute(input);
+		Map<String, Object> out = jdbcCall.execute(input);
 
-        @SuppressWarnings("unchecked")
-        List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
-                .get("associationRequest");
+		@SuppressWarnings("unchecked")
+		List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
+				.get("associationRequest");
 
-        return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
-                : null;
-    }
+		return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
+				: null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public AssociationRequestBean getAssociationRequestByToken(String userToken) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("userToken", userToken);
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetAssociationRequestByToken")
+				.withSchemaName("dbo")
+				.returningResultSet("associationRequest",
+						(rs, rowNum) -> {
+							try {
+								return mapRowToAssociationRequestBean(rs);
+							} catch (Exception e) {
+								return null;
+							}
+						});
+
+		Map<String, Object> out = jdbcCall.execute(input);
+
+		return ((List<AssociationRequestBean>) out.get("associationRequest")).get(0);
+			
+	}
+
+	@Override
+	public AssociationRequestBean cancelAssociationRequest(String userToken) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("userToken", userToken);
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CancelAssociationRequest")
+				.withSchemaName("dbo")
+				.returningResultSet("associationRequest",
+						(rs, rowNum) -> {
+							try {
+								return mapRowToAssociationRequestBean(rs);
+							} catch (Exception e) {
+								return null;
+							}
+						});
+
+		Map<String, Object> out = jdbcCall.execute(input);
+
+		@SuppressWarnings("unchecked")
+		List<AssociationRequestBean> associationRequests = (List<AssociationRequestBean>) out
+				.get("associationRequest");
+
+		return associationRequests != null && !associationRequests.isEmpty() ? associationRequests.get(0)
+				: null;
+	}
 
 }

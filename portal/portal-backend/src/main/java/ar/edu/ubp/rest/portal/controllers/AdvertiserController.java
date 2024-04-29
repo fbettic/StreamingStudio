@@ -79,7 +79,7 @@ public class AdvertiserController {
             @RequestBody AdvertiserRequestDTO advertiserData)
             throws Exception {
 
-        if (getCurrentRole().name() != "ADMINISTRATOR" && id != getCurrentUserId()) {
+        if (!getCurrentRole().name().equals("ADMINISTRATOR")  && id != getCurrentUserId()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -90,6 +90,11 @@ public class AdvertiserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AdvertiserDTO>> getAllAdvertisers() {
         return ResponseEntity.ok(advertiserService.getAllAdvertisers());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AdvertiserDTO> getAdvertiserById(@PathVariable Integer id) {
+        return new ResponseEntity<>(advertiserService.getAdvertiserById(id), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

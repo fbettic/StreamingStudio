@@ -58,7 +58,7 @@ CREATE OR ALTER PROCEDURE GetAdvertiserById
     @advertiserId INT
 AS
 BEGIN
-    SELECT advertiserId AS id,
+    SELECT advertiserId,
         agentFirstname,
         agentLastname,
         companyName,
@@ -79,7 +79,7 @@ CREATE OR ALTER PROCEDURE GetAllAdvertisers
 AS
 BEGIN
     SELECT
-        advertiserId AS id,
+        advertiserId,
         agentFirstname,
         agentLastname,
         companyName,

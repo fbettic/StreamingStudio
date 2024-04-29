@@ -1,6 +1,7 @@
 package ar.edu.ubp.soap.ws;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.cxf.interceptor.Fault;
 
@@ -34,19 +35,22 @@ public class PlataformasWS {
         this.authManager = new AuthManager();
         this.userManager = new UserManager();
         this.filmManager = new FilmManager();
-    }    
+    }
 
     // crear usuario no relacionado a plataforma
     @WebMethod()
     @WebResult(name = "platformUser")
-    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser) throws Exception {
+    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser)
+            throws Exception {
         return userManager.creatPlatformUser(newPlatformUser);
     }
 
     // se crea el usuario y se setea el token
     @WebMethod()
     @WebResult(name = "signupAssociationCompleted")
-    public AssociationRequestBean completeSignupAssociationRequest(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser, @WebParam(name = "uuid") String uuid) throws Exception {
+    public AssociationRequestBean completeSignupAssociationRequest(
+            @WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser,
+            @WebParam(name = "uuid") String uuid) throws Exception {
         Integer userId = userManager.creatPlatformUser(newPlatformUser).getUserId();
 
         System.out.println("-------------> " + userId);
@@ -61,14 +65,14 @@ public class PlataformasWS {
     // se busca el usuario y se setea el token
     @WebMethod()
     @WebResult(name = "loginAssociationCompleted")
-    public AssociationRequestBean completeLoginAssociationRequest(@WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid) throws Exception {
-        
+    public AssociationRequestBean completeLoginAssociationRequest(
+            @WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid)
+            throws Exception {
+
         System.out.println("-------------> " + loginRequest.toString() + ", " + uuid);
         PlatformUserBean user = userManager.getUserByEmail(loginRequest.getEmail());
-        
 
-        if(user == null || !user.getPassword().equals(loginRequest.getPassword()))
-        {
+        if (user == null || !user.getPassword().equals(loginRequest.getPassword())) {
             throw new Fault(new Exception("Invalid user credentials"));
         }
 
@@ -85,7 +89,8 @@ public class PlataformasWS {
     @WebMethod()
     @WebResult(name = "associationRequest")
     public AssociationRequestBean getAssociationData(
-        @WebParam(name = "authToken") String authToken, @WebParam(name = "associationId") Integer associationId) throws Exception {
+            @WebParam(name = "authToken") String authToken, @WebParam(name = "associationId") Integer associationId)
+            throws Exception {
         final Integer serviceId = authManager.validateServiceToken(authToken);
         if (serviceId == null || serviceId == 0) {
             throw new Fault(new Exception("Invalid token"));
@@ -95,15 +100,36 @@ public class PlataformasWS {
 
     @WebMethod()
     @WebResult(name = "associationRequest")
+    public AssociationRequestBean cancelAssociationRequest(
+            @WebParam(name = "authToken") String authToken,
+            @WebParam(name = "userToken") String userToken) throws Exception {
+                
+        final Integer serviceId = authManager.validateServiceToken(authToken);
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+
+        final AssociationRequestBean association = userManager.getAssociationRequestByToken(userToken);
+
+        if (!Objects.isNull(association)
+                && (association.getState().equals("CANCELED")
+                        || !Objects.isNull(association.getCanceledAt()))) {
+            return association;
+        }
+        return userManager.cancelAssociationRequest(userToken);
+    }
+
+    @WebMethod()
+    @WebResult(name = "associationRequest")
     public AssociationRequestBean createAssociationRequest(
-            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest) throws Exception {
+            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest)
+            throws Exception {
         final Integer serviceId = authManager.validateServiceToken(newAssociationRequest.getAuthToken());
         if (serviceId == null || serviceId == 0) {
             throw new Fault(new Exception("Invalid token"));
         }
         return userManager.createAssociationRequest(newAssociationRequest, serviceId);
     }
-
 
     // se obtienen los datos de reproduccion de la pelicula
     @WebMethod()
@@ -112,6 +138,28 @@ public class PlataformasWS {
         final Integer serviceId = authManager.validateServiceToken(newSession.getAuthToken());
         final Integer userId = authManager.validateUserToken(newSession.getUserToken());
         return userManager.createSession(newSession, serviceId, userId);
+    }
+
+    @WebMethod()
+    @WebResult(name = "session")
+    public SessionBean markSessionAsUsed(@WebParam(name = "sessionId") Integer sessionId,
+            @WebParam(name = "authToken") String authToken) throws Exception {
+        final Integer serviceId = authManager.validateServiceToken(authToken);
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+        return userManager.markSessionAsUsed(sessionId);
+    }
+
+    @WebMethod()
+    @WebResult(name = "session")
+    public SessionBean markSessionAsExpired(@WebParam(name = "sessionId") Integer sessionId,
+            @WebParam(name = "authToken") String authToken) throws Exception {
+        final Integer serviceId = authManager.validateServiceToken(authToken);
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+        return userManager.markSessionAsExpired(sessionId);
     }
 
     // obtener todas las peliculas

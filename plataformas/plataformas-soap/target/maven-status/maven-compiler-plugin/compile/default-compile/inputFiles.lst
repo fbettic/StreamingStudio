@@ -10,6 +10,7 @@ D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\db\AuthManager.java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\app\Server.java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\beans\NewPlatformUserBean.java
+D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\beans\CancelAssociationRequest.java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\beans\WeeklyGenreReportBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\beans\NewAssociationRequestBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\plataformas\plataformas-soap\src\main\java\ar\edu\ubp\soap\beans\PlatformUserBean.java

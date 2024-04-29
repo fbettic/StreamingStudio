@@ -15,7 +15,7 @@ CREATE OR ALTER PROCEDURE CreateAdvertising
     @sizeId INT,
     @allPagesFeeId INT,
     @priorityId INT,
-    @authUrl VARCHAR(255),
+    @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255),
     @bannerId INT,
@@ -44,7 +44,7 @@ BEGIN
             @sizeId,
             @allPagesFeeId,
             @priorityId,
-            @authUrl,
+            @redirectUrl,
             @imageUrl,
             @bannerText,
             @bannerId,
@@ -63,7 +63,7 @@ CREATE OR ALTER PROCEDURE UpdateAdvertising
     @sizeId INT,
     @allPagesFeeId INT,
     @priorityId INT,
-    @authUrl VARCHAR(255),
+    @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255),
     @bannerId INT,
@@ -78,7 +78,7 @@ BEGIN
         sizeId = @sizeId,
         allPagesFeeId = @allPagesFeeId,
         priorityId = @priorityId,
-        redirectUrl = @authUrl,
+        redirectUrl = @redirectUrl,
         imageUrl = @imageUrl,
         bannerText = @bannerText,
         bannerId = @bannerId,
@@ -104,10 +104,18 @@ BEGIN
     SELECT
         advertisingId,
         advertiserId,
+        a.sizeId AS sizeId,
         sizeType,
         sizeValue,
+        height,
+        width,
         af_st.feeValue AS sizeFee,
-        af.feeValue AS allPagesFee,
+        a.allPagesFeeId AS allPagesFeeId,
+        CASE
+            WHEN a.allPagesFeeId IS NOT NULL THEN af.feeValue
+            ELSE NULL
+        END AS allPagesFee,
+        a.priorityId AS priorityId,
         priorityType,
         priorityValue,
         af_bp.feeValue AS priorityFee,
@@ -122,11 +130,12 @@ BEGIN
     INNER JOIN SizeType st ON st.sizeId = a.sizeId
     INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
     INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    INNER JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
     WHERE a.advertisingId = @advertisingId
     AND a.deletedAt IS NULL
 END
 GO
+
 
 
 -- DROP PROCEDURE IF EXISTS GetAdvertisingById
@@ -146,9 +155,14 @@ BEGIN
         a.sizeId AS sizeId,
         sizeType,
         sizeValue,
+        height,
+        width,
         af_st.feeValue AS sizeFee,
         a.allPagesFeeId AS allPagesFeeId,
-        af.feeValue AS allPagesFee,
+        CASE
+            WHEN a.allPagesFeeId IS NOT NULL THEN af.feeValue
+            ELSE NULL
+        END AS allPagesFee,
         a.priorityId AS priorityId,
         priorityType,
         priorityValue,
@@ -164,7 +178,7 @@ BEGIN
     INNER JOIN SizeType st ON st.sizeId = a.sizeId
     INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
     INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    INNER JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
     WHERE a.advertiserId = @advertiserId
     AND a.deletedAt IS NULL
 END
@@ -189,9 +203,14 @@ BEGIN
         a.sizeId AS sizeId,
         sizeType,
         sizeValue,
+        height,
+        width,
         af_st.feeValue AS sizeFee,
         a.allPagesFeeId AS allPagesFeeId,
-        af.feeValue AS allPagesFee,
+        CASE
+            WHEN a.allPagesFeeId IS NOT NULL THEN af.feeValue
+            ELSE NULL
+        END AS allPagesFee,
         a.priorityId AS priorityId,
         priorityType,
         priorityValue,
@@ -207,8 +226,8 @@ BEGIN
     INNER JOIN SizeType st ON st.sizeId = a.sizeId
     INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
     INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    INNER JOIN @AllFees af ON af.feeId = a.allPagesFeeId
-    AND a.deletedAt IS NULL
+    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+    WHERE a.deletedAt IS NULL
 END
 GO
 
@@ -216,13 +235,13 @@ GO
 CREATE OR ALTER PROCEDURE UpdateAdvertisingBanner
     @advertiserId INT,
     @bannerId INT,
-    @authUrl VARCHAR(255),
+    @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255)
 AS
 BEGIN
     UPDATE Advertising 
-    SET redirectUrl = @authUrl,
+    SET redirectUrl = @redirectUrl,
     imageUrl = @imageUrl,
     bannerText = @bannerText
     WHERE bannerId = @bannerId 

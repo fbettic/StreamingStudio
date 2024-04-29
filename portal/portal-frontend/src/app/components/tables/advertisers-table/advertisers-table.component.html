@@ -4,12 +4,12 @@
   placeholder="Buscar..."
   #filter
 />
-<app-modal-form modalTitle="New advertiser" (onClose)="onModalClose()">
+<app-custom-modal modalTitle="New advertiser" (onClose)="onModalClose()">
   <app-advertiser-form
     [advertiser]="itemSelected"
     (doRefresh)="refreshList()"
   ></app-advertiser-form>
-</app-modal-form>
+</app-custom-modal>
 <app-table
   [headers]="headers"
   [items]="filteredList"

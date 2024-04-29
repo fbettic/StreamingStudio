@@ -15,7 +15,11 @@ public class StreamingPlatformDTO {
     private String email;
     private String apiUrl;
     private String authToken;
+    private Integer signupFeeId;
+    private String signupFeeType;
     private Float signupFee;
+    private Integer loginFeeId;
+    private String loginFeeType;
     private Float loginFee;
     private String serviceType;
 }

@@ -2,6 +2,7 @@ package ar.edu.ubp.rest.portal.repositories;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -40,12 +41,15 @@ public class AdvertisingRepository implements IAdvertisingRepository {
         .addValue("fromDate", advertising.getFromDate())
         .addValue("toDate", advertising.getToDate());
 
+    System.out.println("----------------->" + input.toString());
     SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
         .withProcedureName("CreateAdvertising")
         .withSchemaName("dbo")
         .returningResultSet("advertising", BeanPropertyRowMapper.newInstance(AdvertisingDTO.class));
 
     Map<String, Object> output = jdbcCall.execute(input);
+
+    System.out.println("----------------->" + output.toString());
     return ((List<AdvertisingDTO>) output.get("advertising")).get(0);
   }
 
@@ -119,21 +123,22 @@ public class AdvertisingRepository implements IAdvertisingRepository {
     return ((List<AdvertisingDTO>) output.get("advertising")).get(0);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Integer deleteAdvertisingById(Integer id) {
     SqlParameterSource input = new MapSqlParameterSource()
         .addValue("tableName", "Advertising")
         .addValue("primaryKeyColumn", "advertisingId")
-        .addValue("primaryKeyValue", id);
+        .addValue("primaryKeyValue", id)
+        .addValue("deletedId", null, Types.INTEGER);
 
     SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
         .withProcedureName("SoftDeleteRecord")
-        .withSchemaName("dbo")
-        .returningResultSet("advertisingId", BeanPropertyRowMapper.newInstance(Integer.class));
+        .withSchemaName("dbo");
 
     Map<String, Object> output = jdbcCall.execute(input);
-    return ((List<Integer>) output.get("advertisingId")).get(0);
+
+    
+    return Integer.valueOf(output.get("deletedId").toString());
   }
 
   @SuppressWarnings("unchecked")
@@ -151,7 +156,6 @@ public class AdvertisingRepository implements IAdvertisingRepository {
         .addValue("fromDate", advertising.getFromDate())
         .addValue("toDate", advertising.getToDate())
         .addValue("advertisingId", id);
-
 
     SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
         .withProcedureName("UpdateAdvertising")

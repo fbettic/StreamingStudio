@@ -1,0 +1,19 @@
+<input
+  type="text"
+  (input)="filterSizeTypes(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-custom-modal modalTitle="Streaming Platform Form" (onClose)="onModalClose()">
+    <app-size-type-form
+      [sizeType]="itemSelected"
+      (doRefresh)="refreshList()"
+    />
+  </app-custom-modal>
+  <app-table
+    [headers]="headers"
+    [items]="filteredList"
+    (editClicked)="onEditItem($event)"
+    (deleteClicked)="onDeleteItem($event)"
+  />
+  

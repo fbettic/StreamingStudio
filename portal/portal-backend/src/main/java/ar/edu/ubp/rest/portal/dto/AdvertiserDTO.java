@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AdvertiserDTO {
-    Integer id;
+    Integer advertiserId;
     String agentFirstname;
     String agentLastname;
     String companyName;

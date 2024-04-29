@@ -55,6 +55,11 @@ public class AdvertiserService {
         return advertiserRepository.getAllAdvertisers();
     }
 
+    public AdvertiserDTO getAdvertiserById(Integer id) {
+        return advertiserRepository.getAdvertiserById(id);
+    }
+
+
     public Integer deleteAdvertiserById(Integer id) {
         return advertiserRepository.deleteAdvertiserById(id);
     }

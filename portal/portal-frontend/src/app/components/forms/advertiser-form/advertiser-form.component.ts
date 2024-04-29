@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import {
   FormBuilder,
@@ -6,10 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ServiceType } from '../../../enums/service-type.enum';
-import { CommonModule } from '@angular/common';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { AdvertiserService } from '../../../services/advertiser/advertiser.service';
 import { IAdvertiser } from '../../../models/advertiser.model';
+import { AdvertiserService } from '../../../services/advertiser.service';
 
 @Component({
   selector: 'app-advertiser-form',
@@ -24,12 +23,12 @@ export class AdvertiserFormComponent {
 
   @Output() doRefresh: EventEmitter<void> = new EventEmitter<void>();
 
-  newAdvertiserFormGroup: FormGroup;
+  advertiserFormGroup: FormGroup;
   error: string = '';
   id: number = 0;
 
   constructor() {
-    this.newAdvertiserFormGroup = this._formBuilder.group({
+    this.advertiserFormGroup = this._formBuilder.group({
       agentFirstname: ['', [Validators.required]],
       agentLastname: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -44,23 +43,23 @@ export class AdvertiserFormComponent {
   }
 
   onServiceTypeChange(): void {
-    const service = this.newAdvertiserFormGroup.get('serviceType')?.value;
+    const service = this.advertiserFormGroup.get('serviceType')?.value;
 
     if (service === '') {
-      this.newAdvertiserFormGroup.get('password')?.disable();
-      this.newAdvertiserFormGroup.get('authToken')?.disable();
-      this.newAdvertiserFormGroup.get('apiUrl')?.disable();
+      this.advertiserFormGroup.get('password')?.disable();
+      this.advertiserFormGroup.get('authToken')?.disable();
+      this.advertiserFormGroup.get('apiUrl')?.disable();
       return;
     }
 
     if (service === ServiceType.ACCOUNT) {
-      this.newAdvertiserFormGroup.get('password')?.enable();
-      this.newAdvertiserFormGroup.get('authToken')?.disable();
-      this.newAdvertiserFormGroup.get('apiUrl')?.disable();
+      this.advertiserFormGroup.get('password')?.enable();
+      this.advertiserFormGroup.get('authToken')?.disable();
+      this.advertiserFormGroup.get('apiUrl')?.disable();
     } else {
-      this.newAdvertiserFormGroup.get('password')?.disable();
-      this.newAdvertiserFormGroup.get('authToken')?.enable();
-      this.newAdvertiserFormGroup.get('apiUrl')?.enable();
+      this.advertiserFormGroup.get('password')?.disable();
+      this.advertiserFormGroup.get('authToken')?.enable();
+      this.advertiserFormGroup.get('apiUrl')?.enable();
     }
   }
 
@@ -73,36 +72,36 @@ export class AdvertiserFormComponent {
 
     if (!advertiser) {
       this.id = 0;
-      this.newAdvertiserFormGroup.reset();
+      this.resetForm()
       this.error = '';
       return;
     }
 
-    this.id = advertiser.id!;
+    this.id = advertiser.advertiserId!;
 
-    this.newAdvertiserFormGroup.setValue({
+    this.advertiserFormGroup.setValue({
       agentFirstname: advertiser.agentFirstname,
       agentLastname: advertiser.agentLastname,
       email: advertiser.email,
-      password: "",
+      password: '',
       companyName: advertiser.companyName,
       bussinesName: advertiser.bussinesName,
       phone: advertiser.phone,
       apiUrl: advertiser.apiUrl,
-      authToken: "",
+      authToken: '',
       serviceType: advertiser.serviceType,
     });
   }
 
   submit() {
-    const isValid = this.newAdvertiserFormGroup.valid;
+    const isValid = this.advertiserFormGroup.valid;
     if (isValid) {
-      const data: IAdvertiser = this.newAdvertiserFormGroup.value;
+      const data: IAdvertiser = this.advertiserFormGroup.value;
       this.id != 0 ? this.updateAdvertiser(data) : this.createAdvertiser(data);
     } else {
       this.error =
         'Por favor, verifique todos los campos del formulario y asegúrese de que estén completos y cumplan con las especificaciones requeridas.';
-      this.newAdvertiserFormGroup.markAllAsTouched();
+      this.advertiserFormGroup.markAllAsTouched();
     }
   }
 
@@ -117,7 +116,7 @@ export class AdvertiserFormComponent {
         this.error = error.error;
       },
       complete: () => {
-        this.newAdvertiserFormGroup.reset();
+        this.advertiserFormGroup.reset();
         this.error = '';
         this.doRefresh.emit();
       },
@@ -135,11 +134,26 @@ export class AdvertiserFormComponent {
         this.error = error.error;
       },
       complete: () => {
-        this.newAdvertiserFormGroup.reset();
+        this.advertiserFormGroup.reset();
         this.error = '';
         this.id = 0;
         this.doRefresh.emit();
       },
+    });
+  }
+
+  resetForm() {
+    this.advertiserFormGroup.reset({
+      agentFirstname: '',
+      agentLastname: '',
+      email: '',
+      password: '',
+      companyName: '',
+      bussinesName: '',
+      phone: '',
+      apiUrl: '',
+      authToken: '',
+      serviceType: '',
     });
   }
 }

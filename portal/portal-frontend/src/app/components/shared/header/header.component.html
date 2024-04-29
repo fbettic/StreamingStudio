@@ -3,7 +3,14 @@
   data-bs-theme="dark"
 >
   <div class="container-fluid">
-    <a routerLink="" class="navbar-brand">StreamingStudio</a>
+    <a routerLink="" class="navbar-brand">
+      <img src="../../../../assets/ss-logo.svg" alt="" style="width: 36px;" class="me-2" />
+      <img
+        src="../../../../assets/ss-name.svg"
+        alt=""
+        style="width: 65px"
+        class="navbar-brand"
+    /></a>
     <button
       class="navbar-toggler"
       type="button"
@@ -13,15 +20,12 @@
       aria-expanded="false"
       aria-label="Toggle navigation"
     >
-      <span class="navbar-toggler-icon"></span>
+      <span class="navbar-toggler-icon"> </span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown" ngbDropdown>
-          <a
-            class="nav-link dropdown-toggle"
-            id="id01"
-            ngbDropdownToggle
+          <a class="nav-link dropdown-toggle" id="id01" ngbDropdownToggle
             >Account</a
           >
           <div
@@ -30,10 +34,14 @@
             ngbDropdownMenu
           >
             @if (isLoggedIn){
-                <a class="dropdown-item" (click)="logout()">Logout</a>
-            }@else{
-                <a routerLink="login" class="dropdown-item">Login</a>
-                <a routerLink="signup" class="dropdown-item">Signup</a>
+            <a class="dropdown-item" (click)="logout()">Logout</a>
+            @if (user?.role === "SUBSCRIBER") {
+            <a class="dropdown-item" routerLink="platforms"
+              >Platform Management</a
+            >
+            } }@else{
+            <a routerLink="login" class="dropdown-item">Login</a>
+            <a routerLink="signup" class="dropdown-item">Signup</a>
             }
           </div>
         </li>

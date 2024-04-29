@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +38,13 @@ public class AuthController {
 
     }
 
-    @PostMapping("subscribers")
+    @PostMapping("signup/subscriber")
     public ResponseEntity<AuthResponseDTO> createSubscriber(@RequestBody SubscriberRequestDTO request) {
-        return ResponseEntity.ok(authService.createSubscriber(request));
 
+        return ResponseEntity.ok(authService.createSubscriber(request));
     }
 
-    @PostMapping("administrators")
+    @PostMapping("signup/administrator")
     public ResponseEntity<AuthResponseDTO> createAdministrator(@RequestBody AdministratorRequestDTO request) {
 
         return ResponseEntity.ok(authService.createAdministrator(request));

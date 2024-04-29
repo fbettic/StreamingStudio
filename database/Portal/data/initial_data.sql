@@ -11,7 +11,7 @@ EXEC CreateSubscriber 'federico', 'bettic', 'fbettic@gmail.com', '1111111111111'
 -- Crear Fees
 EXEC CreateFee 'BANNER_PRIORITY_LOW', 2.5
 EXEC CreateFee 'BANNER_PRIORITY_MEDIUM', 6.5
-EXEC CreateFee 'BANNER_PRIORITY_HIGHT', 9.8
+EXEC CreateFee 'BANNER_PRIORITY_HIGH', 9.8
 EXEC CreateFee 'BANNER_SIZE_SMALL', 4.5
 EXEC CreateFee 'BANNER_SIZE_MEDIUM', 8.5
 EXEC CreateFee 'BANNER_SIZE_LARGE', 10.6
@@ -22,10 +22,11 @@ EXEC CreateFee 'SIGNUP_FEE', 13.5
 -- Crear Priorities
 EXEC CreateBannerPriority "LOW", 5, 1
 EXEC CreateBannerPriority "MEDIUM", 10, 2
-EXEC CreateBannerPriority "HIGHT", 15, 3
+EXEC CreateBannerPriority "HIGH", 15, 3
 
 -- Crear Sizes
 EXEC CreateSizeType 4, 'SMALL', 5, 150, 100
 EXEC CreateSizeType 5, 'MEDIUM', 5, 300, 100
 EXEC CreateSizeType 6, 'LARGE', 5, 150, 600
 
+select * from Administrator

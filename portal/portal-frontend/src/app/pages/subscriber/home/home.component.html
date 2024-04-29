@@ -1,0 +1,13 @@
+<app-custom-modal [modalTitle]="film?.title!" [showButton]="false">
+  <app-film-info [film]="film" (onPlayClick)="onPlayClick($event)"/>
+</app-custom-modal>
+
+<div class="advertisement-top">Anuncio superior</div>
+
+<div class="row">
+  <div class="advertisement-side">Anuncio lateral izquierdo</div>
+  <div class="col">
+    <app-film-list [films]="films" (onFilmClick)="onFilmClick($event)"/>
+  </div>
+  <div class="advertisement-side">Anuncio lateral derecho</div>
+</div>

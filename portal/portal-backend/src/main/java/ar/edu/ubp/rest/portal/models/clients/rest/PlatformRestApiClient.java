@@ -14,6 +14,7 @@ import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
@@ -66,9 +67,10 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
     public AssociationResponseBean getAssociationData(AssociationPayloadBean payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(new BasicPayloadBean(payload.getAuthToken()), headers);
+        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(new BasicPayloadBean(payload.getAuthToken()),
+                headers);
         ResponseEntity<AssociationResponseBean> responseEntity = restTemplate.exchange(
-                url + "/associations/{"+ payload.getAssociationId() +"}",
+                url + "/associations/" + payload.getAssociationId(),
                 HttpMethod.POST,
                 requestEntity,
                 AssociationResponseBean.class);
@@ -99,6 +101,27 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
             // Handle error
             throw new RuntimeException(
                     "Failed to create session. Status code: " + responseEntity.getStatusCode().toString());
+        }
+    }
+
+    @Override
+    public AssociationResponseBean cancelAssociationRequest(UserPayloadBean payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<UserPayloadBean> requestEntity = new HttpEntity<>(payload,
+                headers);
+        ResponseEntity<AssociationResponseBean> responseEntity = restTemplate.exchange(
+                url + "/associations/cancel",
+                HttpMethod.POST,
+                requestEntity,
+                AssociationResponseBean.class);
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody();
+        } else {
+            // Handle error
+            throw new RuntimeException(
+                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
         }
     }
 

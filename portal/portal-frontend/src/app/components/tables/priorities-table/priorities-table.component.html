@@ -1,0 +1,19 @@
+<input
+  type="text"
+  (input)="filterBannerPrioritys(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-custom-modal modalTitle="Streaming Platform Form" (onClose)="onModalClose()">
+    <app-banner-priority-form
+      [bannerPriority]="itemSelected"
+      (doRefresh)="refreshList()"
+    />
+  </app-custom-modal>
+  <app-table
+    [headers]="headers"
+    [items]="filteredList"
+    (editClicked)="onEditItem($event)"
+    (deleteClicked)="onDeleteItem($event)"
+  />
+  

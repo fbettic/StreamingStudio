@@ -23,6 +23,7 @@ import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
@@ -87,9 +88,14 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
         NodeList filmNodes = root.getElementsByTagName("films");
         List<FilmResponseBean> filmList = new ArrayList<>();
 
+        System.out.println("------------> filmNodes.getLength()" + filmNodes.item(5).getTextContent());
+
         for (int i = 0; i < filmNodes.getLength(); i++) {
             Element filmElement = (Element) filmNodes.item(i);
-            filmList.add(new FilmResponseBean(filmElement.getOwnerDocument()));
+            FilmResponseBean film = new FilmResponseBean(filmElement);
+            System.out.println("-------------> " + i);
+            System.out.println("-------------> " + film.toString());
+            filmList.add(film);
         }
 
         return filmList;
@@ -101,6 +107,10 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
                 <ws:createAssociationRequest xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
                 </ws:createAssociationRequest>""".formatted(payload.toSoapXml());
+
+        System.out.println("message---->" + message);
+
+        System.out.println("url" + this.url);
 
         Document resultDocument = createAndSendSoapRequest(message);
 
@@ -118,9 +128,29 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
     @Override
     public AssociationResponseBean getAssociationData(AssociationPayloadBean payload) {
         String message = """
-                <ws:getUserToken xmlns:ws="http://ws.soap.ubp.edu.ar/">
+                <ws:getAssociationData xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
-                </ws:getUserToken>""".formatted(payload.toSoapXml());
+                </ws:getAssociationData>""".formatted(payload.toSoapXml());
+
+        Document resultDocument = createAndSendSoapRequest(message);
+
+        Element root = resultDocument.getDocumentElement();
+        NodeList associationNodes = root.getElementsByTagName("associationRequest");
+
+        if (associationNodes.getLength() == 0) {
+            return null;
+        }
+
+        Element associationElement = (Element) associationNodes.item(0);
+        return new AssociationResponseBean(associationElement.getOwnerDocument());
+    }
+
+    @Override
+    public AssociationResponseBean cancelAssociationRequest(UserPayloadBean payload) {
+        String message = """
+                <ws:cancelAssociationRequest xmlns:ws="http://ws.soap.ubp.edu.ar/">
+                   %s
+                </ws:cancelAssociationRequest>""".formatted(payload.toSoapXml());
 
         Document resultDocument = createAndSendSoapRequest(message);
 

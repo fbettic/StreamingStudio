@@ -10,5 +10,3 @@ export interface IAdvertisingRequest {
     fromDate: Date;
     toDate: Date;
 }
-
-sizeId,allPagesFeeId,priorityId

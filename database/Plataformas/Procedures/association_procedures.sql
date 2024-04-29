@@ -59,7 +59,7 @@ BEGIN
     WHERE uuid = @uuid
         AND state = 'OPEN'
 
-     SELECT *
+    SELECT *
     FROM AssociationRequest
     WHERE uuid = @uuid
 END
@@ -70,16 +70,29 @@ GO
 
 -- DROP PROCEDURE IF EXISTS CancelAssociationRequest
 CREATE OR ALTER PROCEDURE CancelAssociationRequest
-    @associationId INT
+    @userToken NVARCHAR(255)
 AS
 BEGIN
     UPDATE AssociationRequest
     SET state = 'CANCELED', canceledAt = GETDATE()
-    WHERE associationId = @associationId
+    WHERE userToken = @userToken
         AND (state = 'OPEN' OR state = 'FINALIZED')
+
+    SELECT *
+    FROM AssociationRequest
+    WHERE userToken = @userToken
 END;
 GO
 
+
+CREATE OR ALTER PROCEDURE CancelAllAssociationsRequest
+AS
+BEGIN
+    UPDATE AssociationRequest
+    SET state = 'CANCELED', canceledAt = GETDATE()
+    WHERE (state = 'OPEN')
+END
+GO
 
 -- DROP PROCEDURE IF EXISTS FinalizeAssociationRequest
 CREATE OR ALTER PROCEDURE FinalizeAssociationRequest
@@ -115,6 +128,16 @@ BEGIN
     SELECT *
     FROM AssociationRequest
     WHERE associationId = @associationId
+END
+GO
+
+CREATE OR ALTER PROCEDURE GetAssociationRequestByToken
+    @userToken NVARCHAR(255)
+AS
+BEGIN
+    SELECT *
+    FROM AssociationRequest
+    WHERE userToken = @userToken
 END
 GO
 
@@ -159,7 +182,8 @@ BEGIN
     DECLARE @canceledAt DATE;
     DECLARE @associationId INT;
     DECLARE @filmId INT;
-    DECLARE @sessionUrl VARCHAR(255) ;
+    DECLARE @sessionUrl VARCHAR(255)
+    ;
     DECLARE @sessionId INT;
 
 
@@ -171,7 +195,7 @@ BEGIN
         AND state = 'FINALIZED'
 
     SELECT @filmId = filmId,
-    @sessionUrl = url
+        @sessionUrl = url
     FROM Film
     WHERE filmCode = @filmCode
 
@@ -193,7 +217,7 @@ BEGIN
 
     SET @sessionId = SCOPE_IDENTITY()
     EXEC GetSessionById  @sessionId
-    
+
 END;
 GO
 
@@ -205,6 +229,8 @@ BEGIN
     UPDATE Sessions
     SET usedAt = GETDATE()
     WHERE sessionId = @sessionId;
+
+    EXEC GetSessionById @sessionId
 END;
 GO
 
@@ -216,6 +242,7 @@ BEGIN
     UPDATE Sessions
     SET expired = 1
     WHERE sessionId = @sessionId;
+    EXEC GetSessionById @sessionId
 END;
 GO
 
@@ -224,15 +251,15 @@ CREATE OR ALTER PROCEDURE GetSessionById
     @sessionId INT
 AS
 BEGIN
-    SELECT sessionId, 
-        associationId, 
-        filmCode, 
-        sessionUrl, 
-        createdAt, 
-        usedAt, 
+    SELECT sessionId,
+        associationId,
+        filmCode,
+        sessionUrl,
+        createdAt,
+        usedAt,
         expired
     FROM Sessions s
-    JOIN Film f ON f.filmId = s.filmId
+        JOIN Film f ON f.filmId = s.filmId
     WHERE sessionId = @sessionId
 END;
 GO

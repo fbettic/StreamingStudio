@@ -33,10 +33,9 @@ public class AuthUrlGenerator {
     }
 
 
-    public static String generateAuthUrl(String urlType, String uuid) {
+    public static String generateAuthUrl(String uuid) {
         String baseUrl = "http://localhost:4200/";
-        String endpoint = urlType == "LOGIN" ? "login" : "signup";
-        return baseUrl + endpoint + "?uuid=" + uuid;
+        return baseUrl + "link?uuid=" + uuid;
     }
 
 }

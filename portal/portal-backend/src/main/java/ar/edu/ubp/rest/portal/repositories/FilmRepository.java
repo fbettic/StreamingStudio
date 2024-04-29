@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.PlatformFilmDTO;
+import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IFilmRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -142,6 +143,19 @@ public class FilmRepository implements IFilmRepository {
     }
 
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public FilmSubscriberResponseDTO getFilmById(Integer id) {
+        SqlParameterSource input = new MapSqlParameterSource()
+        .addValue("filmId", id);
 
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("GetFilmById")
+                .withSchemaName("dbo")
+                .returningResultSet("film", BeanPropertyRowMapper.newInstance(FilmSubscriberResponseDTO.class));
+
+        Map<String, Object> output = jdbcCall.execute(input);
+        return ((List<FilmSubscriberResponseDTO>) output.get("film")).get(0);
+    }
 
 }

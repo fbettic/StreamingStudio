@@ -34,6 +34,10 @@ BEGIN
         (platformId, transactionId, subscriberId, state, authUrl, associationType, requestAt, uuid)
     VALUES
         (@platformId, @transactionId, @subscriberId, 'OPEN', @authUrl, @associationType, @requestAt, @uuid);
+
+    SELECT *
+    FROM AssociationRequest
+    WHERE uuid=@uuid
 END;
 GO
 
@@ -58,6 +62,16 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE CancelAllAssociationsRequest
+AS
+BEGIN
+    UPDATE AssociationRequest
+    SET state = 'CANCELED', closedAt = GETDATE()
+    WHERE (state = 'OPEN')
+END
+GO
+
+
 -- DROP PROCEDURE IF EXISTS FinalizeAssociationRequest
 CREATE OR ALTER PROCEDURE FinalizeAssociationRequest
     @platformId INT,
@@ -66,7 +80,7 @@ CREATE OR ALTER PROCEDURE FinalizeAssociationRequest
 AS
 BEGIN
     UPDATE AssociationRequest
-    SET state = 'FINALIZED', closedAt = GETDATE()
+    SET state = 'FINALICED', closedAt = GETDATE()
     WHERE platformId = @platformId
         AND transactionId = @transactionId
         AND subscriberId = @subscriberId;
@@ -76,13 +90,15 @@ GO
 -- DROP PROCEDURE IF EXISTS GetLastOpenAssociationRequest
 CREATE OR ALTER PROCEDURE GetLastOpenAssociationRequest
     @platformId INT,
-    @subscriberId INT
+    @subscriberId INT,
+    @associationType VARCHAR(255)
 AS
 BEGIN
     SELECT *
     FROM AssociationRequest
     WHERE platformId = @platformId
         AND subscriberId = @subscriberId
+        AND associationType = @associationType
         AND state = 'OPEN'
 END
 GO
@@ -125,6 +141,12 @@ BEGIN
 
         EXEC FinalizeAssociationRequest @platformId, @transactionId, @subscriberId
     END;
+
+    SELECT platformId, transactionId, subscriberId, userToken, entryDate, leavingDate
+    FROM Association
+    WHERE platformId = @platformId
+        AND transactionId = @transactionId
+        AND subscriberId = @subscriberId;
 END;
 GO
 
@@ -155,10 +177,21 @@ CREATE OR ALTER PROCEDURE GetAssociationToken
     @subscriberId INT
 AS
 BEGIN
-    SELECT platformId, subscriberId, userToken
+    SELECT platformId, subscriberId, userToken, transactionId
     FROM Association
     WHERE leavingDate IS NULL
         AND platformId = @platformId
+        AND subscriberId = @subscriberId
+END
+GO
+
+CREATE OR ALTER PROCEDURE GetAllAssociationsBySubscriberId
+    @subscriberId INT
+AS
+BEGIN
+    SELECT platformId, subscriberId, userToken
+    FROM Association
+    WHERE leavingDate IS NULL
         AND subscriberId = @subscriberId
 END
 GO
@@ -267,6 +300,7 @@ BEGIN
             (usedAt, subscriberId, platformId, transactionId, filmid, sessionUrl, createdAt)
         VALUES
             (NULL, @subscriberId, @platformId, @transactionId, @filmId, @sessionUrl, @createdAt);
+        EXEC GetSessionById @@IDENTITY
     END;
 END;
 GO
@@ -294,4 +328,14 @@ BEGIN
     WHERE filmid = @filmId
         AND subscriberId = @subscriberId
         AND platformId = @platformId;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE GetSessionById
+    @sessionId INT
+AS
+BEGIN
+    SELECT *
+    FROM Sessions
+    WHERE sessionId=@sessionId
 END;

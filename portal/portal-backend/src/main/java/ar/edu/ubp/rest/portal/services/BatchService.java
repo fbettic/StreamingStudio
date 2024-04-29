@@ -3,6 +3,7 @@ package ar.edu.ubp.rest.portal.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -61,8 +62,10 @@ public class BatchService {
 
         List<PlatformFilmDTO> platformFilms = new ArrayList<>();
 
+        System.out.println("--------------> clientsFilms" + clientFilms.toString());
+
         if (Objects.isNull(clientFilms) || clientFilms.size()==0) {
-            throw new Exception("No films availables");
+            throw new NoSuchElementException("No films availables");
         }
 
         clientFilms.forEach((client) -> {
@@ -99,7 +102,9 @@ public class BatchService {
             });
         });
 
-        System.out.println("---------------> allFilms" + allFilms.toString());
+
+
+        System.out.println("---------------> platformFilms" + platformFilms.toString());
 
         int filmsCreated = filmRepository.updateBatchFilm(allFilms);
 

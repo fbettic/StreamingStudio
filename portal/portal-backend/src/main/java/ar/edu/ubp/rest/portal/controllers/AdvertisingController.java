@@ -27,6 +27,8 @@ import ar.edu.ubp.rest.portal.services.AdvertisingService;
 import ar.edu.ubp.rest.portal.services.BannerPriorityService;
 import ar.edu.ubp.rest.portal.services.SizeTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/advertisings")
@@ -68,8 +70,13 @@ public class AdvertisingController {
     public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest)
             throws Exception {
 
-        if (getCurrentRole().name() == "ADVERTISER") {
+        
+
+        if (getCurrentRole().name().equals("ADVERTISER")) {
             Integer userId = getCurrentUserId();
+
+            
+
             advertisingRequest.setAdvertiserId(userId);
         }
 
@@ -78,7 +85,7 @@ public class AdvertisingController {
 
     @GetMapping("")
     public ResponseEntity<List<AdvertisingDTO>> getAllAdvertisings() throws Exception {
-        if (getCurrentRole().name() == "ADVERTISER") {
+        if (getCurrentRole().name().equals("ADVERTISER")) {
             Integer userId = getCurrentUserId();
             return ResponseEntity.ok(advertisingService.getAllAdvertisingsByAdvertiser(userId));
         } else {
@@ -90,7 +97,8 @@ public class AdvertisingController {
     public ResponseEntity<AdvertisingDTO> getAdvertisingById(@PathVariable Integer id) throws Exception {
         AdvertisingDTO response = advertisingService.getAdvertisingById(id);
 
-        if (getCurrentRole().name() != "ADMINISTRATOR" && response.getAdvertiserId() != getCurrentUserId()) {
+        if (!getCurrentRole().name().equals("ADMINISTRATOR")
+                && !response.getAdvertiserId().equals(getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -104,7 +112,8 @@ public class AdvertisingController {
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
         Integer userId = getCurrentUserId();
 
-        if (getCurrentRole().name() != "ADMINISTRATOR" && advertising.getAdvertiserId() != userId) {
+        if (!getCurrentRole().name().equals("ADMINISTRATOR")
+                && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -117,8 +126,9 @@ public class AdvertisingController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> deleteAdvertisingsById(@PathVariable Integer id) throws Exception {
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
-
-        if (getCurrentRole().name() != "ADMINISTRATOR" && advertising.getAdvertiserId() != getCurrentUserId()) {
+        System.out.println(advertising.getAdvertiserId().equals(getCurrentUserId()));
+        if (!getCurrentRole().name().equals("ADMINISTRATOR")
+                && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -181,4 +191,6 @@ public class AdvertisingController {
     public ResponseEntity<Integer> deleteBannerPriorityById(@PathVariable Integer id) throws Exception {
         return ResponseEntity.ok(bannerPriorityService.deleteBannerPriorityById(id));
     }
+    
+    
 }

@@ -90,7 +90,18 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        platformId, platformName, email, apiUrl, authToken, af_s.feeValue AS signupFee, af_l.feeValue AS loginFee, serviceType
+        platformId, 
+        platformName, 
+        email, 
+        apiUrl, 
+        authToken,
+        sp.signupFeeId AS signupFeeId,
+        af_s.feeValue AS signupFee,
+        af_s.feeType AS signupFeeType,
+        sp.loginFeeId AS loginFeeId,
+        af_l.feeValue AS loginFee, 
+        af_l.feeType AS loginFeeType,
+        serviceType
     FROM StreamingPlatform sp
         INNER JOIN @AllFees af_l ON af_l.feeId = sp.loginFeeId
         INNER JOIN @AllFees af_s ON af_s.feeId = sp.signupFeeId
@@ -112,7 +123,18 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        platformId, platformName, email, apiUrl, authToken, af_s.feeValue AS signupFee, af_l.feeValue AS loginFee, serviceType
+        platformId, 
+        platformName, 
+        email, 
+        apiUrl, 
+        authToken,
+        sp.signupFeeId AS signupFeeId,
+        af_s.feeValue AS signupFee,
+        af_s.feeType AS signupFeeType,
+        sp.loginFeeId AS loginFeeId,
+        af_l.feeValue AS loginFee, 
+        af_l.feeType AS loginFeeType,
+        serviceType
     FROM StreamingPlatform sp
         INNER JOIN @AllFees af_l ON af_l.feeId = sp.loginFeeId
         INNER JOIN @AllFees af_s ON af_s.feeId = sp.signupFeeId

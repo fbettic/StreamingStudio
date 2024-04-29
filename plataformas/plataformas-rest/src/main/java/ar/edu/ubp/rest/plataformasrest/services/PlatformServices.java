@@ -1,7 +1,9 @@
 package ar.edu.ubp.rest.plataformasrest.services;
 
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
@@ -14,6 +16,7 @@ import ar.edu.ubp.rest.plataformasrest.beans.NewPlatformUserBean;
 import ar.edu.ubp.rest.plataformasrest.beans.NewSessionBean;
 import ar.edu.ubp.rest.plataformasrest.beans.PlatformUserBean;
 import ar.edu.ubp.rest.plataformasrest.beans.SessionBean;
+import ar.edu.ubp.rest.plataformasrest.beans.UserRequest;
 import ar.edu.ubp.rest.plataformasrest.repositories.AssociationRequestRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.FilmRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.PlatformUserRepository;
@@ -76,13 +79,43 @@ public class PlatformServices {
         return associationRequestRepository.createAssociationRequest(newAssociationRequest, serviceId);
     }
 
-    public AssociationRequestBean getAssociationData(Integer id, AuthTokenRequestBean authToken) throws Exception{
+    public AssociationRequestBean getAssociationData(Integer id, AuthTokenRequestBean authToken) throws Exception {
         final Integer serviceId = serviceConnectionRepository
                 .getServiceConnectionByToken(authToken.getAuthToken()).getServiceId();
+
         if (serviceId == null || serviceId == 0) {
             throw new Exception("Invalid token");
         }
         return associationRequestRepository.getAssociationData(id);
+    }
+
+    public AssociationRequestBean cancelAssociationRequest(UserRequest request)
+            throws Exception {
+        final Integer serviceId = serviceConnectionRepository
+                .getServiceConnectionByToken(request.getAuthToken()).getServiceId();
+
+        System.out.println("--------> serviceId" + serviceId);
+        final Integer userId = platformUserRepository.getPlatformUserByToken(request.getUserToken()).getUserId();
+        System.out.println("--------> userId" + userId);
+
+        if (serviceId == null || serviceId == 0 || userId == null) {
+            throw new Exception("Invalid token");
+        }
+
+        final AssociationRequestBean association = associationRequestRepository
+                .getAssociationRequestByToken(request.getUserToken());
+        
+        System.out.println("-------->" + association.toString());
+
+        if (!Objects.isNull(association)
+                && (association.getState().equals("CANCELED")
+                        || !Objects.isNull(association.getCanceledAt()))) {
+            return association;
+        }
+
+
+
+        return associationRequestRepository.cancelAssociationRequest(request.getUserToken());
     }
 
     public SessionBean createSession(NewSessionBean newSession) throws Exception {
@@ -95,6 +128,28 @@ public class PlatformServices {
         }
 
         return sessionRepository.createSession(newSession, serviceId, userId);
+    }
+
+    public SessionBean markSessionAsUsed(Integer id, AuthTokenRequestBean authToken) throws Exception {
+        final Integer serviceId = serviceConnectionRepository.getServiceConnectionByToken(authToken.getAuthToken())
+                .getServiceId();
+
+        if (serviceId == null) {
+            throw new Exception("Invalid token");
+        }
+
+        return sessionRepository.markSessionAsUsed(id);
+    }
+
+    public SessionBean markSessionAsExpired(Integer id, AuthTokenRequestBean authToken) throws Exception {
+        final Integer serviceId = serviceConnectionRepository.getServiceConnectionByToken(authToken.getAuthToken())
+                .getServiceId();
+
+        if (serviceId == null) {
+            throw new Exception("Invalid token");
+        }
+
+        return sessionRepository.markSessionAsExpired(id);
     }
 
     public List<FilmBean> getAllFilms(String authToken) throws Exception {

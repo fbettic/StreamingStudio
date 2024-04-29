@@ -4,5 +4,6 @@ import ar.edu.ubp.rest.portal.dto.SessionDTO;
 
 public interface ISessionRepository {
     public SessionDTO createSession(SessionDTO session);
+    public SessionDTO getSessionById(Integer id);
     public SessionDTO markSesionAsUsed(Integer id);
 }

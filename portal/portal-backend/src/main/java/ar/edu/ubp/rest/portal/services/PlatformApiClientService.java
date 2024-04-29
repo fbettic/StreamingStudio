@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.ServiceResponseMapperBean;
@@ -48,15 +50,12 @@ public class PlatformApiClientService {
     }
 
     public List<ServiceResponseMapperBean<FilmResponseBean>> getAllFilmsFromPlatforms() throws Exception {
-        System.out.println("---------------->asdasdasd");
         List<StreamingPlatformDTO> platforms = streamingPlatformRepository.getAllStreamingPlatfroms();
 
         List<ServiceResponseMapperBean<FilmResponseBean>> filmsByPlatform = new ArrayList<>();
 
         if (Objects.isNull(platforms) || platforms.size() == 0)
             throw new Exception("Failed to retrieve data from registered platforms.");
-
-        System.out.println("--------->" + platforms.toString());
 
         platforms.forEach((platform) -> {
 
@@ -80,6 +79,9 @@ public class PlatformApiClientService {
             BasicPayloadBean authToken = new BasicPayloadBean(platform.getAuthToken());
 
             List<FilmResponseBean> films = platformClient.getAllFilms(authToken);
+
+            System.out.println("--------------->" + platform.getPlatformId());
+            System.out.println("--------------->" + films.toString());
 
             if (!films.isEmpty()) {
                 filmsByPlatform.add(new ServiceResponseMapperBean<FilmResponseBean>(platform.getPlatformId(), films));
@@ -110,8 +112,8 @@ public class PlatformApiClientService {
         if (Objects.isNull(platformClient))
             return null;
 
-        AssociationRequestPayloadBean associationRequest = new AssociationRequestPayloadBean(
-                newAssociationRequest.getAssociationType(), platform.getAuthToken(), redirectUrl);
+        AssociationRequestPayloadBean associationRequest = new AssociationRequestPayloadBean(platform.getAuthToken(),
+                newAssociationRequest.getAssociationType(), redirectUrl);
 
         AssociationResponseBean associationResponse = platformClient.createAssociationRequest(associationRequest);
 
@@ -131,7 +133,7 @@ public class PlatformApiClientService {
                     platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
                 | IllegalAccessException e) {
-            System.out.println(e);
+
             e.printStackTrace();
         }
 
@@ -142,6 +144,35 @@ public class PlatformApiClientService {
                 transactionId);
 
         AssociationResponseBean associationResponse = platformClient.getAssociationData(userTokenRequest);
+
+        return associationResponse;
+    }
+
+    public AssociationResponseBean cancelAssociationResponse(Integer platformId, String userToken) {
+        StreamingPlatformDTO platform = streamingPlatformRepository
+                .getStreamingPlatformById(platformId);
+
+        if (Objects.isNull(platform))
+            return null;
+
+        AbstractPlatformApiClient platformClient = null;
+        try {
+            platformClient = platformClientFactory.buildPlatformClient(
+                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                | IllegalAccessException e) {
+
+            e.printStackTrace();
+        }
+
+        if (Objects.isNull(platformClient))
+            return null;
+
+        UserPayloadBean credentials = new UserPayloadBean(platform.getAuthToken(), userToken);
+
+        System.out.println("---->" + credentials.toString());
+
+        AssociationResponseBean associationResponse = platformClient.cancelAssociationRequest(credentials);
 
         return associationResponse;
     }

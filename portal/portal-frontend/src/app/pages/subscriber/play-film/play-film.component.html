@@ -1,0 +1,32 @@
+
+
+<div class="advertisement-top">Anuncio superior</div>
+
+<div class="row">
+  <div class="advertisement-side">Anuncio lateral izquierdo</div>
+  <div class="col">
+    @for (platform of platforms; track platform.platformId) {
+      <button
+        class="btn btn-primary"
+        (click)="onPlatformSelect(platform.platformId)"
+      >
+        {{ platform.platformName }}
+      </button>
+      }
+    <div class="ratio ratio-16x9 iframe-content">
+      @if(filmUrl){
+        <iframe
+        class="iframe-content"
+        [src]="filmUrl"
+        title="YouTube video player"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+      }@else{
+        <h2>Seleccione una plataforma</h2>
+      }
+      
+    </div>
+  </div>
+  <div class="advertisement-side">Anuncio lateral derecho</div>
+</div>

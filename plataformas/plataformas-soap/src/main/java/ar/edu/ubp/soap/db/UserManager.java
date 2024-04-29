@@ -202,6 +202,72 @@ public class UserManager {
         }
     }
 
+    public AssociationRequestBean getAssociationRequestByToken(String userToken) throws Exception {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL GetAssociationRequestByToken(?)}")) {
+
+            stmt.setString(1, userToken);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                AssociationRequestBean associationRequest = null;
+                // Se verifica si hay resultados y se crea el objeto AssociationRequestBean
+                if (rs.next()) {
+                    associationRequest = AssociationRequestBean.builder()
+                            .associationId(rs.getInt("associationId"))
+                            .serviceId(rs.getInt("serviceId"))
+                            .associationType(rs.getString("associationType"))
+                            .state(rs.getString("state"))
+                            .authUrl(AuthUrlGenerator.generateAuthUrl(rs.getString("associationType"),
+                                    rs.getString("uuid")))
+                            .redirectUrl(rs.getString("redirectUrl"))
+                            .requestedAt(rs.getDate("requestedAt"))
+                            .userId(rs.getInt("userId"))
+                            .userToken(rs.getString("userToken"))
+                            .build();
+                }
+
+                return associationRequest;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Fault(e);
+        }
+    }
+
+
+
+    public AssociationRequestBean cancelAssociationRequest(String userToken) throws Exception {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL CancelAssociationRequest(?)}")) {
+
+            stmt.setString(1, userToken);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                AssociationRequestBean associationRequest = null;
+                // Se verifica si hay resultados y se crea el objeto AssociationRequestBean
+                if (rs.next()) {
+                    associationRequest = AssociationRequestBean.builder()
+                            .associationId(rs.getInt("associationId"))
+                            .serviceId(rs.getInt("serviceId"))
+                            .associationType(rs.getString("associationType"))
+                            .state(rs.getString("state"))
+                            .authUrl(AuthUrlGenerator.generateAuthUrl(rs.getString("associationType"),
+                                    rs.getString("uuid")))
+                            .redirectUrl(rs.getString("redirectUrl"))
+                            .requestedAt(rs.getDate("requestedAt"))
+                            .userId(rs.getInt("userId"))
+                            .userToken(rs.getString("userToken"))
+                            .build();
+                }
+
+                return associationRequest;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Fault(e);
+        }
+    }
+
     public SessionBean createSession(NewSessionBean newSession, Integer serviceId, Integer userId) throws Exception {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL dbo.CreateSession(?,?,?,?)}")) {
@@ -214,6 +280,82 @@ public class UserManager {
             stmt.setInt(2, userId);
             stmt.setString(3, newSession.getFilmCode());
             stmt.setDate(4, new java.sql.Date(createdAt.getTime()));
+
+            // Se ejecuta la consulta
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                SessionBean session = null;
+                // Se verifica si hay resultados y se crea el objeto AssociationRequestBean
+                if (rs.next()) {
+                    session = SessionBean.builder()
+                            .sessionId(rs.getInt("sessionId"))
+                            .associationId(rs.getInt("associationId"))
+                            .filmCode(rs.getString("filmCode"))
+                            .sessionUrl(rs.getString("sessionUrl"))
+                            .createdAt(rs.getDate("createdAt"))
+                            .usedAt(rs.getDate("usedAt"))
+                            .expired(rs.getBoolean("expired"))
+                            .build();
+                }
+
+                conn.commit();
+
+                return session;
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Fault(e);
+        }
+    }
+
+    public SessionBean markSessionAsUsed(Integer sessionId) throws Exception {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL dbo.MarkSessionAsUsed(?)}")) {
+
+            conn.setAutoCommit(false);
+
+            stmt.setInt(1, sessionId);
+
+            // Se ejecuta la consulta
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                SessionBean session = null;
+                // Se verifica si hay resultados y se crea el objeto AssociationRequestBean
+                if (rs.next()) {
+                    session = SessionBean.builder()
+                            .sessionId(rs.getInt("sessionId"))
+                            .associationId(rs.getInt("associationId"))
+                            .filmCode(rs.getString("filmCode"))
+                            .sessionUrl(rs.getString("sessionUrl"))
+                            .createdAt(rs.getDate("createdAt"))
+                            .usedAt(rs.getDate("usedAt"))
+                            .expired(rs.getBoolean("expired"))
+                            .build();
+                }
+
+                conn.commit();
+
+                return session;
+            } catch (SQLException ex) {
+                conn.rollback();
+                throw ex;
+            }
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new Fault(e);
+        }
+    }
+
+    public SessionBean markSessionAsExpired(Integer sessionId) throws Exception {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL dbo.MarkSessionAsExpired(?)}")) {
+
+            conn.setAutoCommit(false);
+
+            stmt.setInt(1, sessionId);
 
             // Se ejecuta la consulta
 

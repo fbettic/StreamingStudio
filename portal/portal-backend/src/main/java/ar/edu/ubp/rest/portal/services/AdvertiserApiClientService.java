@@ -16,7 +16,6 @@ import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
 import ar.edu.ubp.rest.portal.models.clients.AdvertiserApiClientFactory;
 import ar.edu.ubp.rest.portal.repositories.AdvertiserRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
 public class AdvertiserApiClientService {
@@ -94,7 +93,7 @@ public class AdvertiserApiClientService {
 
             if (!advertisings.isEmpty()) {
 
-                advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(advertiser.getId(), advertisings));
+                advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(advertiser.getAdvertiserId(), advertisings));
             }
 
         });

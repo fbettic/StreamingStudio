@@ -1,4 +1,4 @@
-package ar.edu.ubp.rest.portal.models.clients.soap;
+    package ar.edu.ubp.rest.portal.models.clients.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -63,6 +63,8 @@ public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
 
         Element root = resultDocument.getDocumentElement();
         NodeList pongNodeList = root.getElementsByTagName("pong");
+        
+        
         if (pongNodeList.getLength() > 0) {
             return pongNodeList.item(0).getTextContent();
         } else {
@@ -86,7 +88,7 @@ public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
         if (bannerNodes.getLength() == 0) {
             return null;
         }
-
+        
         Element bannerElement = (Element) bannerNodes.item(0);
         return new BannerResponseBean(bannerElement.getOwnerDocument());
     }

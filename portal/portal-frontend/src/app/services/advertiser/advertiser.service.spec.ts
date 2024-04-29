@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AdvertiserService } from './advertiser.service';
+import { AdvertiserService } from '../advertiser.service';
 
 describe('AdvertiserService', () => {
   let service: AdvertiserService;

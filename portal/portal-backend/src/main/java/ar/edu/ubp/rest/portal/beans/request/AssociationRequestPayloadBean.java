@@ -32,4 +32,9 @@ public class AssociationRequestPayloadBean extends ServiceRequestPayloadBean {
 
         return xmlBuilder.toString();
     }
+
+    @Override
+    public String toString(){
+        return "{authToken="+this.authToken+",associationType="+this.associationType+",redirectUrl="+this.redirectUrl+"}";
+    }
 }

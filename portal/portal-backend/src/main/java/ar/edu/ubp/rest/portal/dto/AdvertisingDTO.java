@@ -17,6 +17,8 @@ public class AdvertisingDTO {
     private Integer sizeId;
     private String sizeType;
     private Integer sizeValue;
+    private Integer height;
+    private Integer width;
     private Float sizeFee;
     private Integer allPagesFeeId; 
     private Float allPagesFee;

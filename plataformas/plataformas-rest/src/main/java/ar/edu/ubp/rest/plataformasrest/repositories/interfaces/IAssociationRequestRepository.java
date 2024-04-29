@@ -4,7 +4,14 @@ import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.NewAssociationRequestBean;
 
 public interface IAssociationRequestRepository {
-    public AssociationRequestBean createAssociationRequest(NewAssociationRequestBean newAssociationRequest,Integer serviceId);
+    public AssociationRequestBean createAssociationRequest(NewAssociationRequestBean newAssociationRequest,
+            Integer serviceId);
+
     public AssociationRequestBean completeAssociationRequest(Integer userId, String uuid);
+
     public AssociationRequestBean getAssociationData(Integer associationId);
+
+    public AssociationRequestBean getAssociationRequestByToken(String userToken);
+
+    public AssociationRequestBean cancelAssociationRequest(String userToken);
 }

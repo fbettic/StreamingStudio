@@ -27,8 +27,7 @@ public class FilmResponseBean extends ServiceResponseBean{
     private String title;
     private Integer year;
 
-    public FilmResponseBean(Document xmlDocument) {
-        Element filmElement = (Element) xmlDocument.getElementsByTagName("films").item(0);
+    public FilmResponseBean(Element filmElement) {
         this.actors = getElementValue(filmElement, "actors");
         this.countryCode = getElementValue(filmElement, "countryCode");
         this.cover = getElementValue(filmElement, "cover");

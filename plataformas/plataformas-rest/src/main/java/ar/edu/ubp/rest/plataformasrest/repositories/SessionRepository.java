@@ -40,4 +40,36 @@ public class SessionRepository implements ISessionRepository {
         return ((List<SessionBean>) out.get("session")).get(0);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public SessionBean markSessionAsUsed(Integer sessionId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+            .addValue("sessionId", sessionId);
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("MarkSessionAsUsed")
+                .withSchemaName("dbo")
+                .returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionBean.class));
+
+        Map<String, Object> out = jdbcCall.execute(input);
+
+        return ((List<SessionBean>) out.get("session")).get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public SessionBean markSessionAsExpired(Integer sessionId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+                .addValue("sessionId", sessionId);
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("MarkSessionAsExpired")
+                .withSchemaName("dbo")
+                .returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionBean.class));
+
+        Map<String, Object> out = jdbcCall.execute(input);
+
+        return ((List<SessionBean>) out.get("session")).get(0);
+    }
+
 }

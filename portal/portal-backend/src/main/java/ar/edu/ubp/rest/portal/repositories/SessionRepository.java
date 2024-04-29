@@ -17,42 +17,57 @@ import ar.edu.ubp.rest.portal.repositories.interfaces.ISessionRepository;
 @Repository
 public class SessionRepository implements ISessionRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public SessionDTO createSession(SessionDTO session) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("subscriberId", session.getSubscriberId())
-                .addValue("platformId", session.getPlatformId())
-                .addValue("transactionId", session.getTransactionId())
-                .addValue("filmCode", session.getFilmCode())
-                .addValue("sessionUrl", session.getSessionUrl())
-                .addValue("createdAt", session.getCreatedAt());
+	@SuppressWarnings("unchecked")
+	@Override
+	public SessionDTO createSession(SessionDTO session) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("subscriberId", session.getSubscriberId())
+				.addValue("platformId", session.getPlatformId())
+				.addValue("transactionId", session.getTransactionId())
+				.addValue("filmCode", session.getFilmCode())
+				.addValue("sessionUrl", session.getSessionUrl())
+				.addValue("createdAt", session.getCreatedAt());
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("CreateSession")
-                .withSchemaName("dbo")
-                .returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CreateSession")
+				.withSchemaName("dbo")
+				.returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionDTO.class));
 
-        Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<SessionDTO>) output.get("session")).get(0);
-    }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<SessionDTO>) output.get("session")).get(0);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public SessionDTO markSesionAsUsed(Integer id) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("sessionId", id);
+	@SuppressWarnings("unchecked")
+	@Override
+	public SessionDTO markSesionAsUsed(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("sessionId", id);
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("MarkSessionAsUsed")
-                .withSchemaName("dbo")
-                .returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("MarkSessionAsUsed")
+				.withSchemaName("dbo")
+				.returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionDTO.class));
 
-        Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<SessionDTO>) output.get("session")).get(0);
-    }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<SessionDTO>) output.get("session")).get(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public SessionDTO getSessionById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("sessionId", id);
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetSessionById")
+				.withSchemaName("dbo")
+				.returningResultSet("session", BeanPropertyRowMapper.newInstance(SessionDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<SessionDTO>) output.get("session")).get(0);
+	}
 
 }

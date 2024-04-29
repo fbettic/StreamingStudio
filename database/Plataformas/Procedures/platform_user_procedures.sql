@@ -93,4 +93,7 @@ BEGIN
 END
 GO
 
-select * from AssociationRequest
+SELECT * FROM AssociationRequest
+
+EXEC GetAssociationRequestByToken "DE2DB1A0-B679-41C2-9B77-22B9310DE1A7"
+EXEC GetUserByToken "DE2DB1A0-B679-41C2-9B77-22B9310DE1A7"

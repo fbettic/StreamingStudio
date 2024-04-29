@@ -34,11 +34,10 @@ public class AssociationResponseBean extends ServiceResponseBean {
     public AssociationResponseBean(Document xmlDocument) {
         Element associationElement = (Element) xmlDocument.getElementsByTagName("associationRequest").item(0);
         this.associationId = Integer.parseInt(getElementValue(associationElement, "associationId"));
-        this.userId = Integer.parseInt(getElementValue(associationElement, "userId"));
         this.serviceId = Integer.parseInt(getElementValue(associationElement, "serviceId"));
         this.associationType = getElementValue(associationElement, "associationType");
         this.state = getElementValue(associationElement, "state");
-        this.authUrl = getElementValue(associationElement, "redirectUrl");
+        this.authUrl = getElementValue(associationElement, "authUrl");
         this.redirectUrl = getElementValue(associationElement, "redirectUrl");
         this.userToken = getElementValue(associationElement, "userToken");
 

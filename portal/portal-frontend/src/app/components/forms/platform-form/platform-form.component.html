@@ -1,0 +1,95 @@
+<form [formGroup]="streamingPlatformFormGroup">
+    @if (error) {
+    <div class="p-3 mb-2 border rounded border-danger-subtle bg-danger-subtle text-danger-emphasis">
+      {{error}}
+    </div>
+    }
+  
+    <div class="row mb-3">
+      <div class="col-md-5">
+        <label for="platformName" class="form-label">Platform Name</label>
+        <input
+          formControlName="platformName"
+          class="form-control"
+          id="platformName"
+          placeholder="My Platform"
+          autocomplete="true"
+        />
+      </div>
+      <div class="col-md-7">
+        <label for="email" class="form-label">Email</label>
+        <input
+          formControlName="email"
+          type="email"
+          class="form-control"
+          id="email"
+          aria-describedby="email"
+          placeholder="example@email.com"
+          autocomplete="true"
+        />
+      </div>
+    </div>
+    <div class="row mb-3 align-items-end">
+      <div class="col-md-6">
+        <label for="loginFeeId" class="form-label">Login Fee</label>
+        <select formControlName="loginFeeId" class="form-select" id="loginFeeId">
+          <option value="" disabled selected hidden>Select Fee</option>
+          <option *ngFor="let fee of loginFees" [value]="fee.feeId">{{fee.feeType}} - ${{fee.feeValue}}</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="signupFeeId" class="form-label">Signup Fee</label>
+        <select formControlName="signupFeeId" class="form-select" id="signupFeeId">
+          <option value="" disabled selected hidden>Select Fee</option>
+          <option *ngFor="let fee of signupFees" [value]="fee.feeId">{{fee.feeType}} - ${{fee.feeValue}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <label for="serviceType" class="form-label">Service type</label>
+        <select
+          formControlName="serviceType"
+          class="form-select"
+          id="serviceType"
+          (change)="onServiceTypeChange()"
+        >
+          <option value="" disabled selected hidden>Service type</option>
+          <option value="REST">REST</option>
+          <option value="SOAP">SOAP</option>
+        </select>
+      </div>
+      <div class="col-md-9">
+        <label for="apiUrl" class="form-label">API URL</label>
+        <input
+          formControlName="apiUrl"
+          class="form-control"
+          id="apiUrl"
+          placeholder="https://www.example.com/api/v1"
+          autocomplete="true"
+        />
+      </div>
+    </div>
+    <div class="row">
+      <div class="mb-3">
+        <label for="authToken" class="form-label">Authentication Token</label>
+        <input
+          formControlName="authToken"
+          class="form-control"
+          id="authToken"
+          placeholder="SECRET_TOKEN"
+          autocomplete="true"
+        />
+      </div>
+    </div>
+    
+    <div class="mt-3 row justify-content-end">
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary" (click)="submit()">
+          Submit
+        </button>
+      </div>
+    </div>
+    
+  </form>
+  

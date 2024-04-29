@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import { IAdvertising } from '../../../models/advertising.model';
 import {
   FormBuilder,
@@ -7,7 +15,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { AdvertisingService } from '../../../services/advertising.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
+import { BannerPriorityService } from '../../../services/banner-priority.service';
+import { SizeTypeService } from '../../../services/size-type.service';
+import { ISizeType } from '../../../models/size-type.model';
+import { IBannerPriority } from '../../../models/banner-priority.model';
+import { FeeService } from '../../../services/fee.service';
+import { IAdvertisingRequest } from '../../../models/advertising-request.model';
+import { IFee } from '../../../models/fee.model';
+import { from } from 'rxjs';
+import { AdvertiserService } from '../../../services/advertiser.service';
 
 @Component({
   selector: 'app-advertising-form',
@@ -19,25 +36,102 @@ import { CommonModule } from '@angular/common';
 export class AdvertisingFormComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _advertisingService: AdvertisingService = inject(AdvertisingService);
+  private _advertiserService: AdvertiserService = inject(AdvertiserService);
+  private _priorityService: BannerPriorityService = inject(
+    BannerPriorityService
+  );
+  private _sizeService: SizeTypeService = inject(SizeTypeService);
+  private _feeService: FeeService = inject(FeeService);
+  private _allPagesFee?: IFee;
 
   @Output() doRefresh: EventEmitter<void> = new EventEmitter<void>();
 
-  newAdvertisingFormGroup: FormGroup;
+  advertiserId = input<number>(0);
+
+  advertisingFormGroup: FormGroup;
+  sizes: ISizeType[] = [];
+  priorities: IBannerPriority[] = [];
+  allPagesCheck: boolean = false;
+  allPagesFee: number = 0;
   error: string = '';
-  id: number = 0;
+  advertisingId: number = 0;
+  fromDate: string = '';
+  toDate: string = '';
+  useBannerId: boolean = true;
 
   constructor() {
-    this.newAdvertisingFormGroup = this._formBuilder.group({
-      advertiserId: ['', [Validators.required]],
+
+    effect(()=>{
+      if(this.advertiserId() !== 0){
+        this.getAdvertiserServiceType(this.advertiserId())
+      }
+    })
+    
+    
+    this._sizeService.getAllSizeTypes().subscribe({
+      next: (res) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._sizeService.getAllSizeTypes ~ res:',
+          res
+        );
+        this.sizes = res;
+      },
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._sizeService.getAllSizeTypes ~ error:',
+          error
+        );
+      },
+    });
+
+    this._priorityService.getAllBannerPriorities().subscribe({
+      next: (res) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._priorityService.getAllBannerPriorities ~ res:',
+          res
+        );
+        this.priorities = res;
+      },
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._priorityService.getAllBannerPriorities ~ error:',
+          error
+        );
+      },
+    });
+
+    this._feeService.getAllFees().subscribe({
+      next: (res) => {
+        this._allPagesFee = res.find((fee) => fee.feeType === 'ALLPAGES');
+        this.allPagesFee = this._allPagesFee!.feeValue;
+      },
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._priorityService.getAllBannerPriorities ~ error:',
+          error
+        );
+      },
+    });
+
+    const todayDate = new Date();
+    this.fromDate = formatDate(todayDate, 'yyyy-MM-dd', 'en');
+    this.toDate = formatDate(
+      todayDate.setFullYear(todayDate.getFullYear() + 1),
+      'yyyy-MM-dd',
+      'en'
+    );
+
+    this.advertisingFormGroup = this._formBuilder.group({
+      advertiserId: [this.advertiserId, [Validators.required]],
       sizeId: ['', [Validators.required]],
-      allPagesFeeId: ['', [Validators.required]],
+      allPagesFeeId: [''],
       priorityId: ['', [Validators.required]],
       redirectUrl: [{ value: '', disabled: true }, [Validators.required]],
       imageUrl: [{ value: '', disabled: true }, [Validators.required]],
       bannerText: [{ value: '', disabled: true }, [Validators.required]],
       bannerId: [{ value: '', disabled: true }, [Validators.required]],
-      fromDate: ['', [Validators.required]],
-      toDate: ['', [Validators.required]],
+      fromDate: [this.fromDate, [Validators.required]],
+      toDate: [this.toDate, [Validators.required]],
     });
   }
 
@@ -49,15 +143,18 @@ export class AdvertisingFormComponent {
     );
 
     if (!advertising) {
-      this.id = 0;
-      this.newAdvertisingFormGroup.reset();
+      this.advertisingId = 0;
+      this.resetForm();
       this.error = '';
       return;
     }
 
-    this.id = advertising.advertisingId!;
+    this.getAdvertiserServiceType(advertising.advertiserId)
 
-    this.newAdvertisingFormGroup.setValue({
+    this.advertisingId = advertising.advertisingId!;
+    
+
+    this.advertisingFormGroup.setValue({
       advertiserId: advertising.advertiserId,
       sizeId: advertising.sizeId,
       allPagesFeeId: advertising.allPagesFeeId,
@@ -66,8 +163,124 @@ export class AdvertisingFormComponent {
       imageUrl: advertising.imageUrl,
       bannerText: advertising.bannerText,
       bannerId: advertising.bannerId,
-      fromDate: advertising.fromDate,
-      toDate: advertising.toDate,
+      fromDate: this.getDate(advertising.fromDate),
+      toDate: this.getDate(advertising.toDate),
     });
+
+    this.allPagesFee = advertising.allPagesFee;
+  }
+
+  getAdvertiserServiceType(id: number) {
+    this._advertiserService.getAdvertiserById(id).subscribe({
+      next: (data) => {
+        console.log("🚀 ~ AdvertisingFormComponent ~ this._advertiserService.getAdvertiserById ~ data:", data)
+        this.useBannerId = data.serviceType !== 'ACCOUNT';
+        this.bannerDataSet()
+      },
+    });
+  }
+
+  bannerDataSet(): void {
+    if (this.useBannerId) {
+      this.advertisingFormGroup.get('redirectUrl')?.disable();
+      this.advertisingFormGroup.get('imageUrl')?.disable();
+      this.advertisingFormGroup.get('bannerText')?.disable();
+      this.advertisingFormGroup.get('bannerId')?.enable();
+      return;
+    } else {
+      this.advertisingFormGroup.get('redirectUrl')?.enable();
+      this.advertisingFormGroup.get('imageUrl')?.enable();
+      this.advertisingFormGroup.get('bannerText')?.enable();
+      this.advertisingFormGroup.get('bannerId')?.disable();
+    }
+  }
+
+  onAllPagesCkeck() {
+    this.allPagesCheck = !this.allPagesCheck;
+
+    if (this.allPagesCheck) {
+      this.advertisingFormGroup.patchValue({
+        allPagesFee: this._allPagesFee?.feeId,
+      });
+    } else {
+      this.advertisingFormGroup.patchValue({
+        allPagesFee: '',
+      });
+    }
+  }
+
+  submit() {
+    const isValid = this.advertisingFormGroup.valid;
+    console.log("🚀 ~ AdvertisingFormComponent ~ submit ~ this.advertisingFormGroup.value:", this.advertisingFormGroup.value)
+
+    if (isValid && this.advertisingFormGroup.value.advertiserId !== 0) {
+      const data: IAdvertisingRequest = this.advertisingFormGroup.value;
+      this.advertisingId != 0
+        ? this.updateAdvertising(data)
+        : this.createAdvertising(data);
+    } else {
+      
+      this.error =
+        'Por favor, verifique todos los campos del formulario y asegúrese de que estén completos y cumplan con las especificaciones requeridas.';
+      this.advertisingFormGroup.markAllAsTouched();
+    }
+  }
+
+  createAdvertising(data: IAdvertisingRequest) {
+    this._advertisingService.createAdvertising(data).subscribe({
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._advertisingService.createAdvertising ~ error:',
+          error
+        );
+
+        this.error = error.error;
+      },
+      complete: () => {
+        this.advertisingFormGroup.reset();
+        this.error = '';
+        this.doRefresh.emit();
+      },
+    });
+  }
+
+  updateAdvertising(data: IAdvertisingRequest) {
+    this._advertisingService
+      .updateAdvertising(this.advertisingId, data)
+      .subscribe({
+        error: (error) => {
+          console.log(
+            '🚀 ~ AdvertisingFormComponent ~ this._advertisingService.updateAdvertising ~ error:',
+            error
+          );
+
+          this.error = error.error;
+        },
+        complete: () => {
+          this.advertisingFormGroup.reset();
+          this.error = '';
+          this.advertisingId = 0;
+          this.doRefresh.emit();
+        },
+      });
+  }
+
+  resetForm() {
+    this.advertisingFormGroup.reset({
+      advertiserId: this.advertiserId,
+      sizeId: '',
+      allPagesFeeId: '',
+      priorityId: '',
+      redirectUrl: '',
+      imageUrl: '',
+      bannerText: '',
+      bannerId: '',
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+    });
+  }
+
+  getDate(date: string | number | Date) {
+    return formatDate(date, 'yyyy-MM-dd', 'en');
   }
 }

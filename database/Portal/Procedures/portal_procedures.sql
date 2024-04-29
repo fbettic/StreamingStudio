@@ -179,7 +179,8 @@ GO
 CREATE OR ALTER PROCEDURE SoftDeleteRecord
   @tableName NVARCHAR(255) ,
   @primaryKeyColumn NVARCHAR(255) ,
-  @primaryKeyValue INT
+  @primaryKeyValue INT,
+  @deletedId	INT OUTPUT
 AS
 BEGIN
   SET NOCOUNT ON;
@@ -208,7 +209,7 @@ BEGIN
   SET @sqlQuery = 'UPDATE ' + @tableName + ' SET deletedAt = GETDATE() WHERE ' + @primaryKeyColumn + ' = @primaryKeyValue;';
   EXEC sp_executesql @sqlQuery, N'@primaryKeyValue INT', @primaryKeyValue;
 
-  SELECT @primaryKeyValue as deletedId
+  SET @deletedId = @primaryKeyValue
 END;
 GO
 

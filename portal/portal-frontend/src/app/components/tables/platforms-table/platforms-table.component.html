@@ -1,1 +1,19 @@
-<p>platforms-table works!</p>
+<input
+  type="text"
+  (input)="filterStreamingPlatforms(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-custom-modal modalTitle="Streaming Platform Form" (onClose)="onModalClose()">
+    <app-platform-form
+      [streamingPlatform]="itemSelected"
+      (doRefresh)="refreshList()"
+    />
+  </app-custom-modal>
+  <app-table
+    [headers]="headers"
+    [items]="filteredList"
+    (editClicked)="onEditItem($event)"
+    (deleteClicked)="onDeleteItem($event)"
+  />
+  

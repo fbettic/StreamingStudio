@@ -42,7 +42,7 @@ public class BatchController {
     }
 
     @PostMapping("countries")
-    public ResponseEntity<String> loadAllCountryes(@RequestBody List<CountryDTO> countries) {
+    public ResponseEntity<String> loadAllCountries(@RequestBody List<CountryDTO> countries) {
         return new ResponseEntity<String>(filmServices.loadAllCountries(countries), HttpStatus.CREATED);
     }
 

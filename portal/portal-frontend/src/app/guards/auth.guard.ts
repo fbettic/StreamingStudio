@@ -1,4 +1,4 @@
-import { CanActivateFn, CanMatchFn, Router } from '@angular/router';
+import { ActivatedRoute, CanActivateFn, CanMatchFn, Router } from '@angular/router';
 import { LoginService } from '../services/auth/login.service';
 import { inject } from '@angular/core';
 import { map } from 'rxjs';
@@ -15,6 +15,10 @@ export const authGuard: CanActivateFn = (route, state) => {
       }
     })
   );
+};
+
+export const associationGuard: CanActivateFn = (route, state) => {
+  return route.queryParams.hasOwnProperty('uuid');
 };
 
 export const subscriberGuard: CanActivateFn = (route, state) => {
@@ -60,4 +64,3 @@ export const advertiserGuard: CanMatchFn = (route, state) => {
     })
   );
 };
-

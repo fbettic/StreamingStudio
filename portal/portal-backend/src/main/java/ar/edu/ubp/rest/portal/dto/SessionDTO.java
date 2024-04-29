@@ -17,7 +17,7 @@ public class SessionDTO {
     private Integer subscriberId;
     private Integer platformId;
     private Integer transactionId;
-    private Integer filmid;
+    private Integer filmId;
     private String filmCode;
     private String sessionUrl;
     private Date createdAt;

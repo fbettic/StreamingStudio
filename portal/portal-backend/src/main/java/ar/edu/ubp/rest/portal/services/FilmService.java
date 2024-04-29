@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
+import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.FilmRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +47,10 @@ public class FilmService {
 
     public List<FilmDTO> getAllFilms() {
         return filmRepository.getAllFilms();
+    }
+
+    public FilmSubscriberResponseDTO getFilmById(Integer id) {
+        return filmRepository.getFilmById(id);
     }
 
 }

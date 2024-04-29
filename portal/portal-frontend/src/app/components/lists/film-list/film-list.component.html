@@ -1,0 +1,19 @@
+<div class="row">
+  @for (film of films(); track film.filmId) {
+  <div class="col-md-4 col-sm-6 mb-4" (click)="onFilmClick.emit(film.filmId)">
+    <div class="card">
+      <div class="ratio-container">
+        <img [src]="film.cover" [alt]="film.title + 'cover'" />
+      </div>
+
+      <div class="card-info">
+        <h2>{{ film.title }}</h2>
+        <p>Año: {{ film.year }}</p>
+        <p>Director: {{ film.director }}</p>
+        <p>{{ film.description }}</p>
+        <p>{{ film.actors }}</p>
+      </div>
+    </div>
+  </div>
+  }
+</div>

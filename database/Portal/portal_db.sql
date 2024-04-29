@@ -40,6 +40,7 @@ DROP TABLE IF EXISTS Administrator
 */
 
 
+
 CREATE TABLE Administrator
 (
   administratorId INT NOT NULL IDENTITY(1,1),
@@ -211,8 +212,10 @@ CREATE TABLE AssociationRequest
   transactionId INT NOT NULL,
   subscriberId INT NOT NULL,
   "state" VARCHAR(255) NOT NULL,
-  authUrl VARCHAR(255) NOT NULL, -- direccion url a la que debo enviar al usuario
-  uuid VARCHAR(255) NOT NULL UNIQUE, -- identificador que debera enviar la plataforma cuando nod devuelva al usuario
+  authUrl VARCHAR(255) NOT NULL,
+  -- direccion url a la que debo enviar al usuario
+  uuid VARCHAR(255) NOT NULL UNIQUE,
+  -- identificador que debera enviar la plataforma cuando nod devuelva al usuario
   associationType VARCHAR(255) NOT NULL,
   requestAt DATETIME NOT NULL,
   closedAt DATETIME,
@@ -220,7 +223,7 @@ CREATE TABLE AssociationRequest
   FOREIGN KEY (platformId) REFERENCES StreamingPlatform(platformId),
   FOREIGN KEY (subscriberId) REFERENCES Subscriber(subscriberId),
   CONSTRAINT chk_state_association_request CHECK (state = 'OPEN' OR state = 'CANCELED' OR state = 'FINALICED'),
-  CONSTRAINT chk_association_type_association_request CHECK (state = 'SIGNUP' OR state = 'LOGIN')
+  CONSTRAINT chk_association_type_association_request CHECK (associationType = 'SIGNUP' OR associationType = 'LOGIN')
 );
 GO
 
@@ -486,5 +489,3 @@ CREATE TABLE AdvertisingInvoiceDetail
   FOREIGN KEY (sizeId) REFERENCES SizeType(sizeId),
 );
 GO
-
-select * from Advertising

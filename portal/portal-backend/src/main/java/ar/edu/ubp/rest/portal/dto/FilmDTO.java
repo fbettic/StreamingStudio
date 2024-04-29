@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FilmDTO {
-    Integer filmid;
+    Integer filmId;
     String filmCode;
     String title;
     String cover;

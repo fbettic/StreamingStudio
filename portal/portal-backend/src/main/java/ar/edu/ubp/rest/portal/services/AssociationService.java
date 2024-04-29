@@ -1,6 +1,8 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,70 +24,117 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AssociationService {
 
-    private SessionRepository sessionRepository;
-    @Autowired
-    private AssociationRepository associationRepository;
-    @Autowired
-    private AssociationRequestRepository associationRequestRepository;
+	private final SessionRepository sessionRepository;
+	@Autowired
+	private final AssociationRepository associationRepository;
+	@Autowired
+	private final AssociationRequestRepository associationRequestRepository;
 
-    // Services
-    @Autowired
-    private PlatformApiClientService platformApiClientService;
-    
+	// Services
+	@Autowired
+	private PlatformApiClientService platformApiClientService;
 
-    // Association management
-    public AssociationRequestDTO createAssociationRequest(NewAssociationRequestDTO newAssociationRequest) {
+	// Association management
+	public AssociationRequestDTO createAssociationRequest(NewAssociationRequestDTO newAssociationRequest) {
 
-        String uuid = AuthUrlGenerator.generateUuid();
-        String redirectUrl = AuthUrlGenerator.generateAuthUrl(newAssociationRequest.getAssociationType(), uuid);
+		System.out.println("------------>createAssociationRequest");
+		AssociationRequestDTO association = associationRequestRepository
+				.getLastOpenAssociationRequest(newAssociationRequest);
+				
+		if (!Objects.isNull(association)) {
+			System.out.println("------------>" + association.toString());
+			return association;
+		}
 
-        AssociationResponseBean response = platformApiClientService.createAssociationRequest(newAssociationRequest,
-                redirectUrl);
+		String uuid = AuthUrlGenerator.generateUuid();
+		String redirectUrl = AuthUrlGenerator.generateAuthUrl(uuid);
 
-        AssociationRequestDTO associationRequest = AssociationRequestDTO.builder()
-                .platformId(newAssociationRequest.getPlatformId())
-                .transactionId(response.getAssociationId())
-                .subscriberId(newAssociationRequest.getSubscriberId())
-                .state(response.getState())
-                .uuid(uuid)
-                .authUrl(response.getRedirectUrl())
-                .associationType(response.getAssociationType())
-                .requestAt(response.getRequestedAt())
-                .build();
+		AssociationResponseBean response = platformApiClientService.createAssociationRequest(
+				newAssociationRequest,
+				redirectUrl);
 
-        return associationRequestRepository.createAssociationRequest(associationRequest);
-    }
+		AssociationRequestDTO associationRequest = AssociationRequestDTO.builder()
+				.platformId(newAssociationRequest.getPlatformId())
+				.transactionId(response.getAssociationId())
+				.subscriberId(newAssociationRequest.getSubscriberId())
+				.state(response.getState())
+				.uuid(uuid)
+				.authUrl(response.getAuthUrl())
+				.associationType(response.getAssociationType())
+				.requestAt(response.getRequestedAt())
+				.build();
 
-    public AssociationDTO getAssociationData(String uuid) {
-        AssociationRequestDTO associationRequest = associationRequestRepository.getAssociationRequestByUuid(uuid);
+		return associationRequestRepository.createAssociationRequest(associationRequest);
+	}
 
-        AssociationResponseBean response = platformApiClientService
-                .getAssociationData(associationRequest.getPlatformId(), associationRequest.getTransactionId());
+	public AssociationDTO getAssociationData(String uuid) {
+		System.out.println("------->" + uuid);
+		AssociationRequestDTO associationRequest = associationRequestRepository
+				.getAssociationRequestByUuid(uuid);
 
-        AssociationDTO association = AssociationDTO.builder()
-                .transactionId(associationRequest.getTransactionId())
-                .platformId(associationRequest.getPlatformId())
-                .subscriberId(associationRequest.getSubscriberId())
-                .userToken(response.getUserToken())
-                .entryDate(new Date())
-                .build();
+		System.out.println(associationRequest.toString());
 
-        return associationRepository.createAssociation(association);
-    }
+		AssociationResponseBean response = platformApiClientService
+				.getAssociationData(associationRequest.getPlatformId(),
+						associationRequest.getTransactionId());
 
-    public SessionDTO createSession(SessionRequestDTO sessionRequest) {
-        SessionResponseBean response = platformApiClientService.createSession(sessionRequest);
+		System.out.println(response.toString());
+		AssociationDTO association = AssociationDTO.builder()
+				.transactionId(associationRequest.getTransactionId())
+				.platformId(associationRequest.getPlatformId())
+				.subscriberId(associationRequest.getSubscriberId())
+				.userToken(response.getUserToken())
+				.entryDate(new Date())
+				.build();
 
-        SessionDTO session = SessionDTO.builder()
-                .subscriberId(sessionRequest.getSubscriberId())
-                .platformId(sessionRequest.getPlatformId())
-                .transactionId(response.getAssociationId())
-                .filmCode(sessionRequest.getFilmCode())
-                .sessionUrl(response.getSessionUrl())
-                .createdAt(new Date())
-                .build();
+		return associationRepository.createAssociation(association);
+	}
 
-        return sessionRepository.createSession(session);
-    }
+	public AssociationDTO cancelAssociationRequest(Integer platformId, Integer subscriberId) throws Exception {
+		System.out.println("------->cancelAssociationRequest");
+		AssociationDTO association = associationRepository.getAssociationToken(platformId, subscriberId);
+		
+		
+		if (Objects.isNull(association)) {
+			throw new Exception("association data not found");
+		}
+
+		System.out.println("------->" + association.toString());
+
+		try {
+			platformApiClientService.cancelAssociationResponse(platformId, association.getUserToken());
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+
+		return associationRepository.cancelAssociation(platformId, subscriberId, association.getTransactionId());
+	}
+
+	public List<AssociationDTO> getAllAssociationsBySubscriber(Integer subscriberId) {
+		return associationRepository.getAllAssociationsBySubscriber(subscriberId);
+	}
+
+	public SessionDTO createSession(SessionRequestDTO sessionRequest) {
+		SessionResponseBean response = platformApiClientService.createSession(sessionRequest);
+
+		SessionDTO session = SessionDTO.builder()
+				.subscriberId(sessionRequest.getSubscriberId())
+				.platformId(sessionRequest.getPlatformId())
+				.transactionId(response.getAssociationId())
+				.filmCode(sessionRequest.getFilmCode())
+				.sessionUrl(response.getSessionUrl())
+				.createdAt(new Date())
+				.build();
+
+		return sessionRepository.createSession(session);
+	}
+
+	public SessionDTO markSessionAsUsed(Integer sessionId){
+		return sessionRepository.markSesionAsUsed(sessionId);
+	}
+
+	public SessionDTO getSessionById(Integer Id){
+		return sessionRepository.getSessionById(Id);
+	}
 
 }

@@ -1,0 +1,32 @@
+<div class="platform-list">
+  <ul class="list-group">
+    @for (platform of platforms; track platform.platformId) {
+    <li class="list-group-item">
+      <span>{{ platform.platformName }}</span>
+      @if(platform.linked){
+      <div class="float-end">
+        <button class="btn btn-danger btn-sm" (click)="unlink(platform)">
+          Unlink
+        </button>
+      </div>
+      }@else{
+      <div class="float-end">
+        <button
+          class="btn btn-primary btn-sm"
+          (click)="link(platform, 'SIGNUP')"
+        >
+          Signup
+        </button>
+        <button
+          class="btn btn-secondary btn-sm"
+          (click)="link(platform, 'LOGIN')"
+        >
+          Login
+        </button>
+      </div>
+
+      }
+    </li>
+    }
+  </ul>
+</div>

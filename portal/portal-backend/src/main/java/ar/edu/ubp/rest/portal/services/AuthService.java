@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    
+
     @Autowired
     private final UserRepository userRepository;
     @Autowired
@@ -47,6 +47,7 @@ public class AuthService {
         String token = jwtService.getToken(user);
 
         return AuthResponseDTO.builder()
+                .id(user.getId())
                 .token(token)
                 .email(user.getUsername())
                 .role(user.getRole().name())
@@ -67,7 +68,7 @@ public class AuthService {
                 .validated(true)
                 .build();
 
-        subscriberRepository.createSubscriber(user);
+        user.setId(subscriberRepository.createSubscriber(user).getId());
 
         return buildAuthResponse(user);
     }
@@ -79,9 +80,8 @@ public class AuthService {
                 .lastname(request.getLastname())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        
 
-        admistratorRepository.createAdministrator(user);
+        user.setId(admistratorRepository.createAdministrator(user).getId());
 
         return buildAuthResponse(user);
     }
@@ -108,13 +108,16 @@ public class AuthService {
             System.out.println("ServiceType desconocido: " + serviceType);
         }
 
-        advertiserRepository.createAdvertiser(user);
+       
 
+        user.setId(advertiserRepository.createAdvertiser(user).getAdvertiserId());
         return buildAuthResponse(user);
     }
 
     private AuthResponseDTO buildAuthResponse(CustomUserDetails user) {
+       
         return AuthResponseDTO.builder()
+                .id(user.getId())
                 .token(jwtService.getToken(user))
                 .email(user.getUsername())
                 .role(user.getRole().name())

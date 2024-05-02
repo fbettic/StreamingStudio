@@ -1,6 +1,7 @@
 package ar.edu.ubp.rest.portal.models.users;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import ar.edu.ubp.rest.portal.enums.Role;
 import lombok.AllArgsConstructor;

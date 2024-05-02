@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ITargetCategory } from '../../../models/target-category.model';
+import { TargetCategoryService } from '../../../services/target-category.service';
 
 @Component({
   selector: 'app-target-form',
@@ -9,79 +13,79 @@ import { Component } from '@angular/core';
 })
 export class TargetFormComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _feeService: FeeService = inject(FeeService);
+  private _targetService: TargetCategoryService = inject(TargetCategoryService);
 
   @Output() doRefresh: EventEmitter<void> = new EventEmitter<void>();
 
-  feeFormGroup: FormGroup;
+  targetFormGroup: FormGroup;
   error: string = '';
   id: number = 0;
 
   constructor() {
-    this.feeFormGroup = this._formBuilder.group({
-      feeType: ['', Validators.required],
-      feeValue: ['', Validators.required],
+    this.targetFormGroup = this._formBuilder.group({
+      targetTitle: ['', Validators.required],
+      
     });
   }
 
   @Input()
-  set fee(fee: IFee | null) {
-    if (!fee) {
+  set target(target: ITargetCategory | null) {
+    if (!target) {
       this.id = 0;
       this.resetForm();
       this.error = '';
       return;
     }
 
-    this.id = fee.feeId!;
+    this.id = target.targetId!;
 
-    this.feeFormGroup.setValue({
-      feeType: fee.feeType,
-      feeValue: fee.feeValue,
+    this.targetFormGroup.setValue({
+      targetTitle: target.targetTitle,
+      
     });
   }
 
   submit() {
-    const isValid = this.feeFormGroup.valid;
+    const isValid = this.targetFormGroup.valid;
     if (isValid) {
-      const data: IFee = this.feeFormGroup.value;
-      this.id != 0 ? this.updateFee(data) : this.createFee(data);
+      const data: ITargetCategory = this.targetFormGroup.value;
+      this.id != 0 ? this.updateTargetCategory(data) : this.createTargetCategory(data);
     } else {
       this.error =
         'Por favor, verifique todos los campos del formulario y asegúrese de que estén completos y cumplan con las especificaciones requeridas.';
-      this.feeFormGroup.markAllAsTouched();
+      this.targetFormGroup.markAllAsTouched();
     }
   }
 
-  createFee(data: IFee) {
-    this._feeService.createFee(data).subscribe({
+  createTargetCategory(data: ITargetCategory) {
+    this._targetService.createTargetCategory(data).subscribe({
       error: (error) => {
         console.log(
-          '🚀 ~ FeeFormComponent ~ this._feeService.createFee ~  error.error:',
+          '🚀 ~ TargetCategoryFormComponent ~ this._targetService.createTargetCategory ~  error.error:',
           error.error
         );
         this.error = error.error;
       },
       complete: () => {
-        this.feeFormGroup.reset();
+        this.targetFormGroup.reset();
         this.error = '';
         this.doRefresh.emit();
       },
     });
   }
 
-  updateFee(data: IFee) {
-    this._feeService.updateFee(this.id, data).subscribe({
+  updateTargetCategory(data: ITargetCategory) {
+    this._targetService.updateTargetCategory(this.id, data).subscribe({
       error: (error) => {
         console.log(
-          '🚀 ~ FeeFormComponent ~ updateFee ~ error.error:',
+          '🚀 ~ TargetCategoryFormComponent ~ updateTargetCategory ~ error.error:',
           error.error
         );
 
         this.error = error.error;
       },
       complete: () => {
-        this.feeFormGroup.reset();
+        this.targetFormGroup.reset();
         this.error = '';
         this.id = 0;
         this.doRefresh.emit();
@@ -90,9 +94,9 @@ export class TargetFormComponent {
   }
 
   resetForm() {
-    this.feeFormGroup.reset({
-      feeType: '',
-      feeValue: '',
+    this.targetFormGroup.reset({
+      targetTitle: '',
+      
     });
   }
 }

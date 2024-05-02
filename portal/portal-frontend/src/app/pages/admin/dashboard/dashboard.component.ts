@@ -8,6 +8,7 @@ import { PlatformsTableComponent } from '../../../components/tables/platforms-ta
 import { FeeTableComponent } from '../../../components/tables/fee-table/fee-table.component';
 import { SizesTableComponent } from '../../../components/tables/sizes-table/sizes-table.component';
 import { PrioritiesTableComponent } from '../../../components/tables/priorities-table/priorities-table.component';
+import { TargetsTableComponent } from '../../../components/tables/targets-table/targets-table.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,8 @@ import { PrioritiesTableComponent } from '../../../components/tables/priorities-
     CustomModalComponent,
     FeeTableComponent,
     SizesTableComponent,
-    PrioritiesTableComponent
+    PrioritiesTableComponent,
+    TargetsTableComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

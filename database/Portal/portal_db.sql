@@ -489,3 +489,5 @@ CREATE TABLE AdvertisingInvoiceDetail
   FOREIGN KEY (sizeId) REFERENCES SizeType(sizeId),
 );
 GO
+
+

@@ -1,5 +1,7 @@
 package ar.edu.ubp.rest.portal.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubscriberDTO {
-    Integer id;
-    String email;
-    String firstname;
-    String lastname;
-    String phone;
-    String birth;
+    private Integer id;
+    private String email;
+    private String firstname;
+    private String lastname;
+    private String phone;
+    private String birth;
+    private List<Integer> marketingPreferences;
 }

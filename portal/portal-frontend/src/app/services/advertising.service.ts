@@ -3,7 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IAdvertisingRequest } from '../models/advertising-request.model';
+import { IAdvertisingSlot } from '../models/advertising-slot.model';
 import { IAdvertising } from '../models/advertising.model';
+import { ITargetCategory } from '../models/target-category.model';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,12 @@ export class AdvertisingService {
       .pipe(catchError(this.handleError));
   }
 
+  getAdvertisingById(id: number): Observable<IAdvertising> {
+    return this.http
+      .get<IAdvertising>(environment.urlApi + 'advertisings/' + id)
+      .pipe(catchError(this.handleError));
+  }
+
   deleteAdvertising(id: number): Observable<IAdvertising> {
     return this.http
       .delete<IAdvertising>(environment.urlApi + 'advertisings/' + id)
@@ -47,6 +55,24 @@ export class AdvertisingService {
     return this.http
       .get<IAdvertising[]>(
         environment.urlApi + 'advertisers/' + id + '/advertisings'
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getAdvertisingsToShow(
+    data: IAdvertisingSlot[]
+  ): Observable<IAdvertisingSlot[]> {
+    return this.http
+      .post<IAdvertisingSlot[]>(environment.urlApi + 'advertisings/show', data)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAllAdvertisingTargetByAdvertisingId(
+    id: number
+  ): Observable<ITargetCategory[]> {
+    return this.http
+      .get<ITargetCategory[]>(
+        environment.urlApi + 'advertising/' + id + '/targets'
       )
       .pipe(catchError(this.handleError));
   }

@@ -89,3 +89,10 @@ CREATE TABLE WeeklyAdvertisingReport (
   FOREIGN KEY (advertisingId) REFERENCES Advertising(advertisingId)
 );
 GO
+
+
+use anunciante1_db
+
+EXEC GetBannerById 2
+
+EXEC UpdateBanner 2, "Oferta especial por tiempo limitado", "http://localhost:4210/images/small-banner-animales.jpg", 'https://example.net/sale'

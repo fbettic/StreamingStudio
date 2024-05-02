@@ -1,0 +1,18 @@
+<input
+  type="text"
+  (input)="filterTargetCategory(filter.value)"
+  placeholder="Buscar..."
+  #filter
+/>
+<app-custom-modal
+  modalTitle="Streaming Platform Form"
+  (onClose)="onModalClose()"
+>
+  <app-target-form [target]="itemSelected" (doRefresh)="refreshList()" />
+</app-custom-modal>
+<app-table
+  [headers]="headers"
+  [items]="filteredList"
+  (editClicked)="onEditItem($event)"
+  (deleteClicked)="onDeleteItem($event)"
+/>

@@ -1,21 +1,56 @@
-
-
-<div class="advertisement-top">Anuncio superior</div>
+<div class="advertisement-top">
+  <app-advertising-slot
+    [image]="getImage('top')"
+    [text]="getText('top')"
+    [url]="getUrl('top')"
+  />
+</div>
 
 <div class="row">
-  <div class="advertisement-side">Anuncio lateral izquierdo</div>
+  <div class="advertisement-side">
+    <div class="col">
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-medium')"
+          [text]="getText('left-medium')"
+          [url]="getUrl('left-medium')"
+          height="600"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-small1')"
+          [text]="getText('left-small1')"
+          [url]="getUrl('left-small1')"
+          height="300"
+          width="200"
+        />
+      </div>
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-small2')"
+          [text]="getText('left-small2')"
+          [url]="getUrl('left-small2')"
+          height="300"
+          width="200"
+        />
+      </div>
+    </div>
+  </div>
   <div class="col">
     @for (platform of platforms; track platform.platformId) {
-      <button
-        class="btn btn-primary"
-        (click)="onPlatformSelect(platform.platformId)"
-      >
-        {{ platform.platformName }}
-      </button>
-      }
+    <button
+      class="btn btn-primary"
+      (click)="onPlatformSelect(platform.platformId)"
+    >
+      {{ platform.platformName }}
+    </button>
+    }
     <div class="ratio ratio-16x9 iframe-content">
       @if(filmUrl){
-        <iframe
+      <iframe
         class="iframe-content"
         [src]="filmUrl"
         title="YouTube video player"
@@ -23,10 +58,41 @@
         referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
       }@else{
-        <h2>Seleccione una plataforma</h2>
+      <h2>Seleccione una plataforma</h2>
       }
-      
     </div>
   </div>
-  <div class="advertisement-side">Anuncio lateral derecho</div>
+  <div class="advertisement-side">
+    <div class="col">
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-medium')"
+          [text]="getText('right-medium')"
+          [url]="getUrl('right-medium')"
+          height="600"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-small1')"
+          [text]="getText('right-small1')"
+          [url]="getUrl('right-small1')"
+          height="300"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-small2')"
+          [text]="getText('right-small2')"
+          [url]="getUrl('right-small2')"
+          height="300"
+          width="200"
+        />
+      </div>
+    </div>
+  </div>
 </div>

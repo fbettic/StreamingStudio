@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { IAdvertising } from '../../../models/advertising.model';
 import {
+  FormArray,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -23,8 +24,9 @@ import { IBannerPriority } from '../../../models/banner-priority.model';
 import { FeeService } from '../../../services/fee.service';
 import { IAdvertisingRequest } from '../../../models/advertising-request.model';
 import { IFee } from '../../../models/fee.model';
-import { from } from 'rxjs';
 import { AdvertiserService } from '../../../services/advertiser.service';
+import { TargetCategoryService } from '../../../services/target-category.service';
+import { ITargetCategory } from '../../../models/target-category.model';
 
 @Component({
   selector: 'app-advertising-form',
@@ -42,6 +44,8 @@ export class AdvertisingFormComponent {
   );
   private _sizeService: SizeTypeService = inject(SizeTypeService);
   private _feeService: FeeService = inject(FeeService);
+  private _targetService: TargetCategoryService = inject(TargetCategoryService);
+
   private _allPagesFee?: IFee;
 
   @Output() doRefresh: EventEmitter<void> = new EventEmitter<void>();
@@ -51,23 +55,39 @@ export class AdvertisingFormComponent {
   advertisingFormGroup: FormGroup;
   sizes: ISizeType[] = [];
   priorities: IBannerPriority[] = [];
+  targets: ITargetCategory[] = [];
+  selectedIds: number[] = [];
   allPagesCheck: boolean = false;
   allPagesFee: number = 0;
   error: string = '';
-  advertisingId: number = 0;
+  id: number = 0;
   fromDate: string = '';
   toDate: string = '';
   useBannerId: boolean = true;
 
   constructor() {
-
-    effect(()=>{
-      if(this.advertiserId() !== 0){
-        this.getAdvertiserServiceType(this.advertiserId())
+    effect(() => {
+      if (this.advertiserId() !== 0) {
+        this.getAdvertiserServiceType(this.advertiserId());
       }
-    })
-    
-    
+    });
+
+    this._targetService.getAllTargetCategories().subscribe({
+      next: (res) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._targetService.getAllTargetCategories ~ res:',
+          res
+        );
+        this.targets = res;
+      },
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._targetService.getAllTargetCategories ~ error:',
+          error
+        );
+      },
+    });
+
     this._sizeService.getAllSizeTypes().subscribe({
       next: (res) => {
         console.log(
@@ -102,7 +122,7 @@ export class AdvertisingFormComponent {
 
     this._feeService.getAllFees().subscribe({
       next: (res) => {
-        this._allPagesFee = res.find((fee) => fee.feeType === 'ALLPAGES');
+        this._allPagesFee = res.find((fee) => fee.feeType === 'ALL_PAGES');
         this.allPagesFee = this._allPagesFee!.feeValue;
       },
       error: (error) => {
@@ -129,53 +149,65 @@ export class AdvertisingFormComponent {
       redirectUrl: [{ value: '', disabled: true }, [Validators.required]],
       imageUrl: [{ value: '', disabled: true }, [Validators.required]],
       bannerText: [{ value: '', disabled: true }, [Validators.required]],
-      bannerId: [{ value: '', disabled: true }, [Validators.required]],
+      bannerId: [{ value: '', disabled: true }, []],
       fromDate: [this.fromDate, [Validators.required]],
       toDate: [this.toDate, [Validators.required]],
+      targets: new FormArray([]),
     });
   }
 
   @Input()
-  set advertising(advertising: IAdvertising | null) {
+  set advertisingId(advertisingId: number) {
     console.log(
       '🚀 ~ AdvertisingFormComponent ~ setsetAdvertising ~ advertising:',
-      advertising
+      advertisingId
     );
 
-    if (!advertising) {
-      this.advertisingId = 0;
+    if (!advertisingId || advertisingId === 0) {
+      this.id = 0;
       this.resetForm();
       this.error = '';
       return;
     }
 
-    this.getAdvertiserServiceType(advertising.advertiserId)
+    this._advertisingService.getAdvertisingById(advertisingId).subscribe({
+      next: (advertising) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._advertisingService.getAdvertisingById ~ advertising:',
+          advertising
+        );
+        this.getAdvertiserServiceType(advertising.advertiserId);
 
-    this.advertisingId = advertising.advertisingId!;
-    
+        this.id = advertising.advertisingId!;
 
-    this.advertisingFormGroup.setValue({
-      advertiserId: advertising.advertiserId,
-      sizeId: advertising.sizeId,
-      allPagesFeeId: advertising.allPagesFeeId,
-      priorityId: advertising.priorityId,
-      redirectUrl: advertising.redirectUrl,
-      imageUrl: advertising.imageUrl,
-      bannerText: advertising.bannerText,
-      bannerId: advertising.bannerId,
-      fromDate: this.getDate(advertising.fromDate),
-      toDate: this.getDate(advertising.toDate),
+        this.advertisingFormGroup.setValue({
+          advertiserId: advertising.advertiserId,
+          sizeId: advertising.sizeId,
+          allPagesFeeId: advertising.allPagesFeeId,
+          priorityId: advertising.priorityId,
+          redirectUrl: advertising.redirectUrl,
+          imageUrl: advertising.imageUrl,
+          bannerText: advertising.bannerText,
+          bannerId: advertising.bannerId,
+          fromDate: this.getDate(advertising.fromDate),
+          toDate: this.getDate(advertising.toDate),
+          targets: advertising.targets,
+        });
+
+        this.allPagesFee = advertising.allPagesFee;
+      },
     });
-
-    this.allPagesFee = advertising.allPagesFee;
   }
 
   getAdvertiserServiceType(id: number) {
     this._advertiserService.getAdvertiserById(id).subscribe({
       next: (data) => {
-        console.log("🚀 ~ AdvertisingFormComponent ~ this._advertiserService.getAdvertiserById ~ data:", data)
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._advertiserService.getAdvertiserById ~ data:',
+          data
+        );
         this.useBannerId = data.serviceType !== 'ACCOUNT';
-        this.bannerDataSet()
+        this.bannerDataSet();
       },
     });
   }
@@ -195,6 +227,23 @@ export class AdvertisingFormComponent {
     }
   }
 
+  onCheckboxChange(event: Event) {
+    const target = <HTMLInputElement>event.target;
+    const isChecked = target.checked;
+    const formArray: FormArray = this.advertisingFormGroup.get(
+      'targets'
+    ) as FormArray;
+
+    if (isChecked) {
+      formArray.push(this._formBuilder.control(target.value));
+    } else {
+      const index = formArray.controls.findIndex(
+        (x) => x.value === target.value
+      );
+      formArray.removeAt(index);
+    }
+  }
+
   onAllPagesCkeck() {
     this.allPagesCheck = !this.allPagesCheck;
 
@@ -211,15 +260,17 @@ export class AdvertisingFormComponent {
 
   submit() {
     const isValid = this.advertisingFormGroup.valid;
-    console.log("🚀 ~ AdvertisingFormComponent ~ submit ~ this.advertisingFormGroup.value:", this.advertisingFormGroup.value)
+    console.log(
+      '🚀 ~ AdvertisingFormComponent ~ submit ~ this.advertisingFormGroup.value:',
+      this.advertisingFormGroup.value
+    );
 
     if (isValid && this.advertisingFormGroup.value.advertiserId !== 0) {
       const data: IAdvertisingRequest = this.advertisingFormGroup.value;
-      this.advertisingId != 0
+      this.id != 0
         ? this.updateAdvertising(data)
         : this.createAdvertising(data);
     } else {
-      
       this.error =
         'Por favor, verifique todos los campos del formulario y asegúrese de que estén completos y cumplan con las especificaciones requeridas.';
       this.advertisingFormGroup.markAllAsTouched();
@@ -237,7 +288,7 @@ export class AdvertisingFormComponent {
         this.error = error.error;
       },
       complete: () => {
-        this.advertisingFormGroup.reset();
+        this.resetForm();
         this.error = '';
         this.doRefresh.emit();
       },
@@ -245,27 +296,27 @@ export class AdvertisingFormComponent {
   }
 
   updateAdvertising(data: IAdvertisingRequest) {
-    this._advertisingService
-      .updateAdvertising(this.advertisingId, data)
-      .subscribe({
-        error: (error) => {
-          console.log(
-            '🚀 ~ AdvertisingFormComponent ~ this._advertisingService.updateAdvertising ~ error:',
-            error
-          );
+    this._advertisingService.updateAdvertising(this.id, data).subscribe({
+      error: (error) => {
+        console.log(
+          '🚀 ~ AdvertisingFormComponent ~ this._advertisingService.updateAdvertising ~ error:',
+          error
+        );
 
-          this.error = error.error;
-        },
-        complete: () => {
-          this.advertisingFormGroup.reset();
-          this.error = '';
-          this.advertisingId = 0;
-          this.doRefresh.emit();
-        },
-      });
+        this.error = error.error;
+      },
+      complete: () => {
+        this.resetForm();
+        this.error = '';
+        this.id = 0;
+        this.doRefresh.emit();
+      },
+    });
   }
 
   resetForm() {
+    console.log('🚀 ~ AdvertisingFormComponent ~ resetForm ~ resetForm:');
+
     this.advertisingFormGroup.reset({
       advertiserId: this.advertiserId,
       sizeId: '',
@@ -277,6 +328,7 @@ export class AdvertisingFormComponent {
       bannerId: '',
       fromDate: this.fromDate,
       toDate: this.toDate,
+      targets: [],
     });
   }
 

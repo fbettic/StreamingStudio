@@ -65,6 +65,23 @@ BEGIN
 END
 GO
 
+-- DROP PROCEDURE IF EXISTS UpdateBanner
+CREATE OR ALTER PROCEDURE UpdateBanner
+    @bannerId INT,
+    @text VARCHAR(255),
+    @imageUrl VARCHAR(255),
+    @redirectUrl VARCHAR(255)
+AS
+BEGIN
+    -- Insertar el nuevo banner en la tabla Banner
+    UPDATE Banner SET text=@text, imageUrl=@imageUrl, redirectUrl=@redirectUrl
+    WHERE bannerId = @bannerId
+
+    -- Devolver el banner recién creado
+    EXEC GetBannerById @bannerId
+END
+GO
+
 -- DROP PROCEDURE IF EXISTS GetBannerById
 CREATE OR ALTER PROCEDURE GetBannerById
     @bannerId INT

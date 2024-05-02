@@ -1,13 +1,14 @@
 .advertisement-top {
-    background-color: red;
+    background-color: black;
     height: 150px;
     text-align: center;
     margin-bottom: 20px; /* Espacio entre el anuncio superior y la fila de películas */
 }
 
 .advertisement-side {
-    background-color: red;
-    width: 150px;
+    padding: 0;
+    background-color: black;
+    width: 200px;
     height: 100%;
     text-align: center;
 }

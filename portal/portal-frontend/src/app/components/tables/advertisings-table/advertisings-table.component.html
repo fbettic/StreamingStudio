@@ -1,6 +1,6 @@
 <app-custom-modal modalTitle="Advertising form" (onClose)="onModalClose()" [showButton]="showAddNewButton()">
   <app-advertising-form
-    [advertising]="itemSelected"
+    [advertisingId]="itemSelected?.advertisingId!"
     [advertiserId]="advertiserId()"
     (doRefresh)="refreshList()"
   />

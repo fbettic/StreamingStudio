@@ -1,14 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ILoginResponse } from '../../models/login-response.model';
-import { ISubscriber } from '../../models/subscriber.model';
-import { IAssociationResponse } from '../../models/association-response.model';
 import { IAssociationRequest } from '../../models/association-request.model';
+import { IAssociationResponse } from '../../models/association-response.model';
 import { IAssociation } from '../../models/association.model';
 import { ISessionRequest } from '../../models/session-request.model';
 import { ISession } from '../../models/session.model';
+import { ISubscriber } from '../../models/subscriber.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +16,14 @@ export class SubscriberService {
   http: HttpClient = inject(HttpClient);
 
   constructor() {}
+
+  updateSubscriber(data: ISubscriber): Observable<ISubscriber> {
+    return this.http.put<ISubscriber>(environment.urlApi + 'subscribers', data);
+  }
+
+  getSubscriber(): Observable<ISubscriber> {
+    return this.http.get<ISubscriber>(environment.urlApi + 'subscribers');
+  }
 
   createAsociationRequest(
     data: IAssociationRequest

@@ -39,8 +39,8 @@ BEGIN
 END;
 GO
 
--- DROP PROCEDURE IF EXISTS UpdateTargetCategoryTitle
-CREATE OR ALTER PROCEDURE UpdateTargetCategoryTitle
+-- DROP PROCEDURE IF EXISTS UpdateTargetCategory
+CREATE OR ALTER PROCEDURE UpdateTargetCategory
     @targetId INT,
     @newTitle VARCHAR(255)
 AS
@@ -74,6 +74,20 @@ BEGIN
         AND targetId=@targetId
 END;
 GO
+
+-- DROP PROCEDURE IF EXISTS RemoveAdvertisingTarget
+CREATE OR ALTER PROCEDURE RemoveAllAdvertisingTarget
+    @advertisingId INT,
+    @deletedId INT OUTPUT
+AS
+BEGIN
+    DELETE FROM AdvertisingTarget
+    WHERE advertisingId = @advertisingId
+
+    SET @deletedId = @advertisingId
+END;
+GO
+
 
 -- DROP PROCEDURE IF EXISTS RemoveAdvertisingTarget
 CREATE OR ALTER PROCEDURE RemoveAdvertisingTarget
@@ -135,8 +149,23 @@ BEGIN
 END;
 GO
 
--- DROP PROCEDURE IF EXISTS GetAllAdvertisingTargetBySubscriberId
-CREATE OR ALTER PROCEDURE GetAllAdvertisingTargetBySubscriberId
+-- DROP PROCEDURE IF EXISTS RemoveMarketingPreference
+CREATE OR ALTER PROCEDURE RemoveAllMarketingPreference
+    @subscriberId INT,
+    @deletedId INT OUTPUT
+AS
+BEGIN
+    DELETE FROM MarketingPreferences
+    WHERE subscriberId = @subscriberId
+
+    SELECT @subscriberId
+
+    SET @deletedId = @subscriberId
+END;
+GO
+
+-- DROP PROCEDURE IF EXISTS GetAllMarketingPreferencesBySubscriberId
+CREATE OR ALTER PROCEDURE GetAllMarketingPreferencesBySubscriberId
     @subscriberId INT
 AS
 BEGIN
@@ -147,3 +176,5 @@ BEGIN
         AND subscriberId = @subscriberId
 END;
 GO
+
+EXEC GetAllMarketingPreferencesBySubscriberId 1

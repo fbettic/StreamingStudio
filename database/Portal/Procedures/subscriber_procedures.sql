@@ -46,7 +46,6 @@ CREATE OR ALTER PROCEDURE UpdateSubscriber
     @email VARCHAR(255),
     @phone VARCHAR(255),
     @birth DATE,
-    @password VARCHAR(255),
     @validated BIT
 AS
 BEGIN
@@ -66,7 +65,6 @@ BEGIN
         email=@email,
         phone=@phone,
         birth=@birth,
-        password=@password,
         validated=@validated
     WHERE subscriberId=@subscriberId
 
@@ -85,7 +83,7 @@ BEGIN
         AND deletedAt IS NULL
 END
 
-
+select * from Subscriber
 
 
 

@@ -1,6 +1,8 @@
 package ar.edu.ubp.rest.portal.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,17 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.BannerPriorityDTO;
 import ar.edu.ubp.rest.portal.dto.SizeTypeDTO;
+import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.BannerPriorityRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SizeTypeRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
 import ar.edu.ubp.rest.portal.services.BannerPriorityService;
 import ar.edu.ubp.rest.portal.services.SizeTypeService;
+import ar.edu.ubp.rest.portal.services.TargetServices;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/api/v1/advertisings")
@@ -41,6 +44,8 @@ public class AdvertisingController {
     private final SizeTypeService sizeTypeService;
 
     private final BannerPriorityService bannerPriorityService;
+
+    private final TargetServices targetServices;
 
     private Integer getCurrentUserId() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,12 +75,8 @@ public class AdvertisingController {
     public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest)
             throws Exception {
 
-        
-
         if (getCurrentRole().name().equals("ADVERTISER")) {
             Integer userId = getCurrentUserId();
-
-            
 
             advertisingRequest.setAdvertiserId(userId);
         }
@@ -88,9 +89,9 @@ public class AdvertisingController {
         if (getCurrentRole().name().equals("ADVERTISER")) {
             Integer userId = getCurrentUserId();
             return ResponseEntity.ok(advertisingService.getAllAdvertisingsByAdvertiser(userId));
-        } else {
-            return ResponseEntity.ok(advertisingService.getAllAdvertisings());
         }
+        return ResponseEntity.ok(advertisingService.getAllAdvertisings());
+
     }
 
     @GetMapping("/{id}")
@@ -102,6 +103,16 @@ public class AdvertisingController {
             return ResponseEntity.notFound().build();
         }
 
+        List<TargetCategoryDTO> targets = targetServices.getAllAdvertisingTargetByAdvertisingId(id);
+
+        List<Integer> targetsId = new ArrayList<>();
+        if (Objects.nonNull(targets)) {
+            for (TargetCategoryDTO target : targets) {
+                targetsId.add(target.getTargetId());
+            }
+        }
+
+        response.setTargets(targetsId);
         return ResponseEntity.ok(response);
     }
 
@@ -110,14 +121,14 @@ public class AdvertisingController {
             @RequestBody AdvertisingRequestDTO advertisingRequest) throws Exception {
 
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
-        Integer userId = getCurrentUserId();
+        //Integer userId = getCurrentUserId();
 
         if (!getCurrentRole().name().equals("ADMINISTRATOR")
                 && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
             return ResponseEntity.notFound().build();
-        }
+        } 
 
-        advertisingRequest.setAdvertiserId(userId);
+
 
         AdvertisingDTO response = advertisingService.updateAdvertisingById(id, advertisingRequest);
         return ResponseEntity.ok(response);
@@ -133,6 +144,13 @@ public class AdvertisingController {
         }
 
         return ResponseEntity.ok(advertisingService.deleteAdvertisingById(id));
+    }
+
+    @PostMapping("/show")
+    public ResponseEntity<List<SubscriberAdvertisingRequestDTO>> getAdvertisingToShow(
+            @RequestBody List<SubscriberAdvertisingRequestDTO> request) throws Exception {
+
+        return ResponseEntity.ok(advertisingService.getAdvertisingsToShow(getCurrentUserId(), request));
     }
 
     @PostMapping("/sizes")
@@ -191,6 +209,10 @@ public class AdvertisingController {
     public ResponseEntity<Integer> deleteBannerPriorityById(@PathVariable Integer id) throws Exception {
         return ResponseEntity.ok(bannerPriorityService.deleteBannerPriorityById(id));
     }
-    
-    
+
+    @GetMapping("{id}/targets")
+    public ResponseEntity<List<TargetCategoryDTO>> getAllAdvertisingTargetByAdvertisingId(@PathVariable Integer id) {
+        return ResponseEntity.ok(targetServices.getAllAdvertisingTargetByAdvertisingId(id));
+    }
+
 }

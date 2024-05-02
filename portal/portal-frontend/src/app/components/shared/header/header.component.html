@@ -3,8 +3,12 @@
   data-bs-theme="dark"
 >
   <div class="container-fluid">
-    <a routerLink="" class="navbar-brand">
-      <img src="../../../../assets/ss-logo.svg" alt="" style="width: 36px;" class="me-2" />
+    <a routerLink="/home" class="navbar-brand">
+      <img
+        src="../../../../assets/ss-logo.svg"
+        alt=""
+        style="width: 36px"
+        class="me-2" />
       <img
         src="../../../../assets/ss-name.svg"
         alt=""
@@ -39,6 +43,7 @@
             <a class="dropdown-item" routerLink="platforms"
               >Platform Management</a
             >
+            <a class="dropdown-item" routerLink="profile">Profile</a>
             } }@else{
             <a routerLink="login" class="dropdown-item">Login</a>
             <a routerLink="signup" class="dropdown-item">Signup</a>

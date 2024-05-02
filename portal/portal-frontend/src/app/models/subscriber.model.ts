@@ -8,4 +8,5 @@ export interface ISubscriber {
   password?: string;
   phone: string;
   birth: Date;
+  marketingPreferences: number[]
 }

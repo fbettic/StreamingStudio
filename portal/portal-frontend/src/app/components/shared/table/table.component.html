@@ -1,43 +1,46 @@
-<table class="table table-striped border rounded">
-  <thead>
-    <tr>
-      @for(header of headers; track header ){
-      <th>{{ header.label }}</th>
-      }
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for(item of items; track item.id ){
-    <tr>
-      <td *ngFor="let header of headers">{{ item[header.key] }}</td>
+<div class="table-container">
+  <table class="table table-striped border rounded">
+    <thead>
+      <tr>
+        @for(header of headers; track header ){
+        <th>{{ header.label }}</th>
+        }
+        <th>Actions</th>
+      </tr>
+    </thead>
 
-      <td>
-        <div class="row justify-content-start">
-          <div class="col-auto">
-            <button
-              class="btn btn-sm"
-              [ngClass]="{
-                'btn-outline-primary': isEditable(item),
-                'btn-outline-secondary': !isEditable(item)
-              }"
-              (click)="onEditClick(item)"
-              [disabled]="!isEditable(item)"
-            >
-              Edit
-            </button>
+    <tbody>
+      @for(item of items; track item.id ){
+      <tr>
+        <td *ngFor="let header of headers">{{ item[header.key] }}</td>
+
+        <td>
+          <div class="row justify-content-start">
+            <div class="col-auto">
+              <button
+                class="btn btn-sm"
+                [ngClass]="{
+                  'btn-outline-primary': isEditable(item),
+                  'btn-outline-secondary': !isEditable(item)
+                }"
+                (click)="onEditClick(item)"
+                [disabled]="!isEditable(item)"
+              >
+                Edit
+              </button>
+            </div>
+            <div class="col-auto">
+              <button
+                class="btn btn-outline-danger btn-sm"
+                (click)="onDeleteClick(item)"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-          <div class="col-auto">
-            <button
-              class="btn btn-outline-danger btn-sm"
-              (click)="onDeleteClick(item)"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </td>
-    </tr>
-    }
-  </tbody>
-</table>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

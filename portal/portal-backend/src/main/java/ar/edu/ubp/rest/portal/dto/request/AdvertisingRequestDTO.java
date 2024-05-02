@@ -1,5 +1,7 @@
 package ar.edu.ubp.rest.portal.dto.request;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +22,5 @@ public class AdvertisingRequestDTO {
     private Integer bannerId;
     private String fromDate;
     private String toDate;
+    private List<Integer> targets;
 }

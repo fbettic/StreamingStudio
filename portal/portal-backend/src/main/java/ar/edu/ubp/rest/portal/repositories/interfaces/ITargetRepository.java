@@ -10,7 +10,9 @@ public interface ITargetRepository {
 
     public TargetCategoryDTO createTargetCategory(String targetTitle);
 
-    public TargetCategoryDTO updateTargetCategoryTitle(Integer id, String targetTitle);
+    public TargetCategoryDTO updateTargetCategory(Integer id, String targetTitle);
+
+    public Integer deleteTargetCategory(Integer id);
 
     public List<TargetCategoryDTO> getAllTargetCategories();
 
@@ -18,12 +20,16 @@ public interface ITargetRepository {
 
     public AdvertisingTargetDTO removeAdvertisingTarget(Integer targetId, Integer advertisingId);
 
+    public Integer removeAllAdvertisingTarget(Integer advertisingId);
+
     public List<TargetCategoryDTO> getAllAdvertisingTargetByAdvertisingId(Integer advertisingId);
 
     public MarketingPreferenceDTO addMarketingPreference(Integer targetId, Integer subscriberId);
 
     public MarketingPreferenceDTO removeMarketingPreference(Integer targetId, Integer subscriberId);
 
-    public List<TargetCategoryDTO> getAllAdvertisingTargetBySubscriberId(Integer subscriberId);
+    public Integer removeAllMarketingPreference(Integer subscriberId);
+
+    public List<TargetCategoryDTO> getAllMarketingPreferencesBySubscriberId(Integer subscriberId);
 
 }

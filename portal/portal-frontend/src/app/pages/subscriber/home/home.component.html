@@ -1,13 +1,82 @@
 <app-custom-modal [modalTitle]="film?.title!" [showButton]="false">
-  <app-film-info [film]="film" (onPlayClick)="onPlayClick($event)"/>
+  <app-film-info [film]="film" (onPlayClick)="onPlayClick($event)" />
 </app-custom-modal>
 
-<div class="advertisement-top">Anuncio superior</div>
+<div class="advertisement-top">
+  <app-advertising-slot
+    [image]="getImage('top')"
+    [text]="getText('top')"
+    [url]="getUrl('top')"
+  />
+</div>
 
 <div class="row">
-  <div class="advertisement-side">Anuncio lateral izquierdo</div>
-  <div class="col">
-    <app-film-list [films]="films" (onFilmClick)="onFilmClick($event)"/>
+  <div class="advertisement-side">
+    <div class="col">
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-medium')"
+          [text]="getText('left-medium')"
+          [url]="getUrl('left-medium')"
+          height="600"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-small1')"
+          [text]="getText('left-small1')"
+          [url]="getUrl('left-small1')"
+          height="300"
+          width="200"
+        />
+      </div>
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('left-small2')"
+          [text]="getText('left-small2')"
+          [url]="getUrl('left-small2')"
+          height="300"
+          width="200"
+        />
+      </div>
+    </div>
   </div>
-  <div class="advertisement-side">Anuncio lateral derecho</div>
+  <div class="col">
+    <app-film-list [films]="films" (onFilmClick)="onFilmClick($event)" />
+  </div>
+  <div class="advertisement-side">
+    <div class="col">
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-medium')"
+          [text]="getText('right-medium')"
+          [url]="getUrl('right-medium')"
+          height="600"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-small1')"
+          [text]="getText('right-small1')"
+          [url]="getUrl('right-small1')"
+          height="300"
+          width="200"
+        />
+      </div>
+
+      <div class="mb-3">
+        <app-advertising-slot
+          [image]="getImage('right-small2')"
+          [text]="getText('right-small2')"
+          [url]="getUrl('right-small2')"
+          height="300"
+          width="200"
+        />
+      </div>
+    </div>
+  </div>
 </div>

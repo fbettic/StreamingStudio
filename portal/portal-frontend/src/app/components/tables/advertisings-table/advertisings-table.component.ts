@@ -29,10 +29,8 @@ export class AdvertisingsTableComponent {
     { key: 'advertisingId', label: 'ID' },
     { key: 'advertiserId', label: 'Advertiser ID' },
     { key: 'bannerId', label: 'Banner ID' },
-    { key: 'sizeType', label: 'Size' },
-    { key: 'sizeFee', label: 'Size Fee' },
-    { key: 'priorityType', label: 'Priority' },
-    { key: 'priorityFee', label: 'Priority Fee' },
+    { key: 'size', label: 'Size' },
+    { key: 'priority', label: 'Priority' },
     { key: 'allPagesFee', label: 'All Pages' },
     { key: 'redirectUrl', label: 'URL' },
     { key: 'imageUrl', label: 'Img URL' },
@@ -55,7 +53,13 @@ export class AdvertisingsTableComponent {
           '🚀 ~ TableComponent ~ this.advertisingServices.getAdvertising ~ res:',
           res
         );
-        this.setItems(res);
+        this.setItems(res.map((advertising)=>{
+          return {
+            ...advertising,
+            size: `${advertising.sizeType}-$${advertising.sizeFee}`,
+            priority: `${advertising.priorityType}-$${advertising.priorityFee}`
+          }
+        }));
       },
       error: (error) => {
         console.log(

@@ -5,6 +5,8 @@ export interface IAdvertising {
     sizeType:string;
     sizeValue:number;
     sizeFee: number;
+    width:string;
+    height:string;
     allPagesFeeId: number;
     allPagesFee: number;
     priorityId: number;
@@ -17,5 +19,6 @@ export interface IAdvertising {
     bannerId: number;
     fromDate: Date;
     toDate: Date;
+    targets?: number[]
 }
 

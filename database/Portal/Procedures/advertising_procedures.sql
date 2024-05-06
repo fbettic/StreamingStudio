@@ -188,7 +188,6 @@ EXEC GetAllAdvertisings
 GO
 -- DROP PROCEDURE IF EXISTS GetAdvertisingById
 CREATE OR ALTER PROCEDURE GetAllAdvertisings
-
 AS
 BEGIN
     DECLARE @AllFees AS dbo.AllFees
@@ -247,4 +246,42 @@ BEGIN
     WHERE bannerId = @bannerId 
     AND advertiserId = @advertiserId
 END
+GO
 
+-- DROP PROCEDURE IF EXISTS
+CREATE OR ALTER PROCEDURE GetAdvertisingsToShow 
+    @jsonData NVARCHAR(MAX)
+AS
+BEGIN
+    BEGIN TRY
+    DECLARE @tempTable TABLE (
+        filmId INT,
+        platformId INT,
+        newContent BIT,
+        highlighted BIT
+    );
+
+    -- Insertar los datos JSON en una tabla temporal
+    INSERT INTO @tempTable
+        (filmId, platformId, newContent, highlighted)
+    SELECT filmId, platformId, newContent, highlighted
+    FROM Film f
+        JOIN OPENJSON(@jsonData)
+    WITH (
+      filmCode VARCHAR(255) '$.filmCode',
+      platformId INT '$.platformId',
+      newContent BIT '$.newContent',
+      highlighted BIT '$.highlighted'
+    ) AS js on f.filmCode = js.filmCode;
+    
+
+
+    -- Éxito
+    SELECT 'Success' AS Result;
+  END TRY
+  BEGIN CATCH
+    -- Error
+    SELECT ERROR_MESSAGE() AS Result;
+  END CATCH
+END
+GO

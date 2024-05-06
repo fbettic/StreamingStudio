@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
-import ar.edu.ubp.rest.portal.dto.PlatformFilmDTO;
 import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IFilmRepository;
 import lombok.RequiredArgsConstructor;
@@ -102,31 +101,19 @@ public class FilmRepository implements IFilmRepository {
     }
 
     @Override
-    public Integer updateBatchPlatformFilm(List<PlatformFilmDTO> platformFilms) {
-        String sql = "EXEC CreatePlatformFilm @filmCode = ?, @platformId = ?, @newContent = ?, @highlighted = ?";
-        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                PlatformFilmDTO platformFilm = platformFilms.get(i);
-                ps.setString(1, platformFilm.getFilmCode());
-                ps.setInt(2, platformFilm.getPlatformId());
-                ps.setBoolean(3, platformFilm.getNewContent());
-                ps.setBoolean(4, platformFilm.getHighlighted());
-                
-            }
+    @SuppressWarnings("unchecked")
+    public String updateBatchPlatformFilm(String platformFilmsJson) {
+        
+        SqlParameterSource input = new MapSqlParameterSource()
+        .addValue("jsonData", platformFilmsJson);
 
-            @Override
-            public int getBatchSize() {
-                return platformFilms.size();
-            }
-        });
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("ProcessPlatformFilmJson")
+                .withSchemaName("dbo")
+                .returningResultSet("message", BeanPropertyRowMapper.newInstance(String.class));
 
-        int totalAffectedRows = 0;
-        for (int rows : affectedRows) {
-            totalAffectedRows += rows;
-        }
-
-        return totalAffectedRows;
+        Map<String, Object> output = jdbcCall.execute(input);
+        return ((List<String>) output.get("message")).get(0);
     }
 
     @Override

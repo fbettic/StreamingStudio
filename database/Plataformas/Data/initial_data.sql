@@ -106,5 +106,13 @@ EXEC CreateFilmIfNotExists 'F00000008', 'Inglourious Basterds', 'https://m.media
 EXEC CreateFilmIfNotExists 'F00000009', 'Schindler''s List', 'https://m.media-amazon.com/images/M/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.', 0, 1, 'USA', 'Steven Spielberg', 1993, 'Liam Neeson,Ben Kingsley', 'Biography,Drama,History', 'https://www.youtube.com/embed/BmkchuRJ82w?si=gISrhDek7G1PHwEi'
 EXEC CreateFilmIfNotExists 'F00000010', 'The Lord of the Rings: The Fellowship of the Ring', 'https://m.media-amazon.com/images/M/MV5BYzA4Y2Q4YTMtOTI5OC00NWMyLTk0NTUtODc1ZmQxOTY5MmU5XkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_.jpg', 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.', 1, 1, 'USA', 'Peter Jackson', 2001, 'Elijah Wood,Ian McKellen', 'Action,Adventure,Drama', 'https://www.youtube.com/embed/_nZdmwHrcnw?si=Jv8oRvO0-H9bj7QI'
 EXEC CreateFilmIfNotExists 'F00000002', 'The Shawshank Redemption', 'https://m.media-amazon.com/images/M/MV5BMzBmNWM0YzktOTM2MC00MzVkLWFiNjUtNWVjMWRiOTQ0OWM0XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.', 1, 1, 'USA', 'Frank Darabont', 1994, 'Tim Robbins,Morgan Freeman', 'Drama', 'https://www.youtube.com/embed/xB4nJg0fyE0?si=dnYzPe-CWqJcIQCV'
+EXEC CreateFilmIfNotExists 'F00000013', 'Titanic', 'https://m.media-amazon.com/images/M/MV5BMDdmZGU3NDQtY2E5My00ZTliLWIzOTUtMTY4ZGI1YjdiNjk3XkEyXkFqcGdeQXVyNTA4NzY1MzY@._V1_.jpg', 'A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.', 0, 1, 'USA', 'James Cameron', 1997, 'Leonardo DiCaprio,Kate Winslet', 'Drama,Romance', 'https://www.youtube.com/embed/FiRVcExwBVA?si=UzHUcThRgo6NWEmt'
 GO
 
+UPDATE Film Set newContent = 1 where filmId = 1002
+
+delete FilmActor where filmId = 1002
+delete FilmGenre where filmId = 1002
+delete Film where filmId = 1002
+
+EXEC GetFilmById 1002

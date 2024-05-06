@@ -490,4 +490,6 @@ CREATE TABLE AdvertisingInvoiceDetail
 );
 GO
 
+select * from Film where filmCode = 'F00000013'
 
+EXEC GetFilmById 7

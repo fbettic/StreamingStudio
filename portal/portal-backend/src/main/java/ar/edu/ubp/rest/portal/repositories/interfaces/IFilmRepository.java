@@ -11,7 +11,7 @@ public interface IFilmRepository {
     public Integer loadAllCountries(List<CountryDTO> countries);
     public Integer updateBatchFilm(List<FilmDTO> films);
     public Integer dropAllPlatformFilmRelations();
-    public Integer updateBatchPlatformFilm(List<PlatformFilmDTO> streamingPlatformFilms);
+    public String updateBatchPlatformFilm(String streamingPlatformFilmsJson);
     public List<FilmDTO> getAllFilms();
     public FilmSubscriberResponseDTO getFilmById(Integer id);
 }

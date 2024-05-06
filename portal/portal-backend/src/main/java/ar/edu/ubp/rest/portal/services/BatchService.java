@@ -10,6 +10,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.ServiceResponseMapperBean;
@@ -64,7 +67,7 @@ public class BatchService {
 
         System.out.println("--------------> clientsFilms" + clientFilms.toString());
 
-        if (Objects.isNull(clientFilms) || clientFilms.size()==0) {
+        if (Objects.isNull(clientFilms) || clientFilms.size() == 0) {
             throw new NoSuchElementException("No films availables");
         }
 
@@ -102,18 +105,19 @@ public class BatchService {
             });
         });
 
-
-
         System.out.println("---------------> platformFilms" + platformFilms.toString());
 
         int filmsCreated = filmRepository.updateBatchFilm(allFilms);
 
-        
         if (filmsCreated != 0) {
-            System.out.println("---------------> filmsCreated" + filmsCreated);
-            Integer droped = filmRepository.dropAllPlatformFilmRelations();
-            System.out.println("---------------> droped" + droped);
-            filmRepository.updateBatchPlatformFilm(platformFilms);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = null;
+            try {
+                jsonString = objectMapper.writeValueAsString(platformFilms);
+            } catch (JsonProcessingException e) {
+                throw e;
+            }
+            filmRepository.updateBatchPlatformFilm(jsonString);
         }
 
     }

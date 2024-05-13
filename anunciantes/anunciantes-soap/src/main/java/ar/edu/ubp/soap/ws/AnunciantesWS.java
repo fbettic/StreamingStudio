@@ -10,8 +10,12 @@ import java.util.List;
 
 import org.apache.cxf.interceptor.Fault;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.soap.beans.AdvertisingBean;
 import ar.edu.ubp.soap.beans.BannerBean;
+import ar.edu.ubp.soap.beans.WeeklyReportBean;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebResult;
@@ -24,18 +28,18 @@ public class AnunciantesWS {
 
     private String databaseName;
 
-    public AnunciantesWS(String databaseName){
+    public AnunciantesWS(String databaseName) {
         this.databaseName = databaseName;
     }
 
     private Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         return DriverManager.getConnection(
-                "jdbc:sqlserver://localhost;databaseName="+ databaseName +";encrypt=false;trustServerCertificate=true",
+                "jdbc:sqlserver://localhost;databaseName=" + databaseName
+                        + ";encrypt=false;trustServerCertificate=true",
                 "sa", "Chino@1234");
     }
 
-    
     private Integer getServiceId(String authToken) throws Fault {
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("{CALL GetServiceConnectionByToken(?)}")) {
@@ -96,11 +100,11 @@ public class AnunciantesWS {
     @WebResult(name = "advertising")
     public AdvertisingBean getAdvertisingById(@WebParam(name = "advertisingId") String advertisingId,
             @WebParam(name = "authToken") String authToken) throws Fault {
-                Integer serviceId = getServiceId(authToken);
-                if (serviceId == null || serviceId == 0) {
-                    throw new Fault(new Exception("Invalid token"));
-                }
-            
+        Integer serviceId = getServiceId(authToken);
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+
         try {
             Connection conn = getConnection();
             PreparedStatement stmt;
@@ -166,10 +170,61 @@ public class AnunciantesWS {
         }
     }
 
+    public String createWeeklyReport(String reportJson) throws Fault {
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL CreateWeeklyReportFromJson(?)}")) {
+
+            stmt.setString(1, reportJson);
+
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    return result.getString("result");
+                } else {
+                    throw new Fault(new Exception("Invalid user token"));
+                }
+            }
+        } catch (Exception e) {
+            throw new Fault(e);
+        }
+    }
+
+    @WebMethod()
+    @WebResult(name = "result")
+    public String receiveWeeklyReport(@WebParam(name = "report") WeeklyReportBean report) throws Exception {
+        final Integer serviceId = getServiceId(report.getAuthToken());
+
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(report);
+        } catch (JsonProcessingException e) {
+            throw e;
+        }
+
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement("{CALL CreateWeeklyReportFromJson(?)}")) {
+
+            stmt.setString(1, jsonString);
+
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    return result.getString("result");
+                } else {
+                    throw new Fault(new Exception("Invalid user token"));
+                }
+            }
+        } catch (Exception e) {
+            throw new Fault(e);
+        }
+    }
+
     @WebMethod()
     @WebResult(name = "pong")
     public String ping(@WebParam(name = "authToken") String authToken) throws Fault {
-        Integer serviceId = getServiceId(authToken) ;
+        Integer serviceId = getServiceId(authToken);
         if (serviceId == null || serviceId == 0) {
             throw new Fault(new Exception("Invalid token"));
         }

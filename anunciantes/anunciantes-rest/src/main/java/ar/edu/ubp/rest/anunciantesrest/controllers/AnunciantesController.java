@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.anunciantesrest.beans.AdvertisingBean;
-import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.AuthTokenRequestBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.WeeklyReportBean;
 import ar.edu.ubp.rest.anunciantesrest.services.AdvertiserServices;
 
 @RestController
@@ -45,10 +46,10 @@ public class AnunciantesController {
         return new ResponseEntity<>(advertiserServices.getAllAdvertisings(authToken.getAuthToken()), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/advertisings/track")
-    public ResponseEntity<String> getUserTrack(@RequestBody AuthTokenRequestBean authToken)
-            throws NumberFormatException, Exception {
-        return new ResponseEntity<>(string, HttpStatus.OK);
+    @PostMapping(path = "/report")
+    public ResponseEntity<String> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
+
+        return new ResponseEntity<String>(advertiserServices.createWeeklyReport(report), HttpStatus.OK);
     }
 
     @PostMapping(path = "/ping")

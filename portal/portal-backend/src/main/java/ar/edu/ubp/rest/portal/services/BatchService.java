@@ -37,6 +37,9 @@ public class BatchService {
     @Autowired
     private final PlatformApiClientService platformApiClientService;
 
+    @Autowired
+    private final AdvertiserApiClientService advertiserApiClientService;
+
     public void updateAdvertisings(List<ServiceResponseMapperBean<AdvertisingResponseBean>> clientAdvertisings) {
 
         List<BannerDTO> banners = new ArrayList<>();
@@ -126,8 +129,16 @@ public class BatchService {
 
     }
 
-    public Map<Integer, String> sendWeeklyReport() throws Exception{
-        return platformApiClientService.sendWeeklyReport();
+    public String sendWeeklyReport() throws Exception{
+        Map<Integer, String> platformsResult = platformApiClientService.sendWeeklyReport();
+        Map<Integer, String> advertisersResult = advertiserApiClientService.sendWeeklyReport();
+
+        System.out.println("----------->" + platformsResult);
+        System.out.println("----------->" + advertisersResult);
+
+        return platformsResult.toString() + advertisersResult.toString();
     }
+
+   
 
 }

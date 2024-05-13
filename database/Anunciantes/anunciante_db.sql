@@ -11,24 +11,25 @@
 USE anunciante3_db
 
 /*
-DROP TABLE IF EXISTS WeeklyAdvertisingReport
+DROP TABLE IF EXISTS WeeklyAdvertisingClickReport
+DROP TABLE IF EXISTS WeeklyReport
 DROP TABLE IF EXISTS Advertising
 DROP TABLE IF EXISTS Banner                
-DROP TABLE IF EXISTS WeeklyPriorityReport
-DROP TABLE IF EXISTS WeeklyReport
 DROP TABLE IF EXISTS ServiceConnection
 DROP TABLE IF EXISTS Priorty
 */
 
 
-CREATE TABLE Priorty (
+CREATE TABLE Priorty
+(
   priorityId INT NOT NULL IDENTITY(1,1),
   priorityTitle VARCHAR(255) NOT NULL,
   PRIMARY KEY (priorityId)
 );
 GO
 
-CREATE TABLE ServiceConnection (
+CREATE TABLE ServiceConnection
+(
   serviceId INT NOT NULL IDENTITY(1,1),
   name VARCHAR(255) NOT NULL UNIQUE,
   authToken NVARCHAR(255) NOT NULL UNIQUE,
@@ -36,28 +37,9 @@ CREATE TABLE ServiceConnection (
 );
 GO
 
-CREATE TABLE WeeklyReport (
-  reportId INT NOT NULL IDENTITY(1,1),
-  serviceId INT NOT NULL,
-  totalClicks INT NOT NULL,
-  fromDate DATE NOT NULL,
-  toDate DATE NOT NULL,
-  PRIMARY KEY (reportId),
-  FOREIGN KEY (serviceId) REFERENCES ServiceConnection(serviceId)
-);
-GO
 
-CREATE TABLE WeeklyPriorityReport (
-  reportId INT NOT NULL IDENTITY(1,1),
-  priorityId INT NOT NULL,
-  clicks INT NOT NULL,
-  PRIMARY KEY (reportId, priorityId),
-  FOREIGN KEY (priorityId) REFERENCES Priorty(priorityId),
-  FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId)
-);
-GO
-
-CREATE TABLE Banner (
+CREATE TABLE Banner
+(
   bannerId INT NOT NULL IDENTITY(1,1),
   text VARCHAR(255) NOT NULL,
   imageUrl VARCHAR(255) NOT NULL,
@@ -66,7 +48,8 @@ CREATE TABLE Banner (
 );
 GO
 
-CREATE TABLE Advertising (
+CREATE TABLE Advertising
+(
   advertisingId INT NOT NULL IDENTITY(1,1),
   bannerId INT NOT NULL,
   serviceId INT NOT NULL,
@@ -80,15 +63,29 @@ CREATE TABLE Advertising (
 );
 GO
 
-CREATE TABLE WeeklyAdvertisingReport (
+CREATE TABLE WeeklyReport
+(
   reportId INT NOT NULL IDENTITY(1,1),
-  advertisingId INT NOT NULL,
-  clicks INT NOT NULL,
-  PRIMARY KEY (reportId, advertisingId),
-  FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId),
-  FOREIGN KEY (advertisingId) REFERENCES Advertising(advertisingId)
+  serviceId INT NOT NULL,
+  fromDate DATE NOT NULL,
+  toDate DATE NOT NULL,
+  PRIMARY KEY (reportId),
+  FOREIGN KEY (serviceId) REFERENCES ServiceConnection(serviceId)
 );
 GO
+
+CREATE TABLE WeeklyAdvertisingClickReport
+(
+  reportId INT NOT NULL,
+  bannerId INT NOT NULL,
+  subscriberId INT NOT NULL,
+  clickedAt DATETIME NOT NULL,
+  PRIMARY KEY (reportId, subscriberId, clickedAt),
+  FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId),
+  FOREIGN KEY (bannerId) REFERENCES Banner(bannerId)
+);
+GO
+
 
 
 

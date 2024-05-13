@@ -20,8 +20,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
 
 public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
@@ -112,6 +115,27 @@ public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
         }
 
         return advertisingList;
+    }
+
+    
+    @Override
+    public String sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload) {
+        String message = """
+                <ws:receiveWeeklyReport xmlns:ws="http://ws.soap.ubp.edu.ar/">
+                   %s
+                </ws:receiveWeeklyReport>""".formatted(payload.toSoapXml());
+
+        Document resultDocument = createAndSendSoapRequest(message);
+
+        Element root = resultDocument.getDocumentElement();
+        NodeList nodes = root.getElementsByTagName("report");
+
+        if (nodes.getLength() == 0) {
+            return null;
+        }
+
+        Element element = (Element) nodes.item(0);
+        return new ReportResponseBean(element.getOwnerDocument()).getResponse();
     }
 
 }

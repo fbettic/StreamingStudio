@@ -1,6 +1,8 @@
 package ar.edu.ubp.soap.beans;
 
-import java.sql.Date;
+
+import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeeklyReportBean {
-    private int reportId;
-    private int serviceId;
-    private int totalClicks;
+    private String authToken;
+    private Integer reportId;
     private Date fromDate;
     private Date toDate;
+    private List<AdvertisingClickReportBean> clicks;
 }

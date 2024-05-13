@@ -88,9 +88,10 @@ CREATE OR ALTER PROCEDURE GetAdvertisingClickReportsByReportId
     @reportId INT
 AS
 BEGIN
-    SELECT *
+    SELECT acr.clickId, bannerId, subscriberId, clickedAt
     FROM AdvertisingClickReport acr
         JOIN SubscriberAdvertisingClick sac on sac.clickId = acr.clickId
+        JOIN Advertising a ON a.advertisingId = sac.advertisingId
     WHERE reportId = @reportId
 END
 GO

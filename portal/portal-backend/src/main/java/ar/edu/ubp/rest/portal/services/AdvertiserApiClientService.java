@@ -2,13 +2,19 @@ package ar.edu.ubp.rest.portal.services;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.ServiceResponseMapperBean;
@@ -24,6 +30,9 @@ public class AdvertiserApiClientService {
 
     @Autowired
     private AdvertiserRepository advertiserRepository;
+
+    @Autowired
+    private ReportService reportService;
 
     public AdvertiserApiClientService() {
         this.advertiserClientFactory = AdvertiserApiClientFactory.getInstance();
@@ -41,7 +50,7 @@ public class AdvertiserApiClientService {
         AdvertiserDTO advertiser = advertiserRepository.getAdvertiserById(advertiserId);
 
         if (Objects.isNull(advertiser) || advertiser.getServiceType() == "ACCOUNT")
-                return null;
+            return null;
 
         AbstractAdvertiserApiClient advertiserClient = null;
         try {
@@ -56,15 +65,14 @@ public class AdvertiserApiClientService {
         if (Objects.isNull(advertiserClient))
             return null;
 
-        
         BasicPayloadBean authToken = new BasicPayloadBean(advertiser.getAuthToken());
 
-        BannerResponseBean banner = advertiserClient.getBannerById(bannerId,authToken);
+        BannerResponseBean banner = advertiserClient.getBannerById(bannerId, authToken);
 
         return banner;
     }
 
-    public List<ServiceResponseMapperBean<AdvertisingResponseBean> > getAllAdvertisingsFromAdvertisers()
+    public List<ServiceResponseMapperBean<AdvertisingResponseBean>> getAllAdvertisingsFromAdvertisers()
             throws Exception {
         List<AdvertiserDTO> advertisers = advertiserRepository.getAllAdvertisers();
 
@@ -93,12 +101,72 @@ public class AdvertiserApiClientService {
 
             if (!advertisings.isEmpty()) {
 
-                advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(advertiser.getAdvertiserId(), advertisings));
+                advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(
+                        advertiser.getAdvertiserId(), advertisings));
             }
 
         });
 
         return advertisingsByAdvertisers;
+    }
+
+    public Map<Integer, String> sendWeeklyReport() throws Exception {
+        List<AdvertiserDTO> advertisers = advertiserRepository.getAllAdvertisers();
+
+        Map<Integer, String> response = new HashMap<Integer, String>();
+
+        if (Objects.isNull(advertisers) || advertisers.size() == 0)
+            throw new Exception("Failed to retrieve data from registered advertisers.");
+
+        for (AdvertiserDTO advertiser : advertisers) {
+            if (Objects.isNull(advertiser) || advertiser.getServiceType() == "ACCOUNT")
+                continue;
+
+            String result = "error";
+
+            AbstractAdvertiserApiClient advertiserClient = null;
+
+            try {
+                advertiserClient = advertiserClientFactory.buildAdvertiserClient(advertiser.getCompanyName(),
+                        advertiser.getServiceType(), advertiser.getApiUrl(), true);
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                    | IllegalAccessException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+
+            if (Objects.isNull(advertiserClient)) {
+                response.put(advertiser.getAdvertiserId(), result);
+                continue;
+            }
+
+            WeeklyAdvertiserReportPayloadBean report = reportService.createWeeklyAdvertiserReport(
+                    advertiser.getAdvertiserId(),
+                    advertiser.getAuthToken());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = null;
+            try {
+                jsonString = objectMapper.writeValueAsString(report);
+            } catch (JsonProcessingException e) {
+                throw e;
+            }
+
+            System.out.println(jsonString);
+            try {
+                result = advertiserClient.sendWeeklyReport(report);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+
+            if (Objects.nonNull(result) && result.equals("Success")) {
+                response.put(advertiser.getAdvertiserId(), result);
+            }
+        }
+        ;
+
+        return response;
     }
 
 }

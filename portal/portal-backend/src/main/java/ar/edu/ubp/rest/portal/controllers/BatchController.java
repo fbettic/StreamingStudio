@@ -53,8 +53,8 @@ public class BatchController {
     }
 
     @GetMapping("reports")
-    public ResponseEntity<Map<Integer, String>> sendWeeklyReport() throws Exception {
-        return new ResponseEntity<Map<Integer, String>>(batchService.sendWeeklyReport(),
+    public ResponseEntity<String> sendWeeklyReport() throws Exception {
+        return new ResponseEntity<String>(batchService.sendWeeklyReport(),
                 HttpStatus.CREATED);
     }
 

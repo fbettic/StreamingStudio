@@ -3,6 +3,8 @@ package ar.edu.ubp.rest.portal.models.clients;
 import java.util.List;
 
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import lombok.Data;
@@ -17,5 +19,5 @@ public abstract class AbstractAdvertiserApiClient {
 
     public abstract List<AdvertisingResponseBean> getAllAdvertisings(BasicPayloadBean payload);
 
-
+    public abstract String sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload);
 }

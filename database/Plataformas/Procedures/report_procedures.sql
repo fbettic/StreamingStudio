@@ -10,11 +10,7 @@ DROP PROCEDURE IF EXISTS CreateWeeklyFilmReport
 DROP PROCEDURE IF EXISTS GetWeeklyReportById
 */
 
-
-
-
-
--- DROP PROCEDURE IF EXISTS InsertWeeklyReportFromJson
+-- DROP PROCEDURE IF EXISTS CreateWeeklyReportFromJson
 CREATE OR ALTER PROCEDURE CreateWeeklyReportFromJson
     @json NVARCHAR(MAX)
 AS

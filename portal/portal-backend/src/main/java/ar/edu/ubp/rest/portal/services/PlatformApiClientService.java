@@ -265,7 +265,7 @@ public class PlatformApiClientService {
                 continue;
             }
 
-            if (result.equals("Success")) {
+            if (Objects.nonNull(result) && result.equals("Success")) {
                 response.put(platform.getPlatformId(), result);
             }
         }

@@ -12,8 +12,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import ar.edu.ubp.rest.portal.beans.request.AdvertisingClickReportBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.PlayRegisterPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IReportRepository;
 
@@ -59,7 +61,7 @@ public class ReportRepository implements IReportRepository {
 
         @SuppressWarnings("unchecked")
         @Override
-        public List<AssociationReportPayloadBean> GetAssociationsByReportId(Integer reportId) {
+        public List<AssociationReportPayloadBean> getAssociationsByReportId(Integer reportId) {
                 SqlParameterSource input = new MapSqlParameterSource()
                                 .addValue("reportId", reportId);
 
@@ -71,5 +73,40 @@ public class ReportRepository implements IReportRepository {
 
                 Map<String, Object> output = jdbcCall.execute(input);
                 return (List<AssociationReportPayloadBean>) output.get("association");
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public WeeklyAdvertiserReportPayloadBean createWeeklyAdvertiserReport(Integer advertiserId, LocalDate fromDate,
+                        LocalDate toDate) {
+                SqlParameterSource input = new MapSqlParameterSource()
+                                .addValue("advertiserId", advertiserId)
+                                .addValue("fromDate", fromDate)
+                                .addValue("toDate", toDate);
+
+                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                                .withProcedureName("CreateWeeklyAdvertiserReport")
+                                .withSchemaName("dbo")
+                                .returningResultSet("report", BeanPropertyRowMapper
+                                                .newInstance(WeeklyAdvertiserReportPayloadBean.class));
+
+                Map<String, Object> output = jdbcCall.execute(input);
+                return ((List<WeeklyAdvertiserReportPayloadBean>) output.get("report")).get(0);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public List<AdvertisingClickReportBean> getAdvertisingClickReportsByReportId(Integer reportId) {
+                SqlParameterSource input = new MapSqlParameterSource()
+                                .addValue("reportId", reportId);
+
+                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                                .withProcedureName("GetAdvertisingClickReportsByReportId")
+                                .withSchemaName("dbo")
+                                .returningResultSet("click",
+                                                BeanPropertyRowMapper.newInstance(AdvertisingClickReportBean.class));
+
+                Map<String, Object> output = jdbcCall.execute(input);
+                return (List<AdvertisingClickReportBean>) output.get("click");
         }
 }

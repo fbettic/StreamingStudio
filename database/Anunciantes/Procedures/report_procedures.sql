@@ -10,64 +10,107 @@ DROP PROCEDURE IF EXISTS CreateWeeklyAdvertisingReport
 DROP PROCEDURE IF EXISTS GetWeeklyReportById
 */
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyReport
-CREATE OR ALTER PROCEDURE CreateWeeklyReport
-    @serviceId INT,
-    @totalClicks INT,
-    @fromDate DATE,
-    @toDate DATE
+-- DROP PROCEDURE IF EXISTS CreateWeeklyReportFromJson
+CREATE OR ALTER PROCEDURE CreateWeeklyReportFromJson
+  @json NVARCHAR(MAX)
 AS
 BEGIN
-    -- Insertar el nuevo informe en la tabla WeeklyReport
-    INSERT INTO WeeklyReport (serviceId, totalClicks, fromDate, toDate)
-    VALUES (@serviceId, @totalClicks, @fromDate, @toDate)
+  BEGIN TRY
+    -- Create temporary table to hold JSON data
+    CREATE TABLE #TempData
+  (
+    authToken NVARCHAR(255),
+    reportId INT,
+    fromDate BIGINT,
+    toDate BIGINT,
+    clicks NVARCHAR(MAX)
+  );
 
-    -- Obtener el ID del informe creado
-    DECLARE @reportId INT
-    SET @reportId = SCOPE_IDENTITY()
+    -- Insert JSON data into temporary table
+    INSERT INTO #TempData
+    (authToken, reportId, fromDate, toDate, clicks)
+  SELECT authToken, reportId, fromDate, toDate, clicks
+  FROM OPENJSON(@json)
+    WITH (
+        authToken NVARCHAR(255) '$.authToken',
+        reportId INT '$.reportId',
+        fromDate BIGINT '$.fromDate',
+        toDate BIGINT '$.toDate',
+        clicks NVARCHAR(MAX) '$.clicks' AS JSON
+    );
 
-    -- Devolver el informe recién creado
-    EXEC GetWeeklyReportById @reportId
-END
+    INSERT INTO WeeklyReport
+    (serviceId, fromDate, toDate)
+  SELECT serviceId, dbo.ConvertirUnixTimestamp(fromDate), dbo.ConvertirUnixTimestamp(toDate)
+  FROM ServiceConnection sc
+    JOIN #TempData td ON td.authToken = sc.authToken;
+
+    -- Get inserted reportId
+    DECLARE @insertedReportId INT;
+    SELECT @insertedReportId = SCOPE_IDENTITY();
+
+    -- Insert data into PlayRegisterReport table
+    INSERT INTO WeeklyAdvertisingClickReport
+    (reportId, bannerId, subscriberId, clickedAt)
+  SELECT @insertedReportId, bannerId, subscriberId, dbo.ConvertirUnixTimestamp(clickedAt)
+  FROM OPENJSON((SELECT clicks FROM #TempData))
+    WITH (
+        bannerId INT '$.bannerId',
+        clickedAt BIGINT '$.clickedAt',
+        subscriberId INT '$.subscriberId'
+    );
+
+    -- Drop temporary table
+    DROP TABLE #TempData;
+
+    SELECT 'Success' AS Result;
+  END TRY
+  BEGIN CATCH
+    -- Error
+    SELECT ERROR_MESSAGE() AS Result;
+  END CATCH
+END;
 GO
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyPriorityReport
-CREATE OR ALTER PROCEDURE CreateWeeklyPriorityReport
-    @reportId INT,
-    @priorityId INT,
-    @clicks INT
+
+CREATE OR ALTER FUNCTION ConvertirUnixTimestamp(@timestamp bigint)
+RETURNS datetime
 AS
 BEGIN
-    -- Insertar el nuevo informe de prioridad en la tabla WeeklyPriorityReport
-    INSERT INTO WeeklyPriorityReport (reportId, priorityId, clicks)
-    VALUES (@reportId, @priorityId, @clicks)
+  DECLARE @fechaInicioUnix datetime = '1970-01-01 00:00:00';
+  DECLARE @fechaInicioSQLServer datetime = '1900-01-01 00:00:00';
 
-    -- No es necesario devolver el informe de prioridad creado, ya que no se solicita explícitamente
-END
+  DECLARE @fechaHora datetime;
+
+  SET @fechaHora = (
+        SELECT
+    CONVERT(datetime, DATEADD(s, @timestamp / 1000, @fechaInicioUnix) + 
+                    DATEADD(ms, @timestamp % 1000, @fechaInicioSQLServer), 20)
+    );
+
+  RETURN @fechaHora;
+END;
 GO
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyAdvertisingReport
-CREATE OR ALTER PROCEDURE CreateWeeklyAdvertisingReport
-    @reportId INT,
-    @advertisingId INT,
-    @clicks INT
-AS
-BEGIN
-    -- Insertar el nuevo informe de publicidad en la tabla WeeklyAdvertisingReport
-    INSERT INTO WeeklyAdvertisingReport (reportId, advertisingId, clicks)
-    VALUES (@reportId, @advertisingId, @clicks)
 
-    -- No es necesario devolver el informe de publicidad creado, ya que no se solicita explícitamente
-END
-GO
 
--- DROP PROCEDURE IF EXISTS GetWeeklyReportById
-CREATE OR ALTER PROCEDURE GetWeeklyReportById
-    @reportId INT
-AS
-BEGIN
-    SELECT reportId, serviceId, totalClicks, fromDate, toDate
-    FROM WeeklyReport
-    WHERE reportId = @reportId
-END
-GO
+DECLARE @json NVARCHAR(MAX)
+
+SET @json = '{
+  "authToken": "STREAMING_STUDIO_SECRET_KEY",
+  "reportId": 19,
+  "fromDate": 1714532400000,
+  "toDate": 1717124400000,
+  "clicks": [
+   
+  ]
+}
+
+'
+
+EXEC CreateWeeklyReportFromJson @json
+
+select *
+from WeeklyReport
+select *
+from WeeklyAdvertisingClickReport

@@ -498,4 +498,5 @@ VALUEs
   (1, 2)
 
 select *
-from Subscriber
+from Advertiser
+

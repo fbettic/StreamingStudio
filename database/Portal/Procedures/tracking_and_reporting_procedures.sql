@@ -13,48 +13,7 @@ DROP PROCEDURE IF EXISTS CreatePlayRegisterReports
 DROP PROCEDURE IF EXISTS GetPlayRegisterReportsByReportId
 */
 
-------------------- AdvertisingClickReports procedures -------------------
 
--- DROP PROCEDURE IF EXISTS CreateAdvertisingClickReports
-CREATE OR ALTER PROCEDURE CreateAdvertisingClickReports
-    @reportId INT,
-    @rowCount INT OUTPUT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    DECLARE @fromDate DATE
-    DECLARE @toDate DATE
-    DECLARE @advertiserId INT
-    
-    SELECT 
-        @fromDate = fromDate, 
-        @toDate = toDate,
-        @advertiserId = advertiserId
-    FROM WeeklyAdvertiserReport
-    WHERE reportId = @reportId
-
-    INSERT INTO AdvertisingClickReport (reportId, clickId)
-    SELECT @reportId, clickId
-    FROM SubscriberAdvertisingClick sac 
-        JOIN Advertising a ON a.advertisingId = sac.advertisingId
-    WHERE clickedAt BETWEEN @fromDate AND @toDate
-    AND a.advertiserId = @advertiserId
-    
-    SET @rowCount = @@ROWCOUNT
-END
-GO
-
--- DROP PROCEDURE IF EXISTS GetAdvertisingClickReportsByReportId
-CREATE OR ALTER PROCEDURE GetAdvertisingClickReportsByReportId
-    @reportId INT
-AS
-BEGIN
-    SELECT *
-    FROM AdvertisingClickReport acr
-    JOIN SubscriberAdvertisingClick sac on sac.clickId = acr.clickId
-    WHERE reportId = @reportId
-END
-GO
 ------------------- WeeklyAdvertiserReport procedures -------------------
 
 -- DROP PROCEDURE IF EXISTS CreateWeeklyAdvertiserReport
@@ -67,16 +26,14 @@ BEGIN
     DECLARE @weekClicks INT
     DECLARE @reportId INT
 
-    INSERT INTO WeeklyAdvertiserReport (advertiserId, fromDate, toDate)
-    VALUES (@advertiserId, @fromDate, @toDate)
+    INSERT INTO WeeklyAdvertiserReport
+        (advertiserId, fromDate, toDate)
+    VALUES
+        (@advertiserId, @fromDate, @toDate)
 
     SET @reportId = SCOPE_IDENTITY()
 
     EXEC CreateAdvertisingClickReports @reportId, @weekClicks OUTPUT
-
-    UPDATE WeeklyAdvertiserReport 
-    SET weekClicks = @weekClicks 
-    WHERE reportId = @reportId
 
     EXEC GetWeeklyAdvertiserReport @reportId
 END
@@ -93,6 +50,51 @@ BEGIN
 END
 GO
 
+
+------------------- AdvertisingClickReports procedures -------------------
+
+-- DROP PROCEDURE IF EXISTS CreateAdvertisingClickReports
+CREATE OR ALTER PROCEDURE CreateAdvertisingClickReports
+    @reportId INT,
+    @rowCount INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @fromDate DATE
+    DECLARE @toDate DATE
+    DECLARE @advertiserId INT
+
+    SELECT
+        @fromDate = fromDate,
+        @toDate = toDate,
+        @advertiserId = advertiserId
+    FROM WeeklyAdvertiserReport
+    WHERE reportId = @reportId
+
+    INSERT INTO AdvertisingClickReport
+        (reportId, clickId)
+    SELECT @reportId, clickId
+    FROM SubscriberAdvertisingClick sac
+        JOIN Advertising a ON a.advertisingId = sac.advertisingId
+    WHERE clickedAt BETWEEN @fromDate AND @toDate
+        AND a.advertiserId = @advertiserId
+
+    SET @rowCount = @@ROWCOUNT
+END
+GO
+
+-- DROP PROCEDURE IF EXISTS GetAdvertisingClickReportsByReportId
+CREATE OR ALTER PROCEDURE GetAdvertisingClickReportsByReportId
+    @reportId INT
+AS
+BEGIN
+    SELECT *
+    FROM AdvertisingClickReport acr
+        JOIN SubscriberAdvertisingClick sac on sac.clickId = acr.clickId
+    WHERE reportId = @reportId
+END
+GO
+
 ------------------- SubscriberAdvertisingClick procedures -------------------
 
 -- DROP PROCEDURE IF EXISTS CreateSubscriberAdvertisingClick
@@ -102,44 +104,45 @@ CREATE OR ALTER PROCEDURE CreateSubscriberAdvertisingClick
     @clickedAt DATETIME
 AS
 BEGIN
-    INSERT INTO SubscriberAdvertisingClick (advertisingId, subscriberId, clickedAt)
-    VALUES (@advertisingId, @subscriberId, @clickedAt)
+    INSERT INTO SubscriberAdvertisingClick
+        (advertisingId, subscriberId, clickedAt)
+    VALUES
+        (@advertisingId, @subscriberId, @clickedAt)
 END
 GO
 
 ------------------- WeeklyPlatformFilmReport procedures -------------------
 -- DROP PROCEDURE IF EXISTS CreateWeeklyPlatformFilmReport
-CREATE OR ALTER PROCEDURE CreateWeeklyPlatformFilmReport
+CREATE OR ALTER PROCEDURE CreateWeeklyPlatformReport
     @platformId INT,
     @fromDate DATE,
     @toDate DATE
 AS
 BEGIN
-    DECLARE @weekViews INT
     DECLARE @reportId INT
 
-    INSERT INTO WeeklyPlatformFilmReport (platformId, fromDate, toDate)
-    VALUES (@platformId, @fromDate, @toDate)
+    INSERT INTO WeeklyPlatformReport
+        (platformId, fromDate, toDate)
+    VALUES
+        (@platformId, @fromDate, @toDate)
 
     SET @reportId = SCOPE_IDENTITY()
 
-    EXEC CreatePlayRegisterReports @reportId, @weekViews OUTPUT
+    EXEC CreatePlayRegisterReports @reportId
 
-    UPDATE WeeklyPlatformFilmReport
-    SET weekViews = @weekViews
-    WHERE reportId = @reportId
-
-    EXEC GetWeeklyPlatformFilmReport @reportId
+    EXEC GetWeeklyPlatformReport @reportId
 END
 GO
 
--- DROP PROCEDURE IF EXISTS GetWeeklyPlatformFilmReport
-CREATE OR ALTER PROCEDURE GetWeeklyPlatformFilmReport
+
+
+-- DROP PROCEDURE IF EXISTS GetWeeklyPlatformReport
+CREATE OR ALTER PROCEDURE GetWeeklyPlatformReport
     @reportId INT
 AS
 BEGIN
-    SELECT *
-    FROM WeeklyPlatformFilmReport
+    SELECT reportId, fromDate, toDate
+    FROM WeeklyPlatformReport
     WHERE reportId = @reportId
 END
 GO
@@ -148,29 +151,27 @@ GO
 
 -- DROP PROCEDURE IF EXISTS CreatePlayRegisterReports
 CREATE OR ALTER PROCEDURE CreatePlayRegisterReports
-    @reportId INT,
-    @rowCount INT OUTPUT
+    @reportId INT
 AS
 BEGIN
     SET NOCOUNT ON;
     DECLARE @fromDate DATE
     DECLARE @toDate DATE
     DECLARE @platformId INT
-    
-    SELECT 
-        @fromDate = fromDate, 
+
+    SELECT
+        @fromDate = fromDate,
         @toDate = toDate,
         @platformId = platformId
-    FROM WeeklyPlatformFilmReport
+    FROM WeeklyPlatformReport
     WHERE reportId = @reportId
 
-    INSERT INTO PlayRegister(reportId, sessionId, playedAt)
+    INSERT INTO PlayRegister
+        (reportId, sessionId, playedAt)
     SELECT @reportId, sessionId, usedAt AS playedAt
     FROM Sessions
     WHERE usedAt BETWEEN @fromDate AND @toDate
-    AND platformId = @platformId
-    
-    SET @rowCount = @@ROWCOUNT
+        AND platformId = @platformId
 END
 GO
 
@@ -179,18 +180,60 @@ CREATE OR ALTER PROCEDURE GetPlayRegisterReportsByReportId
     @reportId INT
 AS
 BEGIN
-    SELECT 
-        reportId,
+    SELECT
         pr.sessionId,
         playedAt,
         subscriberId,
-        platformId,
         transactionId,
         filmCode,
         sessionUrl
     FROM PlayRegister pr
-    JOIN Sessions s ON s.sessionId= pr.sessionId
-    JOIN Film f ON f.filmId = s.filmid
+        JOIN Sessions s ON s.sessionId= pr.sessionId
+        JOIN Film f ON f.filmId = s.filmid
     WHERE reportId = @reportId
 END
 GO
+
+
+-- DROP PROCEDURE IF EXISTS GetAssociationsByReportId
+CREATE OR ALTER PROCEDURE GetAssociationsByReportId
+    @reportId INT
+AS
+BEGIN
+
+    DECLARE @platformId INT
+    DECLARE @fromDate DATE
+    DECLARE @toDate DATE
+
+    SELECT
+        @platformId = platformId,
+        @fromDate = fromDate,
+        @toDate = toDate
+    FROM WeeklyPlatformReport
+    WHERE reportId = @reportId;
+    
+
+    WITH
+        FirstAssociations
+        AS
+        (
+            SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY subscriberId ORDER BY entryDate ASC) AS RowNum
+            FROM Association
+            WHERE platformId = @platformId
+        )
+
+    SELECT ar.transactionId, ar.subscriberId, authUrl, associationType, entryDate, leavingDate
+    FROM FirstAssociations fa
+        JOIN AssociationRequest ar ON ar.platformId = fa.platformId
+            AND ar.transactionId = fa.transactionId
+            AND ar.subscriberId = fa.subscriberId
+    WHERE RowNum = 1
+        AND fa.entryDate BETWEEN @fromDate AND @toDate
+END
+GO
+
+GetAssociationsByReportId 1011
+
+select *
+from SubscriberAdvertisingClick

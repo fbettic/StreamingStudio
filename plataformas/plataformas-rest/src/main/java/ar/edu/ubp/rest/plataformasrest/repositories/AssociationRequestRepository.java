@@ -22,6 +22,7 @@ public class AssociationRequestRepository implements IAssociationRequestReposito
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	// TODO cambiar esto no tiene sentido
 	private AssociationRequestBean mapRowToAssociationRequestBean(ResultSet rs) throws Exception {
 
 		return AssociationRequestBean.builder()
@@ -149,7 +150,7 @@ public class AssociationRequestRepository implements IAssociationRequestReposito
 		Map<String, Object> out = jdbcCall.execute(input);
 
 		return ((List<AssociationRequestBean>) out.get("associationRequest")).get(0);
-			
+
 	}
 
 	@Override

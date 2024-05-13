@@ -13,11 +13,17 @@
     <p><strong>Géneros:</strong> {{ film()?.genres }}</p>
     <p><strong>Actores:</strong> {{ film()?.actors }}</p>
     <p><strong>Descripción:</strong> {{ film()?.description }}</p>
-    <button
-      class="btn btn-primary btn-play"
-      (click)="onPlayClick.emit(film()?.filmId)"
-    >
-      Play
-    </button>
+    <div>
+      <div class="d-grid gap-2 d-md-block">
+        @for (platform of filteredPlatforms; track platform.platformId) {
+        <button
+          class="btn btn-primary"
+          (click)="onPlatformSelect(platform.platformId)"
+        >
+          {{ platform.platformName }}
+        </button>
+        }
+      </div>
+    </div>
   </div>
 </div>

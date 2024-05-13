@@ -6,6 +6,7 @@ import { IAdvertisingRequest } from '../models/advertising-request.model';
 import { IAdvertisingSlot } from '../models/advertising-slot.model';
 import { IAdvertising } from '../models/advertising.model';
 import { ITargetCategory } from '../models/target-category.model';
+import { IAdvertisingClick } from '../models/advertising-click.model';
 
 @Injectable({
   providedIn: 'root',
@@ -59,11 +60,13 @@ export class AdvertisingService {
       .pipe(catchError(this.handleError));
   }
 
-  getAdvertisingsToShow(
-    data: IAdvertisingSlot[]
+  getAdvertisingsForSubscriber(
+    data: IAdvertisingSlot[],
+    allPages: Boolean
   ): Observable<IAdvertisingSlot[]> {
+    
     return this.http
-      .post<IAdvertisingSlot[]>(environment.urlApi + 'advertisings/show', data)
+      .post<IAdvertisingSlot[]>(environment.urlApi + 'advertisings/subscriber?allpages=' + allPages , data)
       .pipe(catchError(this.handleError));
   }
 
@@ -76,6 +79,17 @@ export class AdvertisingService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  createSubscriberAdvertisingClick(
+    data: IAdvertisingClick,
+    
+  ): Observable<String> {
+    
+    return this.http
+      .post<String>(environment.urlApi + 'advertisings/track', data)
+      .pipe(catchError(this.handleError));
+  }
+
 
   private handleError(error: HttpErrorResponse) {
     console.log('🚀 ~ AdvertisingService ~ handleError ~ error:', error);

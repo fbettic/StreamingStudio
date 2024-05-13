@@ -2,6 +2,7 @@ package ar.edu.ubp.rest.portal.models.clients.rest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,8 +16,10 @@ import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractPlatformApiClient;
 
@@ -118,6 +121,27 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return responseEntity.getBody();
+        } else {
+            // Handle error
+            throw new RuntimeException(
+                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
+        }
+    }
+
+    @Override
+    public String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<WeeklyPlatformReportPayloadBean> requestEntity = new HttpEntity<>(payload,
+                headers);
+        ResponseEntity<ReportResponseBean> responseEntity = restTemplate.exchange(
+                url + "/report",
+                HttpMethod.POST,
+                requestEntity,
+                ReportResponseBean.class);
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody().getResponse();
         } else {
             // Handle error
             throw new RuntimeException(

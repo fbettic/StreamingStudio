@@ -91,6 +91,8 @@ CREATE TABLE WeeklyAdvertisingReport (
 GO
 
 
+
+
 use anunciante1_db
 
 EXEC GetBannerById 2

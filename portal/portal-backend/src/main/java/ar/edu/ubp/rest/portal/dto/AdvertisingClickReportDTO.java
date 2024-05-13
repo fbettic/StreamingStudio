@@ -1,5 +1,4 @@
-package ar.edu.ubp.rest.plataformasrest.beans;
-
+package ar.edu.ubp.rest.portal.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeeklyFilmReportBean {
+public class AdvertisingClickReportDTO {
     private Integer reportId;
-    private Integer filmId;
-    private Integer views;
 }

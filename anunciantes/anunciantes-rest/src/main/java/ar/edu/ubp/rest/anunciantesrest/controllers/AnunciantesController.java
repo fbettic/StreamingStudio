@@ -45,6 +45,12 @@ public class AnunciantesController {
         return new ResponseEntity<>(advertiserServices.getAllAdvertisings(authToken.getAuthToken()), HttpStatus.OK);
     }
 
+    @PostMapping(path = "/advertisings/track")
+    public ResponseEntity<String> getUserTrack(@RequestBody AuthTokenRequestBean authToken)
+            throws NumberFormatException, Exception {
+        return new ResponseEntity<>(string, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/ping")
     public ResponseEntity<String> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
         System.out.println("---------------> " + authToken);

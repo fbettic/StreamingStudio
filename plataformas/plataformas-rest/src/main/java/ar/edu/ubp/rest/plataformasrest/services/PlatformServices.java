@@ -3,8 +3,11 @@ package ar.edu.ubp.rest.plataformasrest.services;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.AuthTokenRequestBean;
@@ -17,9 +20,11 @@ import ar.edu.ubp.rest.plataformasrest.beans.NewSessionBean;
 import ar.edu.ubp.rest.plataformasrest.beans.PlatformUserBean;
 import ar.edu.ubp.rest.plataformasrest.beans.SessionBean;
 import ar.edu.ubp.rest.plataformasrest.beans.UserRequest;
+import ar.edu.ubp.rest.plataformasrest.beans.WeeklyReportBean;
 import ar.edu.ubp.rest.plataformasrest.repositories.AssociationRequestRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.FilmRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.PlatformUserRepository;
+import ar.edu.ubp.rest.plataformasrest.repositories.ReportRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.ServiceConnectionRepository;
 import ar.edu.ubp.rest.plataformasrest.repositories.SessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +32,23 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PlatformServices {
+    @Autowired
     private final AssociationRequestRepository associationRequestRepository;
+
+    @Autowired
     private final FilmRepository filmRepository;
+
+    @Autowired
     private final PlatformUserRepository platformUserRepository;
+
+    @Autowired
     private final ServiceConnectionRepository serviceConnectionRepository;
+
+    @Autowired
     private final SessionRepository sessionRepository;
+
+    @Autowired
+    private final ReportRepository reportRepository;
 
     public PlatformUserBean createPlatformUser(NewPlatformUserBean newPlatformUser) throws Exception {
         return platformUserRepository.creatPlatformUser(newPlatformUser);
@@ -104,7 +121,7 @@ public class PlatformServices {
 
         final AssociationRequestBean association = associationRequestRepository
                 .getAssociationRequestByToken(request.getUserToken());
-        
+
         System.out.println("-------->" + association.toString());
 
         if (!Objects.isNull(association)
@@ -112,8 +129,6 @@ public class PlatformServices {
                         || !Objects.isNull(association.getCanceledAt()))) {
             return association;
         }
-
-
 
         return associationRequestRepository.cancelAssociationRequest(request.getUserToken());
     }
@@ -160,6 +175,19 @@ public class PlatformServices {
         }
 
         return filmRepository.getAllFilms();
+    }
+
+    public String createWeeklyReport(WeeklyReportBean report) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(report);
+        } catch (JsonProcessingException e) {
+            throw e;
+        }
+        System.out.println("------------------------->" + jsonString);
+        return reportRepository.createWeekleyReport(jsonString);
     }
 
     public String ping(String authToken) throws Exception {

@@ -2,18 +2,23 @@ package ar.edu.ubp.rest.portal.services;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
-
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.ServiceResponseMapperBean;
@@ -36,6 +41,9 @@ public class PlatformApiClientService {
 
     @Autowired
     private AssociationRepository associationRepository;
+
+    @Autowired
+    private ReportService reportService;
 
     public PlatformApiClientService() {
         this.platformClientFactory = PlatformApiClientFactory.getInstance();
@@ -207,4 +215,62 @@ public class PlatformApiClientService {
         return sessionResponse;
     }
 
+    public Map<Integer, String> sendWeeklyReport() throws Exception {
+        List<StreamingPlatformDTO> platforms = streamingPlatformRepository.getAllStreamingPlatfroms();
+
+        Map<Integer, String> response = new HashMap<Integer, String>();
+
+        if (Objects.isNull(platforms) || platforms.size() == 0)
+            throw new Exception("Failed to retrieve data from registered platforms.");
+
+        for (StreamingPlatformDTO platform : platforms) {
+            String result = "error";
+
+            if (Objects.isNull(platform)) {
+                continue;
+            }
+
+            AbstractPlatformApiClient platformClient = null;
+
+            try {
+                platformClient = platformClientFactory.buildPlatformClient(platform.getPlatformName(),
+                        platform.getServiceType(), platform.getApiUrl(), true);
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                    | IllegalAccessException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+
+            if (Objects.isNull(platformClient)) {
+                response.put(platform.getPlatformId(), result);
+                continue;
+            }
+
+            WeeklyPlatformReportPayloadBean report = reportService.createWeeklyPlatformReport(platform.getPlatformId(),
+                    platform.getAuthToken());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = null;
+            try {
+                jsonString = objectMapper.writeValueAsString(report);
+            } catch (JsonProcessingException e) {
+                throw e;
+            }
+
+            System.out.println(jsonString);
+            try {
+                result = platformClient.sendWeeklyReport(report);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+
+            if (result.equals("Success")) {
+                response.put(platform.getPlatformId(), result);
+            }
+        }
+        ;
+
+        return response;
+    }
 }

@@ -22,12 +22,12 @@ public class SessionRepository implements ISessionRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public SessionDTO createSession(SessionDTO session) {
+	public SessionDTO createSession(SessionDTO session, String filmCode) {
 		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("subscriberId", session.getSubscriberId())
 				.addValue("platformId", session.getPlatformId())
 				.addValue("transactionId", session.getTransactionId())
-				.addValue("filmCode", session.getFilmCode())
+				.addValue("filmCode", filmCode)
 				.addValue("sessionUrl", session.getSessionUrl())
 				.addValue("createdAt", session.getCreatedAt());
 

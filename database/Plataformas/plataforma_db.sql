@@ -11,8 +11,8 @@
 USE plataforma1_db
 
 /*
-DROP TABLE IF EXISTS WeeklyFilmReport
-DROP TABLE IF EXISTS WeeklyGenreReport
+DROP TABLE IF EXISTS AssociationRegisterReport
+DROP TABLE IF EXISTS PlayRegisterReport
 DROP TABLE IF EXISTS WeeklyReport
 DROP TABLE IF EXISTS FilmGenre
 DROP TABLE IF EXISTS Genre
@@ -30,7 +30,8 @@ DROP TABLE IF EXISTS ServiceConnection
 
 
 
-CREATE TABLE ServiceConnection (
+CREATE TABLE ServiceConnection
+(
   serviceId INT NOT NULL IDENTITY(1,1),
   name VARCHAR(255) NOT NULL UNIQUE,
   authToken NVARCHAR(255) NOT NULL UNIQUE,
@@ -38,7 +39,8 @@ CREATE TABLE ServiceConnection (
 );
 GO
 
-CREATE TABLE StreamingPlatformFee (
+CREATE TABLE StreamingPlatformFee
+(
   feeId INT NOT NULL IDENTITY(1,1),
   serviceId INT NOT NULL,
   signupFee FLOAT NOT NULL,
@@ -50,7 +52,8 @@ CREATE TABLE StreamingPlatformFee (
 );
 GO
 
-CREATE TABLE PlatformUser (
+CREATE TABLE PlatformUser
+(
   userId INT NOT NULL IDENTITY(1,1),
   firstname VARCHAR(255) NOT NULL,
   lastname VARCHAR(255) NOT NULL,
@@ -61,7 +64,8 @@ CREATE TABLE PlatformUser (
 );
 GO
 
-CREATE TABLE AssociationRequest (
+CREATE TABLE AssociationRequest
+(
   associationId INT NOT NULL IDENTITY(1,1),
   userId INT,
   serviceId INT NOT NULL,
@@ -89,17 +93,19 @@ CREATE TABLE Country
 GO
 GO
 
-CREATE TABLE Director (
+CREATE TABLE Director
+(
   directorId INT NOT NULL IDENTITY(1,1),
   directorName VARCHAR(255) NOT NULL,
   PRIMARY KEY (directorId)
 );
 GO
 
-CREATE TABLE Film (
+CREATE TABLE Film
+(
   filmId INT NOT NULL IDENTITY(1,1),
   --IMDb id
-  filmCode CHAR(9) NOT NULL UNIQUE, 
+  filmCode CHAR(9) NOT NULL UNIQUE,
   title VARCHAR(255) NOT NULL,
   cover VARCHAR(255) NOT NULL,
   description NVARCHAR(MAX) NOT NULL,
@@ -115,7 +121,8 @@ CREATE TABLE Film (
 );
 GO
 
-CREATE TABLE Sessions (
+CREATE TABLE Sessions
+(
   sessionId INT NOT NULL IDENTITY(1,1),
   associationId INT NOT NULL,
   filmId INT,
@@ -129,14 +136,16 @@ CREATE TABLE Sessions (
 );
 GO
 
-CREATE TABLE Actor (
+CREATE TABLE Actor
+(
   actorId INT NOT NULL IDENTITY(1,1),
   actorName VARCHAR(255) NOT NULL,
   PRIMARY KEY (actorId)
 );
 GO
 
-CREATE TABLE FilmActor (
+CREATE TABLE FilmActor
+(
   filmId INT NOT NULL,
   actorId INT NOT NULL,
   PRIMARY KEY (filmId, actorId),
@@ -145,14 +154,16 @@ CREATE TABLE FilmActor (
 );
 GO
 
-CREATE TABLE Genre (
+CREATE TABLE Genre
+(
   genreId INT NOT NULL IDENTITY(1,1),
   genre VARCHAR(255) NOT NULL,
   PRIMARY KEY (genreId)
 );
 GO
 
-CREATE TABLE FilmGenre (
+CREATE TABLE FilmGenre
+(
   filmId INT NOT NULL,
   genreId INT NOT NULL,
   PRIMARY KEY (filmId, genreId),
@@ -161,43 +172,53 @@ CREATE TABLE FilmGenre (
 );
 GO
 
-CREATE TABLE WeeklyReport (
+CREATE TABLE WeeklyReport
+(
   reportId INT NOT NULL IDENTITY(1,1),
   serviceId INT NOT NULL,
-  signupQuantity INT NOT NULL,
-  associationsQuantity INT NOT NULL,
-  fromDate DATE NOT NULL,
-  toDate DATE NOT NULL,
+  fromDate DATETIME NOT NULL,
+  toDate DATETIME NOT NULL,
   PRIMARY KEY (reportId),
   FOREIGN KEY (serviceId) REFERENCES ServiceConnection(serviceId)
 );
 GO
 
-CREATE TABLE WeeklyGenreReport (
+CREATE TABLE PlayRegisterReport
+(
   reportId INT NOT NULL,
-  genreId INT NOT NULL,
-  views INT NOT NULL,
-  PRIMARY KEY (reportId, genreId),
-  FOREIGN KEY (genreId) REFERENCES Genre(genreId),
+  sessionId INT NOT NULL,
+  playedAt DATETIME NOT NULL,
+  subscriberId INT NOT NULL,
+  transactionId INT NOT NULL,
+  filmCode VARCHAR(MAX) NOT NULL,
+  sessionUrl VARCHAR(MAX) NOT NULL,
+  PRIMARY KEY (reportId,sessionId,playedAt),
   FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId)
 );
 GO
 
-CREATE TABLE WeeklyFilmReport (
-  filmId INT NOT NULL,
+CREATE TABLE AssociationRegisterReport
+(
   reportId INT NOT NULL,
-  views INT NOT NULL,
-  PRIMARY KEY (filmId, reportId),
-  FOREIGN KEY (filmId) REFERENCES Film(filmId),
-  FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId)
-);
+  subscriberId INT NOT NULL,
+  transactionId INT NOT NULL,
+  associationType VARCHAR(MAX) NOT NULL,
+  authUrl VARCHAR(MAX) NOT NULL,
+  entryDate DATETIME NOT NULL,
+  leavingDate DATETIME,
+  PRIMARY KEY (reportId,transactionId),
+  FOREIGN KEY (reportId) REFERENCES WeeklyReport (reportId)
+)
 GO
 
 
+select *
+from Film
 
-select * from Film
-
-select * from PlatformUser
-select * from AssociationRequest WHERE userToken = '0E06FE89-D2B5-4F0E-B7AD-0736B520753F'
+select *
+from PlatformUser
+select *
+from AssociationRequest
+WHERE userToken = '0E06FE89-D2B5-4F0E-B7AD-0736B520753F'
 
 EXEC GetAssociationRequestByToken '98F28D9F-AF50-4EFD-A7D0-C0D3BA0AE213'

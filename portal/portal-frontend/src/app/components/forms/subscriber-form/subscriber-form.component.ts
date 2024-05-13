@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { ISubscriber } from '../../../models/subscriber.model';
 import { ITargetCategory } from '../../../models/target-category.model';
-import { SubscriberService } from '../../../services/subscriber/subscriber.service';
+import { SubscriberService } from '../../../services/subscriber.service';
 import { TargetCategoryService } from '../../../services/target-category.service';
 
 @Component({

@@ -5,6 +5,9 @@ import java.util.Objects;
 
 import org.apache.cxf.interceptor.Fault;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.soap.beans.AssociationRequestBean;
 import ar.edu.ubp.soap.beans.FilmBean;
 import ar.edu.ubp.soap.beans.LoginRequestBean;
@@ -13,9 +16,10 @@ import ar.edu.ubp.soap.beans.NewPlatformUserBean;
 import ar.edu.ubp.soap.beans.NewSessionBean;
 import ar.edu.ubp.soap.beans.PlatformUserBean;
 import ar.edu.ubp.soap.beans.SessionBean;
+import ar.edu.ubp.soap.beans.WeeklyReportBean;
 import ar.edu.ubp.soap.db.AuthManager;
-import ar.edu.ubp.soap.db.DatabaseConnection;
 import ar.edu.ubp.soap.db.FilmManager;
+import ar.edu.ubp.soap.db.ReportManager;
 import ar.edu.ubp.soap.db.UserManager;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
@@ -25,16 +29,19 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @WebService
 @XmlSeeAlso({})
+
 public class PlataformasWS {
 
     private AuthManager authManager;
     private UserManager userManager;
     private FilmManager filmManager;
+    private ReportManager reportManager;
 
     public PlataformasWS() {
         this.authManager = new AuthManager();
         this.userManager = new UserManager();
         this.filmManager = new FilmManager();
+        this.reportManager = new ReportManager();
     }
 
     // crear usuario no relacionado a plataforma
@@ -103,7 +110,7 @@ public class PlataformasWS {
     public AssociationRequestBean cancelAssociationRequest(
             @WebParam(name = "authToken") String authToken,
             @WebParam(name = "userToken") String userToken) throws Exception {
-                
+
         final Integer serviceId = authManager.validateServiceToken(authToken);
         if (serviceId == null || serviceId == 0) {
             throw new Fault(new Exception("Invalid token"));
@@ -171,6 +178,24 @@ public class PlataformasWS {
     }
 
     // TODO añadir logica de almacenamiento de reporte
+    @WebMethod()
+    @WebResult(name = "result")
+    public String receiveWeeklyReport(@WebParam(name = "report") WeeklyReportBean report) throws Exception {
+        final Integer serviceId = authManager.validateServiceToken(report.getAuthToken());
+
+        if (serviceId == null || serviceId == 0) {
+            throw new Fault(new Exception("Invalid token"));
+        }
+         ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = null;
+            try {
+                jsonString = objectMapper.writeValueAsString(report);
+            } catch (JsonProcessingException e) {
+                throw e;
+            }
+        
+        return reportManager.createWeeklyReport(jsonString);
+    }
 
     @WebMethod()
     @WebResult(name = "pong")

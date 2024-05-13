@@ -1,53 +1,5 @@
-<div class="advertisement-top">
-  <app-advertising-slot
-    [image]="getImage('top')"
-    [text]="getText('top')"
-    [url]="getUrl('top')"
-  />
-</div>
-
-<div class="row">
-  <div class="advertisement-side">
-    <div class="col">
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('left-medium')"
-          [text]="getText('left-medium')"
-          [url]="getUrl('left-medium')"
-          height="600"
-          width="200"
-        />
-      </div>
-
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('left-small1')"
-          [text]="getText('left-small1')"
-          [url]="getUrl('left-small1')"
-          height="300"
-          width="200"
-        />
-      </div>
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('left-small2')"
-          [text]="getText('left-small2')"
-          [url]="getUrl('left-small2')"
-          height="300"
-          width="200"
-        />
-      </div>
-    </div>
-  </div>
+<app-advertising-frame [home]="false">
   <div class="col">
-    @for (platform of platforms; track platform.platformId) {
-    <button
-      class="btn btn-primary"
-      (click)="onPlatformSelect(platform.platformId)"
-    >
-      {{ platform.platformName }}
-    </button>
-    }
     <div class="ratio ratio-16x9 iframe-content">
       @if(filmUrl){
       <iframe
@@ -62,37 +14,4 @@
       }
     </div>
   </div>
-  <div class="advertisement-side">
-    <div class="col">
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('right-medium')"
-          [text]="getText('right-medium')"
-          [url]="getUrl('right-medium')"
-          height="600"
-          width="200"
-        />
-      </div>
-
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('right-small1')"
-          [text]="getText('right-small1')"
-          [url]="getUrl('right-small1')"
-          height="300"
-          width="200"
-        />
-      </div>
-
-      <div class="mb-3">
-        <app-advertising-slot
-          [image]="getImage('right-small2')"
-          [text]="getText('right-small2')"
-          [url]="getUrl('right-small2')"
-          height="300"
-          width="200"
-        />
-      </div>
-    </div>
-  </div>
-</div>
+</app-advertising-frame>

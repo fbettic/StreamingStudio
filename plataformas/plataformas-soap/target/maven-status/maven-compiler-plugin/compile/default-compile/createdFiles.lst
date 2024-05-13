@@ -2,6 +2,7 @@ ar\edu\ubp\soap\beans\LoginRequestBean$LoginRequestBeanBuilder.class
 ar\edu\ubp\soap\beans\WeeklyReportBean.class
 ar\edu\ubp\soap\db\DatabaseConnection.class
 ar\edu\ubp\soap\app\Server.class
+ar\edu\ubp\soap\beans\AssociationReportBean$AssociationReportBeanBuilder.class
 ar\edu\ubp\soap\beans\NewPlatformUserBean.class
 ar\edu\ubp\soap\beans\FilmBean$FilmBeanBuilder.class
 ar\edu\ubp\soap\ws\PlataformasWS.class
@@ -9,10 +10,8 @@ ar\edu\ubp\soap\beans\PlatformUserBean$PlatformUserBeanBuilder.class
 ar\edu\ubp\soap\beans\SessionBean$SessionBeanBuilder.class
 ar\edu\ubp\soap\beans\ServiceConnectionBean.class
 ar\edu\ubp\soap\beans\NewSessionBean$NewSessionBeanBuilder.class
-ar\edu\ubp\soap\beans\WeeklyFilmReportBean$WeeklyFilmReportBeanBuilder.class
 ar\edu\ubp\soap\beans\SessionBean.class
 ar\edu\ubp\soap\db\FilmManager.class
-ar\edu\ubp\soap\beans\WeeklyReportBean$WeeklyReportBeanBuilder.class
 ar\edu\ubp\soap\beans\NewAssociationRequestBean.class
 ar\edu\ubp\soap\beans\CancelAssociationRequest$CancelAssociationRequestBuilder.class
 ar\edu\ubp\soap\beans\FilmBean.class
@@ -20,14 +19,14 @@ ar\edu\ubp\soap\beans\LoginRequestBean.class
 ar\edu\ubp\soap\beans\NewPlatformUserBean$NewPlatformUserBeanBuilder.class
 ar\edu\ubp\soap\beans\AssociationRequestBean$AssociationRequestBeanBuilder.class
 ar\edu\ubp\soap\resources\utils\AuthUrlGenerator.class
-ar\edu\ubp\soap\beans\WeeklyGenreReportBean.class
 ar\edu\ubp\soap\beans\CancelAssociationRequest.class
-ar\edu\ubp\soap\beans\WeeklyFilmReportBean.class
 ar\edu\ubp\soap\beans\NewSessionBean.class
+ar\edu\ubp\soap\beans\AssociationReportBean.class
 ar\edu\ubp\soap\db\AuthManager.class
 ar\edu\ubp\soap\db\UserManager.class
 ar\edu\ubp\soap\beans\NewAssociationRequestBean$NewAssociationRequestBeanBuilder.class
 ar\edu\ubp\soap\beans\AssociationRequestBean.class
 ar\edu\ubp\soap\beans\PlatformUserBean.class
-ar\edu\ubp\soap\beans\WeeklyGenreReportBean$WeeklyGenreReportBeanBuilder.class
+ar\edu\ubp\soap\db\ReportManager.class
+ar\edu\ubp\soap\beans\PlayRegisterBean.class
 ar\edu\ubp\soap\beans\ServiceConnectionBean$ServiceConnectionBeanBuilder.class

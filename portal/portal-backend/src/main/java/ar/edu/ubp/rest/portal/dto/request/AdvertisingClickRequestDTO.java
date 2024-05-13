@@ -1,5 +1,7 @@
 package ar.edu.ubp.rest.portal.dto.request;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriberAdvertisingRequestDTO {
-    private String slotId;
-    private String sizeType;
+public class AdvertisingClickRequestDTO {
+    private Integer advertisingId;
+    private Date clickedAt;
 }

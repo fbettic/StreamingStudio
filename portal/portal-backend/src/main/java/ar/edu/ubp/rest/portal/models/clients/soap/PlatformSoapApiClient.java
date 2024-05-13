@@ -24,8 +24,10 @@ import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractPlatformApiClient;
 
@@ -183,6 +185,26 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
 
         Element sessionElement = (Element) sessionNodes.item(0);
         return new SessionResponseBean(sessionElement.getOwnerDocument());
+    }
+
+    @Override
+    public String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
+        String message = """
+                <ws:receiveWeeklyReport xmlns:ws="http://ws.soap.ubp.edu.ar/">
+                   %s
+                </ws:receiveWeeklyReport>""".formatted(payload.toSoapXml());
+
+        Document resultDocument = createAndSendSoapRequest(message);
+
+        Element root = resultDocument.getDocumentElement();
+        NodeList nodes = root.getElementsByTagName("report");
+
+        if (nodes.getLength() == 0) {
+            return null;
+        }
+
+        Element element = (Element) nodes.item(0);
+        return new ReportResponseBean(element.getOwnerDocument()).getResponse();
     }
 
 }

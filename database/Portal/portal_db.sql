@@ -1,4 +1,4 @@
-
+ 
 -- CREATE DATABASE portal_db
 USE portal_db
 
@@ -369,18 +369,15 @@ CREATE TABLE MarketingPreferences
 );
 GO
 
-CREATE TABLE WeeklyPlatformFilmReport
+CREATE TABLE WeeklyPlatformReport
 (
   reportId INT NOT NULL IDENTITY(1,1),
   platformId INT NOT NULL,
-  filmId INT NOT NULL,
   fromDate DATE NOT NULL,
   toDate DATE NOT NULL,
-  weekViews INT,
   PRIMARY KEY (reportId),
-  FOREIGN KEY (filmId, platformId) REFERENCES PlatformFilm(filmId, platformId),
-);
-GO
+  FOREIGN KEY (platformId) REFERENCES StreamingPlatform(platformId),
+)
 
 CREATE TABLE PlayRegister
 (
@@ -388,7 +385,7 @@ CREATE TABLE PlayRegister
   playedAt DATETIME NOT NULL,
   sessionId INT NOT NULL,
   PRIMARY KEY (reportId, sessionId),
-  FOREIGN KEY (reportId) REFERENCES WeeklyPlatformFilmReport(reportId),
+  FOREIGN KEY (reportId) REFERENCES WeeklyPlatformReport(reportId),
   FOREIGN KEY (sessionId) REFERENCES Sessions(sessionId)
 );
 GO
@@ -397,7 +394,6 @@ CREATE TABLE WeeklyAdvertiserReport
 (
   reportId INT NOT NULL IDENTITY(1,1),
   advertiserId INT NOT NULL,
-  weekClicks INT,
   fromDate DATE NOT NULL,
   toDate DATE NOT NULL,
   PRIMARY KEY (reportId),
@@ -490,6 +486,16 @@ CREATE TABLE AdvertisingInvoiceDetail
 );
 GO
 
-select * from Film where filmCode = 'F00000013'
+select *
+from Film
+where filmCode = 'F00000013'
 
 EXEC GetFilmById 7
+
+Insert into AdvertisingTarget
+  (targetId, advertisingId)
+VALUEs
+  (1, 2)
+
+select *
+from Subscriber

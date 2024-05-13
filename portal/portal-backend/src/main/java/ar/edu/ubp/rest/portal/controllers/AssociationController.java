@@ -1,6 +1,7 @@
 package ar.edu.ubp.rest.portal.controllers;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -100,8 +101,9 @@ public class AssociationController {
     public ResponseEntity<SessionDTO> markSessionAsUsed(@PathVariable Integer id) throws Exception {
         SessionDTO session = associationService.getSessionById(id);
 
-        if (!getCurrentRole().name().equals("ADMINISTRATOR")
-                && !session.getSessionId().equals(getCurrentUserId())) {
+        if ((getCurrentRole().name().equals("SUBSCRIBER")
+                && !session.getSubscriberId().equals(getCurrentUserId()))
+                || Objects.nonNull(session.getUsedAt())) {
             return ResponseEntity.notFound().build();
         }
 

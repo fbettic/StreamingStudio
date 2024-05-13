@@ -158,22 +158,45 @@ BEGIN
 END
 GO
 
+
 -- DROP PROCEDURE IF EXISTS GetAllPlatformFilmRelations
-CREATE OR ALTER PROCEDURE GetAllPlatformFilmRelations
+CREATE OR ALTER PROCEDURE GetAllPlatformFilmRelations 
+    @subscriberId INT
 AS
 BEGIN
-    SELECT
-        pf.filmId,
-        platforms = STRING_AGG(sp.platformName, ','),
-        highlightedBy = STRING_AGG(CASE WHEN pf.highlighted = 1 THEN sp.platformName END, ','),
-        newOn = STRING_AGG(CASE WHEN pf.newContent = 1 THEN sp.platformName END, ',')
-    FROM
-        PlatformFilm pf
-        JOIN
-        StreamingPlatform sp ON pf.platformId = sp.platformId
-    WHERE deletedAt IS NULL
-    GROUP BY 
+    IF(@subscriberId IS NULL)
+    BEGIN
+        SELECT
+            pf.filmId,
+            platforms = STRING_AGG(sp.platformName, ','),
+            highlightedBy = STRING_AGG(CASE WHEN pf.highlighted = 1 THEN sp.platformName END, ','),
+            newOn = STRING_AGG(CASE WHEN pf.newContent = 1 THEN sp.platformName END, ',')
+        FROM
+            PlatformFilm pf
+            JOIN
+            StreamingPlatform sp ON pf.platformId = sp.platformId
+        WHERE deletedAt IS NULL
+        GROUP BY 
         pf.filmId;
+    END
+    ELSE
+    BEGIN
+        SELECT
+            pf.filmId,
+            platforms = STRING_AGG(sp.platformName, ','),
+            highlightedBy = STRING_AGG(CASE WHEN pf.highlighted = 1 THEN sp.platformName END, ','),
+            newOn = STRING_AGG(CASE WHEN pf.newContent = 1 THEN sp.platformName END, ',')
+        FROM PlatformFilm pf
+            JOIN StreamingPlatform sp ON pf.platformId = sp.platformId
+            JOIN Association a ON a.platformId = pf.platformId
+        WHERE deletedAt IS NULL
+            AND a.subscriberId = @subscriberId
+            AND a.leavingDate IS NULL
+            AND a.userToken IS NOT NULL
+        GROUP BY 
+        pf.filmId;
+    END
+
 END
 GO
 

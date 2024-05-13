@@ -106,9 +106,10 @@ BEGIN
 END
 GO
 
--- DROP PROCEDURE IF EXISTS GetFilmById
+-- DROP PROCEDURE IF EXISTS GetFilmBy
 CREATE OR ALTER PROCEDURE GetFilmById
-    @filmId INT
+    @filmId INT,
+    @subscriberId INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -126,7 +127,7 @@ BEGIN
     -- Obtener los nombres de las plataformas asociadas a la película
     INSERT INTO @Platform
         (filmId, platforms, highlightedBy, newOn)
-    EXEC GetPlatformFilmRelationsByFilmId @filmId
+    EXEC GetAllPlatformFilmRelations @subscriberId
 
 
     SELECT
@@ -152,6 +153,7 @@ GO
 
 -- DROP PROCEDURE IF EXISTS GetAllFilms
 CREATE OR ALTER PROCEDURE GetAllFilms
+    @subscriberId INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -173,7 +175,7 @@ BEGIN
     -- Obtener los nombres de las plataformas asociadas a la película
     INSERT INTO @Platforms
         (filmId, platforms, highlightedBy, newOn)
-    EXEC  GetAllPlatformFilmRelations
+    EXEC  GetAllPlatformFilmRelations @subscriberId
 
 
     SELECT
@@ -201,6 +203,7 @@ GO
 
 -- DROP PROCEDURE IF EXISTS GetHighlightedFilms
 CREATE OR ALTER PROCEDURE GetHighlightedFilms
+    @subscriberId INT
 AS
 BEGIN
     DECLARE @Actors AS FilmActorType;
@@ -220,7 +223,7 @@ BEGIN
     -- Obtener los nombres de las plataformas asociadas a la película
     INSERT INTO @Platforms
         (filmId, platforms, highlightedBy, newOn)
-    EXEC  GetAllPlatformFilmRelations
+    EXEC  GetAllPlatformFilmRelations @subscriberId
 
 
     SELECT
@@ -248,6 +251,7 @@ GO
 
 -- DROP PROCEDURE IF EXISTS GetNewFilms
 CREATE OR ALTER PROCEDURE GetNewFilms
+    @subscriberId INT
 AS
 BEGIN
     DECLARE @Actors AS FilmActorType;
@@ -267,7 +271,7 @@ BEGIN
     -- Obtener los nombres de las plataformas asociadas a la película
     INSERT INTO @Platforms
         (filmId, platforms, highlightedBy, newOn)
-    EXEC  GetAllPlatformFilmRelations
+    EXEC  GetAllPlatformFilmRelations @subscriberId
 
 
     SELECT
@@ -292,5 +296,70 @@ BEGIN
     ORDER BY filmId
 END
 GO
-    
 
+-- DROP PROCEDURE IF EXISTS GetMostViewedFilms
+CREATE OR ALTER PROCEDURE GetMostViewedFilms
+    @subscriberId INT
+AS
+BEGIN
+    DECLARE @Actors AS FilmActorType;
+    DECLARE @Genres AS FilmGenreType;
+    DECLARE @Platforms AS FilmPlatformType;
+
+    -- Obtener los nombres de los actores asociados a la película
+    INSERT INTO @Actors
+        (filmId, actors)
+    EXEC GetAllFilmActorRelations
+
+    -- Obtener los nombres de los géneros asociados a la película
+    INSERT INTO @Genres
+        (filmId, genres)
+    EXEC GetAllFilmGenreRelations
+
+    -- Obtener los nombres de las plataformas asociadas a la película
+    INSERT INTO @Platforms
+        (filmId, platforms, highlightedBy, newOn)
+    EXEC  GetAllPlatformFilmRelations @subscriberId
+
+    -- Obtener las películas más vistas en el mes actual
+    SELECT TOP 10
+        f.filmId,
+        filmCode,
+        title,
+        cover,
+        description,
+        directorName AS director,
+        countryCode,
+        year,
+        actors,
+        genres,
+        platforms,
+        newOn
+    FROM Film f
+        JOIN Director d ON f.directorId = d.directorId
+        JOIN @Actors a ON a.filmId = f.filmId
+        JOIN @Genres g ON g.filmId = f.filmId
+        JOIN @Platforms p ON p.filmId = f.filmId
+        JOIN Sessions s ON s.filmid = f.filmId
+    WHERE
+        MONTH(s.usedAt) = MONTH(GETDATE()) AND
+        YEAR(s.usedAt) = YEAR(GETDATE())
+    -- Filtrar por sesiones del mes actual
+    GROUP BY
+        f.filmId,
+        filmCode,
+        title,
+        cover,
+        description,
+        directorName,
+        countryCode,
+        year,
+        actors,
+        genres,
+        platforms,
+        newOn
+    ORDER BY
+        COUNT(*) DESC;
+-- Ordenar por la cantidad de sesiones (películas más vistas primero)
+END
+GO

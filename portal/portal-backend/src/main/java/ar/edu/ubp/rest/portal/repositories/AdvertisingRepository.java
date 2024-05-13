@@ -17,7 +17,9 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.BannerDTO;
+import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IAdvertisingRepository;
 
 @Repository
@@ -137,7 +139,6 @@ public class AdvertisingRepository implements IAdvertisingRepository {
 
     Map<String, Object> output = jdbcCall.execute(input);
 
-    
     return Integer.valueOf(output.get("deletedId").toString());
   }
 
@@ -164,5 +165,36 @@ public class AdvertisingRepository implements IAdvertisingRepository {
 
     Map<String, Object> output = jdbcCall.execute(input);
     return ((List<AdvertisingDTO>) output.get("advertising")).get(0);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<SubscriberAdvertisingDTO> getAllAdvertisingForSubscriber(Integer subscriberId) {
+    SqlParameterSource input = new MapSqlParameterSource()
+        .addValue("subscriberId", subscriberId);
+
+    SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+        .withProcedureName("GetAdvertisingsForSubscriber")
+        .withSchemaName("dbo")
+        .returningResultSet("advertisings", BeanPropertyRowMapper.newInstance(SubscriberAdvertisingDTO.class));
+
+    Map<String, Object> output = jdbcCall.execute(input);
+    return (List<SubscriberAdvertisingDTO>) output.get("advertisings");
+  }
+
+  @Override
+  public String createSubscriberAdvertisingClick(Integer subscriberId, AdvertisingClickRequestDTO click) {
+    SqlParameterSource input = new MapSqlParameterSource()
+        .addValue("subscriberId", subscriberId)
+        .addValue("advertisingId", click.getAdvertisingId())
+        .addValue("clickedAt", click.getClickedAt());
+
+    SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+        .withProcedureName("CreateSubscriberAdvertisingClick")
+        .withSchemaName("dbo")
+        .returningResultSet("advertisings", BeanPropertyRowMapper.newInstance(SubscriberAdvertisingDTO.class));
+
+    jdbcCall.execute(input);
+    return "Success";
   }
 }

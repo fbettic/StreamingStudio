@@ -45,12 +45,24 @@ public class FilmService {
         return "Films have been updated";
     }
 
-    public List<FilmDTO> getAllFilms() {
-        return filmRepository.getAllFilms();
+    public List<FilmSubscriberResponseDTO> getAllFilms(Integer subscriberId) {
+        return filmRepository.getAllFilms(subscriberId);
     }
 
-    public FilmSubscriberResponseDTO getFilmById(Integer id) {
-        return filmRepository.getFilmById(id);
+    public FilmSubscriberResponseDTO getFilmById(Integer filmId, Integer subscriberId) {
+        return filmRepository.getFilmById(filmId, subscriberId);
+    }
+
+    public List<FilmSubscriberResponseDTO> getHighlightedFilms(Integer subscriberId) {
+        return filmRepository.getHighlightedFilms(subscriberId);
+    }
+
+    public List<FilmSubscriberResponseDTO> getNewFilms(Integer subscriberId) {
+        return filmRepository.getNewFilms(subscriberId);
+    }
+
+    public List<FilmSubscriberResponseDTO> getMostViewedFilms(Integer subscriberId) {
+        return filmRepository.getMostViewedFilms(subscriberId);
     }
 
 }

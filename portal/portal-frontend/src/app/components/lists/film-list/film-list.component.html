@@ -1,7 +1,16 @@
-<div class="row">
+<div
+  [ngClass]="
+    type() === 'carousel'
+      ? 'row overflow-x-auto d-flex flex-row flex-nowrap'
+      : 'row'
+  "
+>
   @for (film of films(); track film.filmId) {
-  <div class="col-md-4 col-sm-6 mb-4" (click)="onFilmClick.emit(film.filmId)">
+  <div class="col-md-4 col-sm-6 mb-4" (click)="onFilmClick.emit(film)">
     <div class="card">
+      <div class="card-header">
+        <p>{{ film.platforms.replaceAll(',', ', ') }}</p>
+      </div>
       <div class="ratio-container">
         <img [src]="film.cover" [alt]="film.title + 'cover'" />
       </div>
@@ -11,7 +20,7 @@
         <p>Año: {{ film.year }}</p>
         <p>Director: {{ film.director }}</p>
         <p>{{ film.description }}</p>
-        <p>{{ film.actors }}</p>
+        <p>{{ film.actors.replaceAll(',', ', ') }}</p>
       </div>
     </div>
   </div>

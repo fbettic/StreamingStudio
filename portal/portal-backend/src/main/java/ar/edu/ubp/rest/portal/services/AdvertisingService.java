@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
-import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
+import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingDTO;
+import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.AdvertisingRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdvertisingService {
     @Autowired
-    private final AdvertisingRepository advertisingRepository;
 
+    private final AdvertisingRepository advertisingRepository;
     @Autowired
     private final AdvertiserApiClientService advertiserApiClientService;
 
@@ -89,57 +91,102 @@ public class AdvertisingService {
         return advertisingRepository.getAllAdvertisings();
     }
 
-    public List<SubscriberAdvertisingRequestDTO> getAdvertisingsToShow(Integer subscriberId,
-            List<SubscriberAdvertisingRequestDTO> request) {
-        List<AdvertisingDTO> advertisings = advertisingRepository.getAllAdvertisings();
-        List<TargetCategoryDTO> marketingPreferences = targetServices
-                .getAllMarketingPreferencesBySubscriberId(subscriberId);
-
-        for (SubscriberAdvertisingRequestDTO requestSize : request) {
-            AdvertisingDTO mostMatched = null;
-            int maxMatched = 0;
-            for (AdvertisingDTO advertising : advertisings) {
-                if (requestSize.getSizeType().equals(advertising.getSizeType())) {
-                    List<TargetCategoryDTO> targets = targetServices
-                            .getAllAdvertisingTargetByAdvertisingId(advertising.getAdvertisingId());
-
-                    List<Integer> targetsId = new ArrayList<>();
-                    if (Objects.nonNull(targets)) {
-                        for (TargetCategoryDTO target : targets) {
-                            targetsId.add(target.getTargetId());
-                        }
-                    }
-
-                    advertising.setTargets(targetsId);
-
-                    int count = 0;
-                    for (TargetCategoryDTO target : marketingPreferences) {
-                        if (advertising.getTargets().contains(target.getTargetId())) {
-                            count++;
-                        }
-                    }
-                    if (count > maxMatched
-                            || count == maxMatched && advertising.getPriorityValue() > mostMatched.getPriorityValue() ||
-                            Objects.isNull(mostMatched)) {
-                        mostMatched = advertising;
-                        maxMatched = count;
-                    } else if (count == maxMatched
-                            && advertising.getPriorityValue().equals(mostMatched.getPriorityValue())) {
-                        Random random = new Random();
-                        if (random.nextBoolean()) {
-                            mostMatched = advertising;
-                            maxMatched = count;
-                        }
-                    }
-                }
-            }
-            requestSize.setAdvertising(mostMatched);
-        }
-
-        return request;
-    }
-
     public Integer deleteAdvertisingById(Integer id) {
         return advertisingRepository.deleteAdvertisingById(id);
     }
+
+    public String createSubscriberAdvertisingClick(Integer subscriberId, AdvertisingClickRequestDTO click) {
+        return advertisingRepository.createSubscriberAdvertisingClick(subscriberId, click);
+    }
+
+    public List<SubscriberAdvertisingResponseDTO> getAdvertisingsForSubscriber(Boolean allPages, Integer subscriberId,
+            List<SubscriberAdvertisingRequestDTO> request) {
+        List<SubscriberAdvertisingDTO> advertisings = advertisingRepository
+                .getAllAdvertisingForSubscriber(subscriberId);
+
+        List<SubscriberAdvertisingResponseDTO> response = new ArrayList<>();
+
+        for (SubscriberAdvertisingRequestDTO requestItem : request) {
+            SubscriberAdvertisingResponseDTO responseItem = new SubscriberAdvertisingResponseDTO();
+
+            responseItem.setSizeType(requestItem.getSizeType());
+            responseItem.setSlotId(requestItem.getSlotId());
+
+            // se filtran los anuncios por el tipo de tamaño especificado
+            List<SubscriberAdvertisingDTO> filteredAdvertisings = filterAdvertisingsBySize(advertisings,
+                    requestItem.getSizeType());
+
+            // se obtienen los anuncios no seleccionados previamente
+            List<SubscriberAdvertisingDTO> availableAdvertisings = getAvailableAdvertisings(allPages, response,
+                    filteredAdvertisings);
+
+            // si hay anuncios nuevos disponibles
+            if (!availableAdvertisings.isEmpty()) {
+                // Selecciona un anuncio entre los disponibles
+                selectAdvertising(responseItem, availableAdvertisings);
+            } else { // si no
+                     // Seleccionar un anuncio random entre todos los anuncios existentes
+                selectRandomAdvertising(responseItem, filteredAdvertisings);
+            }
+
+            response.add(responseItem);
+        }
+        return response;
+    }
+
+    private List<SubscriberAdvertisingDTO> filterAdvertisingsBySize(List<SubscriberAdvertisingDTO> advertisings,
+            String sizeType) {
+        List<SubscriberAdvertisingDTO> filteredAdvertisings = new ArrayList<>(advertisings);
+        filteredAdvertisings.removeIf(ad -> !sizeType.equals(ad.getSizeType()));
+        return filteredAdvertisings;
+    }
+
+    private List<SubscriberAdvertisingDTO> getAvailableAdvertisings(Boolean allPages,
+            List<SubscriberAdvertisingResponseDTO> response, List<SubscriberAdvertisingDTO> filteredAdvertisings) {
+        List<SubscriberAdvertisingDTO> availableAdvertisings = new ArrayList<>(filteredAdvertisings);
+        if (allPages) {
+            availableAdvertisings.removeIf(ad -> !ad.getAllPages());
+        }
+
+        for (SubscriberAdvertisingResponseDTO resp : response) {
+            if (resp.getAdvertising() != null) {
+                availableAdvertisings.removeIf(
+                        ad -> ad.getAdvertisingId().equals(resp.getAdvertising().getAdvertisingId())
+                                || (allPages && !ad.getAllPages()));
+            }
+        }
+        return availableAdvertisings;
+    }
+
+    private void selectAdvertising(SubscriberAdvertisingResponseDTO responseItem,
+            List<SubscriberAdvertisingDTO> availableAdvertisings) {
+
+        List<SubscriberAdvertisingDTO> equalPointAdvertisings = new ArrayList<>();
+        for (SubscriberAdvertisingDTO ad : availableAdvertisings) {
+            if (Objects.isNull(responseItem.getAdvertising())
+                    || responseItem.getAdvertising().getPoints() < ad.getPoints()) {
+                responseItem.setAdvertising(ad);
+                equalPointAdvertisings.clear();
+
+            } else if (responseItem.getAdvertising().getPoints().equals(ad.getPoints())) {
+                equalPointAdvertisings.add(ad);
+            }
+        }
+
+        if (!equalPointAdvertisings.isEmpty()) {
+            responseItem.setAdvertising(equalPointAdvertisings
+                    .get(new Random().nextInt(equalPointAdvertisings.size())));
+        }
+    }
+
+    private void selectRandomAdvertising(SubscriberAdvertisingResponseDTO responseItem,
+            List<SubscriberAdvertisingDTO> filteredAdvertisings) {
+
+        if (!filteredAdvertisings.isEmpty()) {
+            SubscriberAdvertisingDTO selectedAd = filteredAdvertisings
+                    .get(new Random().nextInt(filteredAdvertisings.size()));
+            responseItem.setAdvertising(selectedAd);
+        }
+    }
+
 }

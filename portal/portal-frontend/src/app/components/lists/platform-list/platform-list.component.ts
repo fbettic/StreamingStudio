@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { IStreamingPlatform } from '../../../models/streaming-platform.model';
 import { StreamingPlatformService } from '../../../services/streaming-platform.service';
 import { IAssociationRequest } from '../../../models/association-request.model';
-import { SubscriberService } from '../../../services/subscriber/subscriber.service';
+import { SubscriberService } from '../../../services/subscriber.service';
 import { Router } from '@angular/router';
 import { IStreamingPlatformSubscriber } from '../../../models/streaming-platform-subscriber.model';
 

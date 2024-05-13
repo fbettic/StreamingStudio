@@ -15,16 +15,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.BannerPriorityDTO;
 import ar.edu.ubp.rest.portal.dto.SizeTypeDTO;
 import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
+import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.BannerPriorityRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SizeTypeRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingResponseDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
@@ -121,14 +124,12 @@ public class AdvertisingController {
             @RequestBody AdvertisingRequestDTO advertisingRequest) throws Exception {
 
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
-        //Integer userId = getCurrentUserId();
+        // Integer userId = getCurrentUserId();
 
         if (!getCurrentRole().name().equals("ADMINISTRATOR")
                 && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
             return ResponseEntity.notFound().build();
-        } 
-
-
+        }
 
         AdvertisingDTO response = advertisingService.updateAdvertisingById(id, advertisingRequest);
         return ResponseEntity.ok(response);
@@ -146,11 +147,20 @@ public class AdvertisingController {
         return ResponseEntity.ok(advertisingService.deleteAdvertisingById(id));
     }
 
-    @PostMapping("/show")
-    public ResponseEntity<List<SubscriberAdvertisingRequestDTO>> getAdvertisingToShow(
+    @PostMapping("/subscriber")
+    public ResponseEntity<List<SubscriberAdvertisingResponseDTO>> getAdvertisingForSubscriber(
+            @RequestParam("allpages") Boolean allPages,
             @RequestBody List<SubscriberAdvertisingRequestDTO> request) throws Exception {
 
-        return ResponseEntity.ok(advertisingService.getAdvertisingsToShow(getCurrentUserId(), request));
+        return ResponseEntity.ok(advertisingService.getAdvertisingsForSubscriber(allPages,
+                getCurrentUserId(), request));
+    }
+
+    @PostMapping("/track")
+    public ResponseEntity<String> createSubscriberAdvertisingClick(
+            @RequestBody AdvertisingClickRequestDTO request) throws Exception {
+
+        return ResponseEntity.ok(advertisingService.createSubscriberAdvertisingClick(getCurrentUserId(), request));
     }
 
     @PostMapping("/sizes")

@@ -10,65 +10,106 @@ DROP PROCEDURE IF EXISTS CreateWeeklyFilmReport
 DROP PROCEDURE IF EXISTS GetWeeklyReportById
 */
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyReport
-CREATE OR ALTER PROCEDURE CreateWeeklyReport
-    @serviceId INT,
-    @signupQuantity INT,
-    @associationsQuantity INT,
-    @fromDate DATE,
-    @toDate DATE
+
+
+
+
+-- DROP PROCEDURE IF EXISTS InsertWeeklyReportFromJson
+CREATE OR ALTER PROCEDURE CreateWeeklyReportFromJson
+    @json NVARCHAR(MAX)
 AS
 BEGIN
-    -- Insertar el nuevo informe en la tabla WeeklyReport
-    INSERT INTO WeeklyReport (serviceId, signupQuantity, associationsQuantity, fromDate, toDate)
-    VALUES (@serviceId, @signupQuantity, @associationsQuantity, @fromDate, @toDate)
+    BEGIN TRY
+    -- Create temporary table to hold JSON data
+    CREATE TABLE #TempData
+    (
+        authToken NVARCHAR(255),
+        reportId INT,
+        fromDate BIGINT,
+        toDate BIGINT,
+        reproductions NVARCHAR(MAX),
+        associations NVARCHAR(MAX)
+    );
 
-    -- Obtener el ID del informe creado
-    DECLARE @reportId INT
-    SET @reportId = SCOPE_IDENTITY()
+    -- Insert JSON data into temporary table
+    INSERT INTO #TempData
+        (authToken, reportId, fromDate, toDate, reproductions, associations)
+    SELECT authToken, reportId, fromDate, toDate, reproductions, associations
+    FROM OPENJSON(@json)
+    WITH (
+        authToken NVARCHAR(255) '$.authToken',
+        reportId INT '$.reportId',
+        fromDate BIGINT '$.fromDate',
+        toDate BIGINT '$.toDate',
+        reproductions NVARCHAR(MAX) '$.reproductions' AS JSON,
+        associations NVARCHAR(MAX) '$.associations' AS JSON
+    );
 
-    -- Devolver el informe recién creado
-    EXEC GetWeeklyReportById @reportId
-END
+    INSERT INTO WeeklyReport
+        (serviceId, fromDate, toDate)
+    SELECT serviceId, dbo.ConvertirUnixTimestamp(fromDate), dbo.ConvertirUnixTimestamp(toDate)
+    FROM ServiceConnection sc
+        JOIN #TempData td ON td.authToken = sc.authToken;
+
+    -- Get inserted reportId
+    DECLARE @insertedReportId INT;
+    SELECT @insertedReportId = SCOPE_IDENTITY();
+
+    -- Insert data into PlayRegisterReport table
+    INSERT INTO PlayRegisterReport
+        (reportId, sessionId, playedAt, subscriberId, transactionId, filmCode, sessionUrl)
+    SELECT @insertedReportId, sessionId, dbo.ConvertirUnixTimestamp(playedAt), subscriberId, transactionId, filmCode, sessionUrl
+    FROM OPENJSON((SELECT reproductions FROM #TempData))
+    WITH (
+        sessionId INT '$.sessionId',
+        playedAt BIGINT '$.playedAt',
+        subscriberId INT '$.subscriberId',
+        transactionId INT '$.transactionId',
+        filmCode VARCHAR(MAX) '$.filmCode',
+        sessionUrl VARCHAR(MAX) '$.sessionUrl'
+    );
+
+    -- Insert data into AssociationRegisterReport table
+    INSERT INTO AssociationRegisterReport
+        (reportId, subscriberId, transactionId, associationType, authUrl, entryDate, leavingDate)
+    SELECT @insertedReportId, subscriberId, transactionId, associationType, authUrl, dbo.ConvertirUnixTimestamp(entryDate), CASE WHEN leavingDate IS NOT NULL THEN  dbo.ConvertirUnixTimestamp(leavingDate) ELSE NULL END
+    FROM OPENJSON((SELECT associations FROM #TempData))
+    WITH (
+        subscriberId INT '$.subscriberId',
+        transactionId INT '$.transactionId',
+        associationType VARCHAR(MAX) '$.associationType',
+        authUrl VARCHAR(MAX) '$.authUrl',
+        entryDate BIGINT '$.entryDate',
+        leavingDate BIGINT '$.leavingDate'
+    );
+
+    -- Drop temporary table
+    DROP TABLE #TempData;
+
+    SELECT 'Success' AS Result;
+  END TRY
+  BEGIN CATCH
+    -- Error
+    SELECT ERROR_MESSAGE() AS Result;
+  END CATCH
+END;
 GO
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyGenreReport
-CREATE OR ALTER PROCEDURE CreateWeeklyGenreReport
-    @reportId INT,
-    @genreId INT,
-    @views INT
+
+CREATE OR ALTER FUNCTION ConvertirUnixTimestamp(@timestamp bigint)
+RETURNS datetime
 AS
 BEGIN
-    -- Insertar el nuevo informe de género en la tabla WeeklyGenreReport
-    INSERT INTO WeeklyGenreReport (reportId, genreId, views)
-    VALUES (@reportId, @genreId, @views)
+    DECLARE @fechaInicioUnix datetime = '1970-01-01 00:00:00';
+    DECLARE @fechaInicioSQLServer datetime = '1900-01-01 00:00:00';
 
-    -- No es necesario devolver el informe de género creado, ya que no se solicita explícitamente
-END
-GO
+    DECLARE @fechaHora datetime;
 
--- DROP PROCEDURE IF EXISTS CreateWeeklyFilmReport
-CREATE OR ALTER PROCEDURE CreateWeeklyFilmReport
-    @filmId INT,
-    @reportId INT,
-    @views INT
-AS
-BEGIN
-    -- Insertar el nuevo informe de película en la tabla WeeklyFilmReport
-    INSERT INTO WeeklyFilmReport (filmId, reportId, views)
-    VALUES (@filmId, @reportId, @views)
+    SET @fechaHora = (
+        SELECT
+        CONVERT(datetime, DATEADD(s, @timestamp / 1000, @fechaInicioUnix) + 
+                    DATEADD(ms, @timestamp % 1000, @fechaInicioSQLServer), 20)
+    );
 
-    -- No es necesario devolver el informe de película creado, ya que no se solicita explícitamente
-END
-GO
-
--- DROP PROCEDURE IF EXISTS GetWeeklyReportById
-CREATE OR ALTER PROCEDURE GetWeeklyReportById
-    @reportId INT
-AS
-BEGIN
-    SELECT reportId, serviceId, signupQuantity, associationsQuantity, fromDate, toDate
-    FROM WeeklyReport
-    WHERE reportId = @reportId
-END
-GO
+    RETURN @fechaHora;
+END;

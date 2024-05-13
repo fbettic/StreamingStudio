@@ -9,7 +9,7 @@ export interface IFilm {
   year: number;
   actors: string;
   genres: string;
-  platforms?: string;
-  higligtedBy?:string;
-  newOn?:string;
+  platforms: string;
+  higligtedBy:string;
+  newOn:string;
 }

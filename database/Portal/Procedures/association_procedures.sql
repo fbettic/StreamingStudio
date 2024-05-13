@@ -269,6 +269,8 @@ BEGIN
 END;
 GO
 
+
+
 ------------------- Session procedures -------------------
 
 -- DROP PROCEDURE IF EXISTS CreateSession
@@ -313,6 +315,8 @@ BEGIN
     UPDATE Sessions
     SET usedAt = GETDATE()
     WHERE sessionId = @sessionId;
+
+    EXEC GetSessionById @sessionId
 END;
 GO
 

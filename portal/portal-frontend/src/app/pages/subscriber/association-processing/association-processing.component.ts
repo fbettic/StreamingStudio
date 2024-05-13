@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap, Route, Router } from '@angular/router';
-import { SubscriberService } from '../../../services/subscriber/subscriber.service';
+import { SubscriberService } from '../../../services/subscriber.service';
 import { Role } from '../../../enums/role.enum';
 
 @Component({

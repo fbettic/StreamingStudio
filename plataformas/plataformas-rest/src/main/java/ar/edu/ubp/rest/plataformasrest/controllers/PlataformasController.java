@@ -23,6 +23,7 @@ import ar.edu.ubp.rest.plataformasrest.beans.NewSessionBean;
 import ar.edu.ubp.rest.plataformasrest.beans.PlatformUserBean;
 import ar.edu.ubp.rest.plataformasrest.beans.SessionBean;
 import ar.edu.ubp.rest.plataformasrest.beans.UserRequest;
+import ar.edu.ubp.rest.plataformasrest.beans.WeeklyReportBean;
 import ar.edu.ubp.rest.plataformasrest.services.PlatformServices;
 
 
@@ -96,6 +97,12 @@ public class PlataformasController {
     @PostMapping(path = "/films")
     public ResponseEntity<List<FilmBean>> getAllFilms(@RequestBody AuthTokenRequestBean authToken) throws Exception {
         return new ResponseEntity<>(platformServices.getAllFilms(authToken.getAuthToken()), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/report")
+    public ResponseEntity<String> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
+        
+        return new ResponseEntity<String>(platformServices.createWeeklyReport(report), HttpStatus.OK);
     }
 
     @PostMapping(path = "/ping")

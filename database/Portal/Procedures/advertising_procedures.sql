@@ -126,13 +126,13 @@ BEGIN
         fromDate,
         toDate
     FROM Advertising a
-    INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
-    INNER JOIN SizeType st ON st.sizeId = a.sizeId
-    INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
-    INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+        INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
+        INNER JOIN SizeType st ON st.sizeId = a.sizeId
+        INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
+        INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
+        LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
     WHERE a.advertisingId = @advertisingId
-    AND a.deletedAt IS NULL
+        AND a.deletedAt IS NULL
 END
 GO
 
@@ -174,13 +174,13 @@ BEGIN
         fromDate,
         toDate
     FROM Advertising a
-    INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
-    INNER JOIN SizeType st ON st.sizeId = a.sizeId
-    INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
-    INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+        INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
+        INNER JOIN SizeType st ON st.sizeId = a.sizeId
+        INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
+        INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
+        LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
     WHERE a.advertiserId = @advertiserId
-    AND a.deletedAt IS NULL
+        AND a.deletedAt IS NULL
 END
 GO
 
@@ -221,11 +221,11 @@ BEGIN
         fromDate,
         toDate
     FROM Advertising a
-    INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
-    INNER JOIN SizeType st ON st.sizeId = a.sizeId
-    INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
-    INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
-    LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
+        INNER JOIN BannerPriority bp ON bp.priorityId = a.priorityId
+        INNER JOIN SizeType st ON st.sizeId = a.sizeId
+        INNER JOIN @AllFees af_st ON af_st.feeId = st.sizeFeeId
+        INNER JOIN @AllFees af_bp ON af_bp.feeId = bp.priorityFeeId
+        LEFT JOIN @AllFees af ON af.feeId = a.allPagesFeeId
     WHERE a.deletedAt IS NULL
 END
 GO
@@ -243,45 +243,52 @@ BEGIN
     SET redirectUrl = @redirectUrl,
     imageUrl = @imageUrl,
     bannerText = @bannerText
-    WHERE bannerId = @bannerId 
-    AND advertiserId = @advertiserId
+    WHERE bannerId = @bannerId
+        AND advertiserId = @advertiserId
 END
 GO
 
--- DROP PROCEDURE IF EXISTS
-CREATE OR ALTER PROCEDURE GetAdvertisingsToShow 
-    @jsonData NVARCHAR(MAX)
+-- DROP PROCEDURE IF EXISTS GetAdvertisingsForSubscriber
+CREATE OR ALTER PROCEDURE GetAdvertisingsForSubscriber
+    @subscriberId INT
 AS
 BEGIN
-    BEGIN TRY
-    DECLARE @tempTable TABLE (
-        filmId INT,
-        platformId INT,
-        newContent BIT,
-        highlighted BIT
-    );
-
-    -- Insertar los datos JSON en una tabla temporal
-    INSERT INTO @tempTable
-        (filmId, platformId, newContent, highlighted)
-    SELECT filmId, platformId, newContent, highlighted
-    FROM Film f
-        JOIN OPENJSON(@jsonData)
-    WITH (
-      filmCode VARCHAR(255) '$.filmCode',
-      platformId INT '$.platformId',
-      newContent BIT '$.newContent',
-      highlighted BIT '$.highlighted'
-    ) AS js on f.filmCode = js.filmCode;
-    
-
-
-    -- Éxito
-    SELECT 'Success' AS Result;
-  END TRY
-  BEGIN CATCH
-    -- Error
-    SELECT ERROR_MESSAGE() AS Result;
-  END CATCH
+    SELECT
+        a.advertisingId,
+        redirectUrl,
+        imageUrl,
+        bannerText,
+        sizeType,
+        height,
+        width,
+        (SELECT
+            CASE 
+        WHEN a.allPagesFeeId IS NULL 
+            THEN 0 
+            ELSE 1 
+        END) AS allPages,
+        COUNT(mt.targetId) + priorityValue AS points
+    FROM
+        Advertising a
+        LEFT JOIN
+        AdvertisingTarget at ON a.advertisingId = at.advertisingId
+        LEFT JOIN
+        MarketingPreferences mp ON at.targetId = mp.targetId
+            AND mp.subscriberId = @subscriberId
+        LEFT JOIN
+        MarketingPreferences mt ON a.advertisingId = mt.targetId
+            AND mt.subscriberId = @subscriberId
+        INNER JOIN BannerPriority b_p ON a.priorityId = b_p.priorityId
+        INNER JOIN SizeType s_t ON a.sizeId = s_t.sizeId
+    WHERE 
+    a.deletedAt IS NULL
+    GROUP BY 
+    a.advertisingId, allPagesFeeId, priorityValue,
+    redirectUrl,imageUrl,bannerText, height, width, sizeType
 END
 GO
+
+EXEC GetAdvertisingsForSubscriber 1 
+
+
+update Advertising set allPagesFeeId=7 WHERE advertisingId = 7

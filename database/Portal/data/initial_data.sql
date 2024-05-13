@@ -29,4 +29,4 @@ EXEC CreateSizeType 4, 'SMALL', 5, 150, 100
 EXEC CreateSizeType 5, 'MEDIUM', 5, 300, 100
 EXEC CreateSizeType 6, 'LARGE', 5, 150, 600
 
-select * from Administrator
+select * from FeeType

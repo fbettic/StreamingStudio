@@ -3,6 +3,7 @@ package ar.edu.ubp.rest.portal.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -32,6 +33,9 @@ public class BatchService {
 
     @Autowired
     private final AdvertisingRepository advertisingRepository;
+
+    @Autowired
+    private final PlatformApiClientService platformApiClientService;
 
     public void updateAdvertisings(List<ServiceResponseMapperBean<AdvertisingResponseBean>> clientAdvertisings) {
 
@@ -120,6 +124,10 @@ public class BatchService {
             filmRepository.updateBatchPlatformFilm(jsonString);
         }
 
+    }
+
+    public Map<Integer, String> sendWeeklyReport() throws Exception{
+        return platformApiClientService.sendWeeklyReport();
     }
 
 }

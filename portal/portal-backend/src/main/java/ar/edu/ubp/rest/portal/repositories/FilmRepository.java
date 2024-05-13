@@ -2,7 +2,6 @@ package ar.edu.ubp.rest.portal.repositories;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -46,7 +44,6 @@ public class FilmRepository implements IFilmRepository {
                 return countries.size();
             }
         });
-
 
         int totalAffectedRows = 0;
         for (int rows : affectedRows) {
@@ -89,23 +86,11 @@ public class FilmRepository implements IFilmRepository {
     }
 
     @Override
-    public Integer dropAllPlatformFilmRelations() {
-        SqlParameterSource input = new MapSqlParameterSource();
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("DropAllPlatformFilmRelations")
-                .withSchemaName("dbo")
-                .declareParameters(new SqlOutParameter("deleted", Types.INTEGER));
-
-    Map<String, Object> output = jdbcCall.execute(input);
-    return (Integer) output.get("deleted");
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public String updateBatchPlatformFilm(String platformFilmsJson) {
-        
+
         SqlParameterSource input = new MapSqlParameterSource()
-        .addValue("jsonData", platformFilmsJson);
+                .addValue("jsonData", platformFilmsJson);
 
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("ProcessPlatformFilmJson")
@@ -118,23 +103,25 @@ public class FilmRepository implements IFilmRepository {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<FilmDTO> getAllFilms() {
-        SqlParameterSource input = new MapSqlParameterSource();
+    public List<FilmSubscriberResponseDTO> getAllFilms(Integer subscriberId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+                .addValue("subscriberId", subscriberId);
+
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("GetAllFilms")
                 .withSchemaName("dbo")
-                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmDTO.class));
+                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmSubscriberResponseDTO.class));
 
         Map<String, Object> output = jdbcCall.execute(input);
-        return (List<FilmDTO>) output.get("films");
+        return (List<FilmSubscriberResponseDTO>) output.get("films");
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
-    public FilmSubscriberResponseDTO getFilmById(Integer id) {
+    public FilmSubscriberResponseDTO getFilmById(Integer filmId, Integer susbcriberId) {
         SqlParameterSource input = new MapSqlParameterSource()
-        .addValue("filmId", id);
+                .addValue("filmId", filmId)
+                .addValue("subscriberId", susbcriberId);
 
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("GetFilmById")
@@ -144,5 +131,53 @@ public class FilmRepository implements IFilmRepository {
         Map<String, Object> output = jdbcCall.execute(input);
         return ((List<FilmSubscriberResponseDTO>) output.get("film")).get(0);
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<FilmSubscriberResponseDTO> getHighlightedFilms(Integer subscriberId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+                .addValue("subscriberId", subscriberId);
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("GetHighlightedFilms")
+                .withSchemaName("dbo")
+                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmSubscriberResponseDTO.class));
+
+        Map<String, Object> output = jdbcCall.execute(input);
+        return (List<FilmSubscriberResponseDTO>) output.get("films");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<FilmSubscriberResponseDTO> getNewFilms(Integer subscriberId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+                .addValue("subscriberId", subscriberId);
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("GetNewFilms")
+                .withSchemaName("dbo")
+                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmSubscriberResponseDTO.class));
+
+        Map<String, Object> output = jdbcCall.execute(input);
+        return (List<FilmSubscriberResponseDTO>) output.get("films");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<FilmSubscriberResponseDTO> getMostViewedFilms(Integer subscriberId) {
+        SqlParameterSource input = new MapSqlParameterSource()
+                .addValue("subscriberId", subscriberId);
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("GetMostViewedFilms")
+                .withSchemaName("dbo")
+                .returningResultSet("films", BeanPropertyRowMapper.newInstance(FilmSubscriberResponseDTO.class));
+
+        Map<String, Object> output = jdbcCall.execute(input);
+        return (List<FilmSubscriberResponseDTO>) output.get("films");
+    }
+
+
+    
 
 }

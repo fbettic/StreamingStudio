@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="advertisement-top">
+    <app-advertising-slot id="top" />
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <div class="advertisement-side">
+        <div class="mb-3">
+          <app-advertising-slot height="600" width="200" id="leftMedium" />
+        </div>
+
+        <div class="mb-3">
+          <app-advertising-slot height="300" width="200" id="leftSmall1" />
+        </div>
+        <div class="mb-3">
+          <app-advertising-slot height="300" width="200" id="leftSmall2" />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <ng-content />
+    </div>
+    <div class="col-md-2 d-flex justify-content-end">
+      <div class="advertisement-side">
+        <div class="col">
+          <div class="mb-3">
+            <app-advertising-slot height="600" width="200" id="rightMedium" />
+          </div>
+
+          <div class="mb-3">
+            <app-advertising-slot height="300" width="200" id="rightSmall1" />
+          </div>
+
+          <div class="mb-3">
+            <app-advertising-slot height="300" width="200" id="rightSmall2" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

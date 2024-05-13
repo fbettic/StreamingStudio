@@ -1,0 +1,18 @@
+.advertisement-top {
+  height: 150px;
+  text-align: center;
+  margin-bottom: 20px; /* Espacio entre el anuncio superior y la fila de películas */
+}
+
+.advertisement-side {
+  padding: 0;
+  width: 200px;
+  height: 100%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .advertisement-side {
+    display: none; /* Oculta los anuncios laterales en dispositivos móviles */
+  }
+}

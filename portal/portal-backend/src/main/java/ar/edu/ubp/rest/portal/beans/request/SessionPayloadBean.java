@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SessionPayloadBean extends ServiceRequestPayloadBean {
+public class SessionPayloadBean extends AbstractServicePayload {
     private String filmCode;
     private String userToken;
 

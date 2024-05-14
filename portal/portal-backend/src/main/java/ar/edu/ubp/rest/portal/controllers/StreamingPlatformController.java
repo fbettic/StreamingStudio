@@ -1,11 +1,7 @@
 package ar.edu.ubp.rest.portal.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.portal.dto.StreamingPlatformDTO;
 import ar.edu.ubp.rest.portal.dto.request.StreamingPlatformRequestDTO;
-import ar.edu.ubp.rest.portal.dto.response.StreamingPlatformSubscriberResponseDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
-import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import ar.edu.ubp.rest.portal.services.StreamingPlatformService;
 import lombok.RequiredArgsConstructor;
 
@@ -34,29 +29,8 @@ public class StreamingPlatformController {
     @Autowired
     private final StreamingPlatformService streamingPlatform;
 
-    private Integer getCurrentUserId() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Integer userId = userDetails.getId();
-            return userId;
-        } else {
-            throw new Exception("User id not found");
-        }
-    }
-
-    private Role getCurrentRole() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Role userId = userDetails.getRole();
-            return userId;
-        } else {
-            throw new Exception("User role not found");
-        }
-    }
+    @Autowired
+    private final CustomUserDetailsService userService;
 
     @PostMapping("")
     public ResponseEntity<StreamingPlatformDTO> createStreamingPlatform(
@@ -74,8 +48,8 @@ public class StreamingPlatformController {
     @GetMapping("")
     @ResponseBody
     public ResponseEntity<?> getAllStreamingPlatforms() throws Exception {
-        if (getCurrentRole().name().equals("SUBSCRIBER")) {
-            return ResponseEntity.ok(streamingPlatform.getStreamingPlatformSubscriber(getCurrentUserId()));
+        if (userService.getCurrentRole().equals(Role.SUBSCRIBER)) {
+            return ResponseEntity.ok(streamingPlatform.getStreamingPlatformSubscriber(userService.getCurrentUserId()));
         } else {
             return ResponseEntity.ok(streamingPlatform.getAllStreamingPlatforms());
         }

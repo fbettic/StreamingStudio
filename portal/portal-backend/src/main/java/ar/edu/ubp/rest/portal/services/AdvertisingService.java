@@ -8,6 +8,8 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
@@ -28,13 +30,9 @@ public class AdvertisingService {
     private final AdvertiserApiClientService advertiserApiClientService;
 
     @Autowired
-    private final BatchService batchService;
-
-    @Autowired
     private final TargetServices targetServices;
 
-    // Advertisings
-    public AdvertisingDTO createAdvertising(AdvertisingRequestDTO advertisingRequest) {
+    private void getBannerData(AdvertisingRequestDTO advertisingRequest) {
         if (advertisingRequest.getBannerId() != null && advertisingRequest.getBannerId() > 0) {
             BannerResponseBean bannerData = advertiserApiClientService.getBannerById(advertisingRequest.getBannerId(),
                     advertisingRequest.getAdvertiserId());
@@ -43,29 +41,31 @@ public class AdvertisingService {
             advertisingRequest.setImageUrl(bannerData.getImageUrl());
             advertisingRequest.setRedirectUrl(bannerData.getRedirectUrl());
         }
+    }
+
+    // Advertisings
+    public AdvertisingDTO createAdvertising(AdvertisingRequestDTO advertisingRequest) throws JsonProcessingException {
+
+        getBannerData(advertisingRequest);
 
         AdvertisingDTO response = advertisingRepository.createAdvertising(advertisingRequest);
 
         if (!Objects.isNull(response)) {
-            targetServices.addAllAdvertisingTarget(advertisingRequest.getTargets(), response.getAdvertisingId());
+            targetServices.updateAdvertisingTargetsFromJson(advertisingRequest.getTargets(),
+                    response.getAdvertisingId());
         }
         return response;
     }
 
-    public AdvertisingDTO updateAdvertisingById(Integer id, AdvertisingRequestDTO advertisingRequest) {
-        if (advertisingRequest.getBannerId() != null && advertisingRequest.getBannerId() > 0) {
-            BannerResponseBean bannerData = advertiserApiClientService.getBannerById(advertisingRequest.getBannerId(),
-                    advertisingRequest.getAdvertiserId());
-
-            advertisingRequest.setBannerText(bannerData.getText());
-            advertisingRequest.setImageUrl(bannerData.getImageUrl());
-            advertisingRequest.setRedirectUrl(bannerData.getRedirectUrl());
-        }
+    public AdvertisingDTO updateAdvertisingById(Integer id, AdvertisingRequestDTO advertisingRequest)
+            throws JsonProcessingException {
+        getBannerData(advertisingRequest);
 
         AdvertisingDTO response = advertisingRepository.updateAdvertisingById(id, advertisingRequest);
 
         if (!Objects.isNull(response)) {
-            targetServices.addAllAdvertisingTarget(advertisingRequest.getTargets(), response.getAdvertisingId());
+            targetServices.updateAdvertisingTargetsFromJson(advertisingRequest.getTargets(),
+                    response.getAdvertisingId());
         }
         return response;
     }
@@ -76,15 +76,6 @@ public class AdvertisingService {
 
     public List<AdvertisingDTO> getAllAdvertisingsByAdvertiser(Integer id) {
         return advertisingRepository.getAllAdvertisingsByAdvertiser(id);
-    }
-
-    public String getAllAdvertisingsFromAdvertisers() throws Exception {
-        try {
-            batchService.updateAdvertisings(advertiserApiClientService.getAllAdvertisingsFromAdvertisers());
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        return "Advertisings have been updated";
     }
 
     public List<AdvertisingDTO> getAllAdvertisings() {

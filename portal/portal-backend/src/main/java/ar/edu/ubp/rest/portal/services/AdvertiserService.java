@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
@@ -28,7 +28,7 @@ public class AdvertiserService {
     public String pingAdvertiser(AdvertiserRequestDTO advertiser) throws Exception {
         return advertiserApiClientService.ping(advertiser.getCompanyName(),
                 advertiser.getServiceType(), advertiser.getApiUrl(),
-                new BasicPayloadBean(advertiser.getAuthToken()));
+                new ServicePayloadBean(advertiser.getAuthToken()));
     }
 
     public AuthResponseDTO createAdvertiser(AdvertiserRequestDTO advertiserRequest) throws Exception {
@@ -36,7 +36,7 @@ public class AdvertiserService {
         if (!advertiserRequest.getServiceType().equals("ACCOUNT")) {
             String result = advertiserApiClientService.ping(advertiserRequest.getCompanyName(),
                     advertiserRequest.getServiceType(), advertiserRequest.getApiUrl(),
-                    new BasicPayloadBean(advertiserRequest.getAuthToken()));
+                    new ServicePayloadBean(advertiserRequest.getAuthToken()));
 
             if (!result.equals("pong")) {
                 throw new Exception(

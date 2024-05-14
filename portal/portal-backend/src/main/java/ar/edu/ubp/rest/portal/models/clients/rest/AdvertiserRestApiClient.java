@@ -10,75 +10,74 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.BannerPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
 
 public class AdvertiserRestApiClient extends AbstractAdvertiserApiClient {
+    private static final String PING_URL = "/ping";
+    private static final String BANNERS_URL = "/banners";
+    private static final String ADVERTISINGS_URL = "/advertisings";
+    private static final String REPORT_URL = "/report";
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Override
-    public String ping(BasicPayloadBean authToken) {
-        System.out.println("------------->" + url);
-        return restTemplate.postForObject(url + "/ping", authToken, String.class);
+    private <T> HttpEntity<T> createHttpEntity(T payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        return new HttpEntity<>(payload, headers);
+    }
+
+    private <T> T processResponse(ResponseEntity<T> responseEntity) {
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody();
+        } else {
+            throw new RuntimeException("Request failed. Status code: " + responseEntity.getStatusCode());
+        }
     }
 
     @Override
-    public BannerResponseBean getBannerById(Integer id, BasicPayloadBean authToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(authToken, headers);
+    public String ping(ServicePayloadBean authToken) {
+        return restTemplate.postForObject(url + PING_URL, authToken, String.class);
+    }
+
+    @Override
+    public BannerResponseBean getBannerById(BannerPayloadBean payload) {
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(payload.getServicePayload());
         ResponseEntity<BannerResponseBean> responseEntity = restTemplate.exchange(
-                url + "/banners/" + id,
+                url + BANNERS_URL + "/" + payload.getBannerId(),
                 HttpMethod.POST,
                 requestEntity,
                 BannerResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to retrieve banner. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 
     @Override
-    public List<AdvertisingResponseBean> getAllAdvertisings(BasicPayloadBean authToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(authToken, headers);
-
+    public List<AdvertisingResponseBean> getAllAdvertisings(ServicePayloadBean authToken) {
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(authToken);
         ResponseEntity<AdvertisingResponseBean[]> responseEntity = restTemplate.exchange(
-                url + "/advertisings",
+                url + ADVERTISINGS_URL,
                 HttpMethod.POST,
                 requestEntity,
                 AdvertisingResponseBean[].class);
 
-        return Arrays.asList(responseEntity.getBody());
+        return Arrays.asList(processResponse(responseEntity));
     }
 
     @Override
-    public String sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<WeeklyAdvertiserReportPayloadBean> requestEntity = new HttpEntity<>(payload,
-                headers);
-        ResponseEntity<ReportResponseBean> responseEntity = restTemplate.exchange(
-                url + "/report",
+    public BasicResponseBean sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload) {
+        HttpEntity<WeeklyAdvertiserReportPayloadBean> requestEntity = createHttpEntity(payload);
+        ResponseEntity<BasicResponseBean> responseEntity = restTemplate.exchange(
+                url + REPORT_URL,
                 HttpMethod.POST,
                 requestEntity,
-                ReportResponseBean.class);
+                BasicResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody().getResponse();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 }

@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TargetMatchedDTO {
     private Integer id;
-    private List<TargetCategoryDTO> targets;
+    private List<Integer> targets;
 }

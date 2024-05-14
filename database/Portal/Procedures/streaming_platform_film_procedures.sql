@@ -75,9 +75,9 @@ BEGIN
 END;
 GO
 
--- DROP PROCEDURE IF EXISTS ProcessPlatformFilmJson
-CREATE OR ALTER PROCEDURE ProcessPlatformFilmJson
-    @jsonData NVARCHAR(MAX)
+-- DROP PROCEDURE IF EXISTS UpdatePlatformFilmFromJson
+CREATE OR ALTER PROCEDURE UpdatePlatformFilmFromJson
+    @json NVARCHAR(MAX)
 AS
 BEGIN
     BEGIN TRY
@@ -93,7 +93,7 @@ BEGIN
         (filmId, platformId, newContent, highlighted)
     SELECT filmId, platformId, newContent, highlighted
     FROM Film f
-        JOIN OPENJSON(@jsonData)
+        JOIN OPENJSON(@json)
     WITH (
       filmCode VARCHAR(255) '$.filmCode',
       platformId INT '$.platformId',
@@ -160,7 +160,7 @@ GO
 
 
 -- DROP PROCEDURE IF EXISTS GetAllPlatformFilmRelations
-CREATE OR ALTER PROCEDURE GetAllPlatformFilmRelations 
+CREATE OR ALTER PROCEDURE GetAllPlatformFilmRelations
     @subscriberId INT
 AS
 BEGIN

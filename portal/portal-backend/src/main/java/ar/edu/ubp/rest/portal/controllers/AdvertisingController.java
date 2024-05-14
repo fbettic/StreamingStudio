@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +28,9 @@ import ar.edu.ubp.rest.portal.dto.request.SizeTypeRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingResponseDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
-import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
 import ar.edu.ubp.rest.portal.services.BannerPriorityService;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import ar.edu.ubp.rest.portal.services.SizeTypeService;
 import ar.edu.ubp.rest.portal.services.TargetServices;
 import lombok.RequiredArgsConstructor;
@@ -41,45 +40,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @CrossOrigin(origins = { "http://localhost:4200" })
 public class AdvertisingController {
-
+    @Autowired
     private final AdvertisingService advertisingService;
-
+    @Autowired
     private final SizeTypeService sizeTypeService;
-
+    @Autowired
     private final BannerPriorityService bannerPriorityService;
-
+    @Autowired
     private final TargetServices targetServices;
 
-    private Integer getCurrentUserId() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Integer userId = userDetails.getId();
-            return userId;
-        } else {
-            throw new Exception("User id not found");
-        }
-    }
-
-    private Role getCurrentRole() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Role userId = userDetails.getRole();
-            return userId;
-        } else {
-            throw new Exception("User role not found");
-        }
-    }
+    @Autowired
+    private final CustomUserDetailsService userService;
 
     @PostMapping("")
     public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest)
             throws Exception {
 
-        if (getCurrentRole().name().equals("ADVERTISER")) {
-            Integer userId = getCurrentUserId();
+        if (userService.getCurrentRole().equals(Role.ADMINISTRATOR)) {
+            Integer userId = userService.getCurrentUserId();
 
             advertisingRequest.setAdvertiserId(userId);
         }
@@ -89,8 +67,8 @@ public class AdvertisingController {
 
     @GetMapping("")
     public ResponseEntity<List<AdvertisingDTO>> getAllAdvertisings() throws Exception {
-        if (getCurrentRole().name().equals("ADVERTISER")) {
-            Integer userId = getCurrentUserId();
+        if (userService.getCurrentRole().equals(Role.ADVERTISER)) {
+            Integer userId = userService.getCurrentUserId();
             return ResponseEntity.ok(advertisingService.getAllAdvertisingsByAdvertiser(userId));
         }
         return ResponseEntity.ok(advertisingService.getAllAdvertisings());
@@ -101,8 +79,8 @@ public class AdvertisingController {
     public ResponseEntity<AdvertisingDTO> getAdvertisingById(@PathVariable Integer id) throws Exception {
         AdvertisingDTO response = advertisingService.getAdvertisingById(id);
 
-        if (!getCurrentRole().name().equals("ADMINISTRATOR")
-                && !response.getAdvertiserId().equals(getCurrentUserId())) {
+        if (!userService.getCurrentRole().equals(Role.ADMINISTRATOR)
+                && !response.getAdvertiserId().equals(userService.getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -124,10 +102,9 @@ public class AdvertisingController {
             @RequestBody AdvertisingRequestDTO advertisingRequest) throws Exception {
 
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
-        // Integer userId = getCurrentUserId();
 
-        if (!getCurrentRole().name().equals("ADMINISTRATOR")
-                && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
+        if (!userService.getCurrentRole().equals(Role.ADMINISTRATOR)
+                && !advertising.getAdvertiserId().equals(userService.getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -138,9 +115,9 @@ public class AdvertisingController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> deleteAdvertisingsById(@PathVariable Integer id) throws Exception {
         AdvertisingDTO advertising = advertisingService.getAdvertisingById(id);
-        System.out.println(advertising.getAdvertiserId().equals(getCurrentUserId()));
-        if (!getCurrentRole().name().equals("ADMINISTRATOR")
-                && !advertising.getAdvertiserId().equals(getCurrentUserId())) {
+
+        if (!userService.getCurrentRole().equals(Role.ADMINISTRATOR)
+                && !advertising.getAdvertiserId().equals(userService.getCurrentUserId())) {
             return ResponseEntity.notFound().build();
         }
 
@@ -153,14 +130,15 @@ public class AdvertisingController {
             @RequestBody List<SubscriberAdvertisingRequestDTO> request) throws Exception {
 
         return ResponseEntity.ok(advertisingService.getAdvertisingsForSubscriber(allPages,
-                getCurrentUserId(), request));
+                userService.getCurrentUserId(), request));
     }
 
     @PostMapping("/track")
     public ResponseEntity<String> createSubscriberAdvertisingClick(
             @RequestBody AdvertisingClickRequestDTO request) throws Exception {
 
-        return ResponseEntity.ok(advertisingService.createSubscriberAdvertisingClick(getCurrentUserId(), request));
+        return ResponseEntity
+                .ok(advertisingService.createSubscriberAdvertisingClick(userService.getCurrentUserId(), request));
     }
 
     @PostMapping("/sizes")

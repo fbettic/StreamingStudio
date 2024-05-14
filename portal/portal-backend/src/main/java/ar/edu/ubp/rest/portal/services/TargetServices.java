@@ -1,14 +1,14 @@
 package ar.edu.ubp.rest.portal.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import ar.edu.ubp.rest.portal.dto.AdvertisingTargetDTO;
-import ar.edu.ubp.rest.portal.dto.MarketingPreferenceDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
+import ar.edu.ubp.rest.portal.dto.TargetMatchedDTO;
 import ar.edu.ubp.rest.portal.repositories.TargetRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -33,59 +33,36 @@ public class TargetServices {
         return targetRepository.deleteTargetCategory(id);
     }
 
-    public List<AdvertisingTargetDTO> addAllAdvertisingTarget(List<Integer> targets, Integer advertisingId) {
+    public String updateAdvertisingTargetsFromJson(List<Integer> targets, Integer advertisingId)
+            throws JsonProcessingException {
 
-        Integer deleted = targetRepository.removeAllAdvertisingTarget(advertisingId);
-
-        List<AdvertisingTargetDTO> result = new ArrayList<>();
-
-        if (deleted.intValue() == advertisingId.intValue()) {
-
-            targets.forEach((targetId) -> {
-                AdvertisingTargetDTO target = targetRepository.addAdvertisingTarget(targetId, advertisingId);
-                if (Objects.isNull(target)) {
-                    result.add(target);
-                }
-            });
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = objectMapper.writeValueAsString(new TargetMatchedDTO(advertisingId, targets));
+        } catch (JsonProcessingException e) {
+            throw e;
         }
 
-        return result;
-    }
-
-    public AdvertisingTargetDTO removeAdvertisingTarget(Integer targetId, Integer advertisingId) {
-        return targetRepository.removeAdvertisingTarget(targetId, advertisingId);
+        return targetRepository.updateAdvertisingTargetsFromJson(json);
     }
 
     public List<TargetCategoryDTO> getAllAdvertisingTargetByAdvertisingId(Integer advertisingId) {
         return targetRepository.getAllAdvertisingTargetByAdvertisingId(advertisingId);
     }
 
-    public MarketingPreferenceDTO addMarketingPreference(Integer targetId, Integer subscriberId) {
-        return targetRepository.addMarketingPreference(targetId, subscriberId);
-    }
+    public String updateMarketingPreferencesFromJson(List<Integer> targets, Integer subscriberId)
+            throws JsonProcessingException {
 
-    public List<MarketingPreferenceDTO> addAllMarketingPreference(List<Integer> targets, Integer subscriberId) {
-
-        Integer deleted = targetRepository.removeAllMarketingPreference(subscriberId);
-
-        List<MarketingPreferenceDTO> result = new ArrayList<>();
-
-        if (deleted.intValue() == subscriberId.intValue()) {
-
-            targets.forEach((targetId) -> {
-                MarketingPreferenceDTO target = targetRepository.addMarketingPreference(targetId, subscriberId);
-                if (Objects.isNull(target)) {
-                    result.add(target);
-                }
-            });
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = objectMapper.writeValueAsString(new TargetMatchedDTO(subscriberId, targets));
+        } catch (JsonProcessingException e) {
+            throw e;
         }
-        return result;
-    }
 
-    public MarketingPreferenceDTO removeMarketingPreference(Integer targetId, Integer subscriberId) {
-        return targetRepository.removeMarketingPreference(targetId, subscriberId);
+        return targetRepository.updateMarketingPreferencesFromJson(json);
     }
 
     public List<TargetCategoryDTO> getAllMarketingPreferencesBySubscriberId(Integer subscriberId) {

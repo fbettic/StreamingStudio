@@ -21,22 +21,18 @@ import org.xml.sax.SAXException;
 
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractPlatformApiClient;
 
 public class PlatformSoapApiClient extends AbstractPlatformApiClient {
-    private final WebServiceTemplate webServiceTemplate;
-
-    public PlatformSoapApiClient() {
-        this.webServiceTemplate = new WebServiceTemplate();
-    }
+    private final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 
     private Document createAndSendSoapRequest(String soapMessage) {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -60,7 +56,7 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
     }
 
     @Override
-    public String ping(BasicPayloadBean payload) {
+    public String ping(ServicePayloadBean payload) {
         String message = """
                 <ws:ping xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
@@ -78,7 +74,7 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
     }
 
     @Override
-    public List<FilmResponseBean> getAllFilms(BasicPayloadBean payload) {
+    public List<FilmResponseBean> getAllFilms(ServicePayloadBean payload) {
         String message = """
                 <ws:getAllFilms xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
@@ -90,13 +86,9 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
         NodeList filmNodes = root.getElementsByTagName("films");
         List<FilmResponseBean> filmList = new ArrayList<>();
 
-        System.out.println("------------> filmNodes.getLength()" + filmNodes.item(5).getTextContent());
-
         for (int i = 0; i < filmNodes.getLength(); i++) {
             Element filmElement = (Element) filmNodes.item(i);
             FilmResponseBean film = new FilmResponseBean(filmElement);
-            System.out.println("-------------> " + i);
-            System.out.println("-------------> " + film.toString());
             filmList.add(film);
         }
 
@@ -109,10 +101,6 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
                 <ws:createAssociationRequest xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
                 </ws:createAssociationRequest>""".formatted(payload.toSoapXml());
-
-        System.out.println("message---->" + message);
-
-        System.out.println("url" + this.url);
 
         Document resultDocument = createAndSendSoapRequest(message);
 
@@ -188,7 +176,7 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
     }
 
     @Override
-    public String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
+    public BasicResponseBean sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
         String message = """
                 <ws:receiveWeeklyReport xmlns:ws="http://ws.soap.ubp.edu.ar/">
                    %s
@@ -204,7 +192,7 @@ public class PlatformSoapApiClient extends AbstractPlatformApiClient {
         }
 
         Element element = (Element) nodes.item(0);
-        return new ReportResponseBean(element.getOwnerDocument()).getResponse();
+        return new BasicResponseBean(element);
     }
 
 }

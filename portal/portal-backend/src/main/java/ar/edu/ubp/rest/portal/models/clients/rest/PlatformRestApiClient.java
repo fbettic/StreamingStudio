@@ -2,7 +2,6 @@ package ar.edu.ubp.rest.portal.models.clients.rest;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,140 +12,114 @@ import org.springframework.web.client.RestTemplate;
 
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractPlatformApiClient;
 
 public class PlatformRestApiClient extends AbstractPlatformApiClient {
+    private static final String PING_URL = "/ping";
+    private static final String FILMS_URL = "/films";
+    private static final String ASSOCIATIONS_URL = "/associations";
+    private static final String SESSIONS_URL = "/sessions";
+    private static final String REPORT_URL = "/report";
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Override
-    public String ping(BasicPayloadBean payload) {
-        return restTemplate.postForObject(url + "/ping", payload, String.class);
+    private <T> HttpEntity<T> createHttpEntity(T payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        return new HttpEntity<>(payload, headers);
+    }
+
+    private <T> T processResponse(ResponseEntity<T> responseEntity) {
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody();
+        } else {
+            throw new RuntimeException("Request failed. Status code: " + responseEntity.getStatusCode());
+        }
     }
 
     @Override
-    public List<FilmResponseBean> getAllFilms(BasicPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(payload, headers);
+    public String ping(ServicePayloadBean payload) {
+        return restTemplate.postForObject(url + PING_URL, payload, String.class);
+    }
 
+    @Override
+    public List<FilmResponseBean> getAllFilms(ServicePayloadBean payload) {
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(payload);
         ResponseEntity<FilmResponseBean[]> responseEntity = restTemplate.exchange(
-                url + "/films",
+                url + FILMS_URL,
                 HttpMethod.POST,
                 requestEntity,
                 FilmResponseBean[].class);
 
-        return Arrays.asList(responseEntity.getBody());
+        return Arrays.asList(processResponse(responseEntity));
     }
 
     @Override
     public AssociationResponseBean createAssociationRequest(AssociationRequestPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<AssociationRequestPayloadBean> requestEntity = new HttpEntity<>(payload, headers);
+        HttpEntity<AssociationRequestPayloadBean> requestEntity = createHttpEntity(payload);
         ResponseEntity<AssociationResponseBean> responseEntity = restTemplate.exchange(
-                url + "/associations",
+                url + ASSOCIATIONS_URL,
                 HttpMethod.POST,
                 requestEntity,
                 AssociationResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 
     @Override
     public AssociationResponseBean getAssociationData(AssociationPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<BasicPayloadBean> requestEntity = new HttpEntity<>(new BasicPayloadBean(payload.getAuthToken()),
-                headers);
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(new ServicePayloadBean(payload.getAuthToken()));
         ResponseEntity<AssociationResponseBean> responseEntity = restTemplate.exchange(
-                url + "/associations/" + payload.getAssociationId(),
+                url + ASSOCIATIONS_URL + "/" + payload.getAssociationId(),
                 HttpMethod.POST,
                 requestEntity,
                 AssociationResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 
     @Override
     public SessionResponseBean createSession(SessionPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<SessionPayloadBean> requestEntity = new HttpEntity<>(payload, headers);
+        HttpEntity<SessionPayloadBean> requestEntity = createHttpEntity(payload);
         ResponseEntity<SessionResponseBean> responseEntity = restTemplate.exchange(
-                url + "/sessions",
+                url + SESSIONS_URL,
                 HttpMethod.POST,
                 requestEntity,
                 SessionResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create session. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 
     @Override
     public AssociationResponseBean cancelAssociationRequest(UserPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<UserPayloadBean> requestEntity = new HttpEntity<>(payload,
-                headers);
+        HttpEntity<UserPayloadBean> requestEntity = createHttpEntity(payload);
         ResponseEntity<AssociationResponseBean> responseEntity = restTemplate.exchange(
-                url + "/associations/cancel",
+                url + ASSOCIATIONS_URL + "/cancel",
                 HttpMethod.POST,
                 requestEntity,
                 AssociationResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity);
     }
 
     @Override
     public String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<WeeklyPlatformReportPayloadBean> requestEntity = new HttpEntity<>(payload,
-                headers);
-        ResponseEntity<ReportResponseBean> responseEntity = restTemplate.exchange(
-                url + "/report",
+        HttpEntity<WeeklyPlatformReportPayloadBean> requestEntity = createHttpEntity(payload);
+        ResponseEntity<BasicResponseBean> responseEntity = restTemplate.exchange(
+                url + REPORT_URL,
                 HttpMethod.POST,
                 requestEntity,
-                ReportResponseBean.class);
+                BasicResponseBean.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return responseEntity.getBody().getResponse();
-        } else {
-            // Handle error
-            throw new RuntimeException(
-                    "Failed to create association. Status code: " + responseEntity.getStatusCode().toString());
-        }
+        return processResponse(responseEntity).getResponse();
     }
 
 }

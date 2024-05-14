@@ -1,15 +1,15 @@
 package ar.edu.ubp.rest.portal.models.clients;
 
 import java.util.List;
-import java.util.Map;
 
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import lombok.Data;
@@ -18,9 +18,9 @@ import lombok.Data;
 public abstract class AbstractPlatformApiClient {
     protected String url = "";
 
-    public abstract String ping(BasicPayloadBean payload);
+    public abstract String ping(ServicePayloadBean payload);
 
-    public abstract List<FilmResponseBean> getAllFilms(BasicPayloadBean payload);
+    public abstract List<FilmResponseBean> getAllFilms(ServicePayloadBean payload);
 
     public abstract AssociationResponseBean createAssociationRequest(AssociationRequestPayloadBean payload);
 
@@ -30,6 +30,6 @@ public abstract class AbstractPlatformApiClient {
 
     public abstract SessionResponseBean createSession(SessionPayloadBean payload);
 
-    public abstract String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload);
+    public abstract BasicResponseBean sendWeeklyReport(WeeklyPlatformReportPayloadBean payload);
 
 }

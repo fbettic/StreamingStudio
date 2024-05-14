@@ -87,13 +87,12 @@ public class FilmRepository implements IFilmRepository {
 
     @Override
     @SuppressWarnings("unchecked")
-    public String updateBatchPlatformFilm(String platformFilmsJson) {
-
+    public String updateBatchPlatformFilm(String json) {
         SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("jsonData", platformFilmsJson);
+                .addValue("json", json);
 
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("ProcessPlatformFilmJson")
+                .withProcedureName("UpdatePlatformFilmFromJson")
                 .withSchemaName("dbo")
                 .returningResultSet("message", BeanPropertyRowMapper.newInstance(String.class));
 
@@ -176,8 +175,5 @@ public class FilmRepository implements IFilmRepository {
         Map<String, Object> output = jdbcCall.execute(input);
         return (List<FilmSubscriberResponseDTO>) output.get("films");
     }
-
-
-    
 
 }

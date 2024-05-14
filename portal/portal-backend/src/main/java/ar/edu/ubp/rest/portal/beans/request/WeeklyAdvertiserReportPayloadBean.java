@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class WeeklyAdvertiserReportPayloadBean extends ServiceRequestPayloadBean {
+public class WeeklyAdvertiserReportPayloadBean extends AbstractServicePayload {
     private Integer reportId;
     private Date fromDate;
     private Date toDate;

@@ -1,5 +1,6 @@
 package ar.edu.ubp.rest.portal.repositories;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -60,17 +61,10 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 	}
 
 	@Override
-	public AdvertiserDTO getAdvertiserByEmail(String email) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAdvertiserByEmail'");
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public AdvertiserDTO getAdvertiserById(Integer id) {
 		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("advertiserId", id);
-				
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("GetAdvertiserById")
@@ -82,20 +76,19 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Integer deleteAdvertiserById(Integer id) {
 		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("tableName", "Advertiser")
 				.addValue("primaryKeyColumn", "advertiserId")
-				.addValue("primaryKeyValue", id);
+				.addValue("primaryKeyValue", id)
+				.addValue("deletedId", null, Types.INTEGER);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("SoftDeleteRecord")
-				.withSchemaName("dbo")
-				.returningResultSet("advertiserId", BeanPropertyRowMapper.newInstance(Integer.class));
+				.withSchemaName("dbo");
 
-		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<Integer>) output.get("advertiserId")).get(0);
+		Map<String, Object> out = jdbcCall.execute(input);
+		return Integer.valueOf(out.get("deletedId").toString());
 	}
 
 	@Override

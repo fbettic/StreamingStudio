@@ -1,4 +1,4 @@
-    package ar.edu.ubp.rest.portal.models.clients.soap;
+package ar.edu.ubp.rest.portal.models.clients.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,32 +19,37 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.AbstractServicePayload;
+import ar.edu.ubp.rest.portal.beans.request.BannerPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
-import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.ReportResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
 
 public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
-    private final WebServiceTemplate webServiceTemplate;
+    private final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+    private static final String NAMESPACE_URI = "http://ws.soap.ubp.edu.ar/";
 
-    public AdvertiserSoapApiClient() {
-        this.webServiceTemplate = new WebServiceTemplate();
-    }
 
-    private Document createAndSendSoapRequest(String soapMessage) {
+    private Document createAndSendSoapRequest(String action, AbstractServicePayload payload) {
+        String message = """
+                <ws:%s xmlns:ws="%s">
+                   %s
+                </ws:%s>""".formatted(action, NAMESPACE_URI, payload.toSoapXml(), action);
+
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
         Document resultDocument;
         Document sourceDocument;
+
         try {
             DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();
             resultDocument = docBuilder.newDocument();
-            sourceDocument = docBuilder.parse(new ByteArrayInputStream(soapMessage.getBytes()));
+            sourceDocument = docBuilder.parse(new ByteArrayInputStream(message.getBytes()));
         } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error while creating and sending SOAP request: " + e.getMessage(), e);
         }
 
         Source source = new DOMSource(sourceDocument);
@@ -56,76 +61,55 @@ public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
     }
 
     @Override
-    public String ping(BasicPayloadBean authToken) {
-        String message = """
-                <ws:ping xmlns:ws="http://ws.soap.ubp.edu.ar/">
-                   %s
-                </ws:ping>""".formatted(authToken.toSoapXml());
+    public String ping(ServicePayloadBean authToken) {
 
-        Document resultDocument = createAndSendSoapRequest(message);
+        Document resultDocument = createAndSendSoapRequest("ping",authToken);
 
         Element root = resultDocument.getDocumentElement();
-        NodeList pongNodeList = root.getElementsByTagName("pong");
-        
-        
-        if (pongNodeList.getLength() > 0) {
-            return pongNodeList.item(0).getTextContent();
+        NodeList nodes = root.getElementsByTagName("pong");
+
+        if (nodes.getLength() > 0) {
+            return nodes.item(0).getTextContent();
         } else {
             throw new RuntimeException("Response does not contain <pong> element");
         }
     }
 
     @Override
-    public BannerResponseBean getBannerById(Integer id, BasicPayloadBean authToken) {
-        String message = """
-                <ws:getBannerById xmlns:ws="http://ws.soap.ubp.edu.ar/">
-                   <bannerId>%d</bannerId>
-                   %s
-                </ws:getBannerById>""".formatted(id, authToken.toSoapXml());
-
-        Document resultDocument = createAndSendSoapRequest(message);
+    public BannerResponseBean getBannerById(BannerPayloadBean payload) {
+        Document resultDocument = createAndSendSoapRequest("getBannerById", payload);
 
         Element root = resultDocument.getDocumentElement();
-        NodeList bannerNodes = root.getElementsByTagName("banner");
+        NodeList nodes = root.getElementsByTagName("banner");
 
-        if (bannerNodes.getLength() == 0) {
+        if (nodes.getLength() == 0) {
             return null;
         }
-        
-        Element bannerElement = (Element) bannerNodes.item(0);
-        return new BannerResponseBean(bannerElement.getOwnerDocument());
+
+        Element element = (Element) nodes.item(0);
+        return new BannerResponseBean(element);
     }
 
     @Override
-    public List<AdvertisingResponseBean> getAllAdvertisings(BasicPayloadBean authToken) {
-        String message = """
-                <ws:getAllAdvertisings xmlns:ws="http://ws.soap.ubp.edu.ar/">
-                   %s
-                </ws:getAllAdvertisings>""".formatted(authToken.toSoapXml());
+    public List<AdvertisingResponseBean> getAllAdvertisings(ServicePayloadBean authToken) {
 
-        Document resultDocument = createAndSendSoapRequest(message);
+        Document resultDocument = createAndSendSoapRequest("getAllAdvertisings",authToken);
 
         Element root = resultDocument.getDocumentElement();
-        NodeList advertisingNodes = root.getElementsByTagName("advertisings");
+        NodeList nodes = root.getElementsByTagName("advertisings");
         List<AdvertisingResponseBean> advertisingList = new ArrayList<>();
 
-        for (int i = 0; i < advertisingNodes.getLength(); i++) {
-            Element advertisingElement = (Element) advertisingNodes.item(i);
-            advertisingList.add(new AdvertisingResponseBean(advertisingElement.getOwnerDocument()));
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element element = (Element) nodes.item(i);
+            advertisingList.add(new AdvertisingResponseBean(element));
         }
 
         return advertisingList;
     }
 
-    
     @Override
-    public String sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload) {
-        String message = """
-                <ws:receiveWeeklyReport xmlns:ws="http://ws.soap.ubp.edu.ar/">
-                   %s
-                </ws:receiveWeeklyReport>""".formatted(payload.toSoapXml());
-
-        Document resultDocument = createAndSendSoapRequest(message);
+    public BasicResponseBean sendWeeklyReport(WeeklyAdvertiserReportPayloadBean payload) {
+        Document resultDocument = createAndSendSoapRequest("receiveWeeklyReport", payload);
 
         Element root = resultDocument.getDocumentElement();
         NodeList nodes = root.getElementsByTagName("report");
@@ -135,7 +119,7 @@ public class AdvertiserSoapApiClient extends AbstractAdvertiserApiClient {
         }
 
         Element element = (Element) nodes.item(0);
-        return new ReportResponseBean(element.getOwnerDocument()).getResponse();
+        return new BasicResponseBean(element);
     }
 
 }

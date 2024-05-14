@@ -10,12 +10,9 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ar.edu.ubp.rest.portal.beans.request.AssociationPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.AssociationRequestPayloadBean;
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
@@ -49,7 +46,7 @@ public class PlatformApiClientService {
         this.platformClientFactory = PlatformApiClientFactory.getInstance();
     }
 
-    public String ping(String platformName, String serviceType, String url, BasicPayloadBean authToken)
+    public String ping(String platformName, String serviceType, String url, ServicePayloadBean authToken)
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
             IllegalAccessException {
         AbstractPlatformApiClient platformClient = platformClientFactory.buildPlatformClient(platformName,
@@ -84,12 +81,9 @@ public class PlatformApiClientService {
             if (Objects.isNull(platformClient))
                 return;
 
-            BasicPayloadBean authToken = new BasicPayloadBean(platform.getAuthToken());
+            ServicePayloadBean authToken = new ServicePayloadBean(platform.getAuthToken());
 
             List<FilmResponseBean> films = platformClient.getAllFilms(authToken);
-
-            System.out.println("--------------->" + platform.getPlatformId());
-            System.out.println("--------------->" + films.toString());
 
             if (!films.isEmpty()) {
                 filmsByPlatform.add(new ServiceResponseMapperBean<FilmResponseBean>(platform.getPlatformId(), films));
@@ -178,8 +172,6 @@ public class PlatformApiClientService {
 
         UserPayloadBean credentials = new UserPayloadBean(platform.getAuthToken(), userToken);
 
-        System.out.println("---->" + credentials.toString());
-
         AssociationResponseBean associationResponse = platformClient.cancelAssociationRequest(credentials);
 
         return associationResponse;
@@ -239,6 +231,7 @@ public class PlatformApiClientService {
                     | IllegalAccessException e) {
                 System.out.println(e);
                 e.printStackTrace();
+                continue;
             }
 
             if (Objects.isNull(platformClient)) {
@@ -249,19 +242,11 @@ public class PlatformApiClientService {
             WeeklyPlatformReportPayloadBean report = reportService.createWeeklyPlatformReport(platform.getPlatformId(),
                     platform.getAuthToken());
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = null;
-            try {
-                jsonString = objectMapper.writeValueAsString(report);
-            } catch (JsonProcessingException e) {
-                throw e;
-            }
-
-            System.out.println(jsonString);
             try {
                 result = platformClient.sendWeeklyReport(report);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println(e);
+                e.printStackTrace();
                 continue;
             }
 

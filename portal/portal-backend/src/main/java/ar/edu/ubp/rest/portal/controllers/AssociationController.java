@@ -1,12 +1,11 @@
 package ar.edu.ubp.rest.portal.controllers;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,8 @@ import ar.edu.ubp.rest.portal.dto.SessionDTO;
 import ar.edu.ubp.rest.portal.dto.request.NewAssociationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SessionRequestDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
-import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AssociationService;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,36 +34,15 @@ public class AssociationController {
     @Autowired
     private final AssociationService associationService;
 
-    private Integer getCurrentUserId() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Integer userId = userDetails.getId();
-            return userId;
-        } else {
-            throw new Exception("User id not found");
-        }
-    }
-
-    private Role getCurrentRole() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Role userId = userDetails.getRole();
-            return userId;
-        } else {
-            throw new Exception("User role not found");
-        }
-    }
+    @Autowired
+    private final CustomUserDetailsService userService;
 
     @PostMapping("/link")
     public ResponseEntity<AssociationRequestDTO> createAssociationRequest(
             @RequestBody NewAssociationRequestDTO newAssociationRequest)
             throws Exception {
-        if (getCurrentRole().name().equals("SUBSCRIBER")) {
-            Integer userId = getCurrentUserId();
+        if (userService.getCurrentRole().equals(Role.SUBSCRIBER)) {
+            Integer userId = userService.getCurrentUserId();
             newAssociationRequest.setSubscriberId(userId);
         }
         return ResponseEntity.ok(associationService.createAssociationRequest(newAssociationRequest));
@@ -73,7 +51,7 @@ public class AssociationController {
     @GetMapping("/unlink/{id}")
     public ResponseEntity<AssociationDTO> cancelAssociationRequest(@PathVariable Integer id)
             throws Exception {
-        return ResponseEntity.ok(associationService.cancelAssociationRequest(id, getCurrentUserId()));
+        return ResponseEntity.ok(associationService.cancelAssociationRequest(id, userService.getCurrentUserId()));
     }
 
     @GetMapping("")
@@ -86,25 +64,24 @@ public class AssociationController {
     public ResponseEntity<List<AssociationDTO>> getAllAssociationsBySubscriber(@RequestParam("uuid") String uuid)
             throws Exception {
 
-        return ResponseEntity.ok(associationService.getAllAssociationsBySubscriber(getCurrentUserId()));
+        return ResponseEntity.ok(associationService.getAllAssociationsBySubscriber(userService.getCurrentUserId()));
     }
 
     @PostMapping("/sessions")
     public ResponseEntity<SessionDTO> createSession(@RequestBody SessionRequestDTO sessionRequest)
             throws Exception {
-        Integer userId = getCurrentUserId();
-        sessionRequest.setSubscriberId(userId);
+        sessionRequest.setSubscriberId(userService.getCurrentUserId());
         return ResponseEntity.ok(associationService.createSession(sessionRequest));
     }
 
     @GetMapping("/sessions/{id}")
-    public ResponseEntity<SessionDTO> markSessionAsUsed(@PathVariable Integer id) throws Exception {
+    public ResponseEntity<SessionDTO> markSessionAsUsed(@PathVariable Integer id) {
         SessionDTO session = associationService.getSessionById(id);
 
-        if ((getCurrentRole().name().equals("SUBSCRIBER")
-                && !session.getSubscriberId().equals(getCurrentUserId()))
+        if ((userService.getCurrentRole().equals(Role.SUBSCRIBER)
+                && !session.getSubscriberId().equals(userService.getCurrentUserId()))
                 || Objects.nonNull(session.getUsedAt())) {
-            return ResponseEntity.notFound().build();
+            throw new NoSuchElementException("The session has not been found, or has already been used.");
         }
 
         return ResponseEntity.ok(associationService.markSessionAsUsed(id));

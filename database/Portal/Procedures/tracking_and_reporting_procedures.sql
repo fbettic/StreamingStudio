@@ -234,7 +234,3 @@ BEGIN
 END
 GO
 
-GetAssociationsByReportId 1011
-
-select *
-from SubscriberAdvertisingClick

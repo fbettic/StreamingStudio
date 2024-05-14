@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExeptionHandler {
 
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleGenericException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -27,12 +34,6 @@ public class GlobalExeptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handlerRuntimeExeption(RuntimeException exception) {
         return new ResponseEntity<String>(exception.getMessage(), HttpStatus.BAD_GATEWAY);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ex.getMessage());
     }
 
     @ExceptionHandler(UncategorizedDataAccessException.class)

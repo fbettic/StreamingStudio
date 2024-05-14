@@ -12,8 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import ar.edu.ubp.rest.portal.dto.AdvertisingTargetDTO;
-import ar.edu.ubp.rest.portal.dto.MarketingPreferenceDTO;
 import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.ITargetRepository;
 
@@ -89,50 +87,18 @@ public class TargetRepository implements ITargetRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public AdvertisingTargetDTO addAdvertisingTarget(Integer targetId, Integer advertisingId) {
+	public String updateAdvertisingTargetsFromJson(String json) {
 		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("targetId", targetId)
-				.addValue("advertisingId", advertisingId);
+				.addValue("json", json);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("AddAdvertisingTarget")
+				.withProcedureName("UpdateAdvertisingTargetsFromJson")
 				.withSchemaName("dbo")
-				.returningResultSet("target",
-						BeanPropertyRowMapper.newInstance(AdvertisingTargetDTO.class));
+				.returningResultSet("message",
+						BeanPropertyRowMapper.newInstance(String.class));
 
 		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<AdvertisingTargetDTO>) output.get("target")).get(0);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public AdvertisingTargetDTO removeAdvertisingTarget(Integer targetId, Integer advertisingId) {
-		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("targetId", targetId)
-				.addValue("advertisingId", advertisingId);
-
-		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("RemoveAdvertisingTarget")
-				.withSchemaName("dbo")
-				.returningResultSet("target",
-						BeanPropertyRowMapper.newInstance(AdvertisingTargetDTO.class));
-
-		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<AdvertisingTargetDTO>) output.get("target")).get(0);
-	}
-
-	@Override
-	public Integer removeAllAdvertisingTarget(Integer advertisingId) {
-		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("advertisingId", advertisingId)
-				.addValue("deletedId", null, Types.INTEGER);
-
-		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("RemoveAllAdvertisingTarget")
-				.withSchemaName("dbo");
-
-		Map<String, Object> out = jdbcCall.execute(input);
-		return Integer.valueOf(out.get("deletedId").toString());
+		return ((List<String>) output.get("message")).get(0);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -153,50 +119,18 @@ public class TargetRepository implements ITargetRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public MarketingPreferenceDTO addMarketingPreference(Integer targetId, Integer subscriberId) {
+	public String updateMarketingPreferencesFromJson(String json) {
 		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("targetId", targetId)
-				.addValue("subscriberId", subscriberId);
+				.addValue("json", json);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("AddMarketingPreference")
+				.withProcedureName("UpdateMarketingPreferencesFromJson")
 				.withSchemaName("dbo")
-				.returningResultSet("target",
-						BeanPropertyRowMapper.newInstance(MarketingPreferenceDTO.class));
+				.returningResultSet("message",
+						BeanPropertyRowMapper.newInstance(String.class));
 
 		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<MarketingPreferenceDTO>) output.get("target")).get(0);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public MarketingPreferenceDTO removeMarketingPreference(Integer targetId, Integer subscriberId) {
-		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("targetId", targetId)
-				.addValue("subscriberId", subscriberId);
-
-		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("RemoveMarketingPreference")
-				.withSchemaName("dbo")
-				.returningResultSet("target",
-						BeanPropertyRowMapper.newInstance(MarketingPreferenceDTO.class));
-
-		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<MarketingPreferenceDTO>) output.get("target")).get(0);
-	}
-
-	@Override
-	public Integer removeAllMarketingPreference(Integer subscriberId) {
-		SqlParameterSource input = new MapSqlParameterSource()
-				.addValue("subscriberId", subscriberId)
-				.addValue("deletedId", null, Types.INTEGER);
-
-		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-				.withProcedureName("RemoveAllMarketingPreference")
-				.withSchemaName("dbo");
-
-		Map<String, Object> out = jdbcCall.execute(input);
-		return Integer.valueOf(out.get("deletedId").toString());
+		return ((List<String>) output.get("message")).get(0);
 	}
 
 	@SuppressWarnings("unchecked")

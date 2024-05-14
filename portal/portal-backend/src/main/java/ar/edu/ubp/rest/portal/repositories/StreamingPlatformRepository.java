@@ -1,5 +1,6 @@
 package ar.edu.ubp.rest.portal.repositories;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -18,100 +19,99 @@ import ar.edu.ubp.rest.portal.repositories.interfaces.IStreamingPlatformReposito
 @Repository
 public class StreamingPlatformRepository implements IStreamingPlatformRepository {
 
-        @Autowired
-        private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO streamingPlatfromRequest) {
-                SqlParameterSource input = new MapSqlParameterSource()
-                                .addValue("platformName", streamingPlatfromRequest.getPlatformName())
-                                .addValue("email", streamingPlatfromRequest.getEmail())
-                                .addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
-                                .addValue("authToken", streamingPlatfromRequest.getAuthToken())
-                                .addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
-                                .addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())
-                                .addValue("serviceType", streamingPlatfromRequest.getServiceType());
+	@SuppressWarnings("unchecked")
+	@Override
+	public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO streamingPlatfromRequest) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("platformName", streamingPlatfromRequest.getPlatformName())
+				.addValue("email", streamingPlatfromRequest.getEmail())
+				.addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
+				.addValue("authToken", streamingPlatfromRequest.getAuthToken())
+				.addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
+				.addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())
+				.addValue("serviceType", streamingPlatfromRequest.getServiceType());
 
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                                .withProcedureName("CreateStreamingPlatform")
-                                .withSchemaName("dbo")
-                                .returningResultSet("platform",
-                                                BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CreateStreamingPlatform")
+				.withSchemaName("dbo")
+				.returningResultSet("platform",
+						BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
 
-                Map<String, Object> output = jdbcCall.execute(input);
-                return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
-        }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
+	}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public StreamingPlatformDTO getStreamingPlatformById(Integer id) {
-                SqlParameterSource input = new MapSqlParameterSource()
-                                .addValue("platformId", id);
+	@SuppressWarnings("unchecked")
+	@Override
+	public StreamingPlatformDTO getStreamingPlatformById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("platformId", id);
 
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                                .withProcedureName("GetStreamingPlatformById")
-                                .withSchemaName("dbo")
-                                .returningResultSet("platform",
-                                                BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetStreamingPlatformById")
+				.withSchemaName("dbo")
+				.returningResultSet("platform",
+						BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
 
-                Map<String, Object> output = jdbcCall.execute(input);
-                return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
-        }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
+	}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public List<StreamingPlatformDTO> getAllStreamingPlatfroms() {
-                SqlParameterSource input = new MapSqlParameterSource();
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<StreamingPlatformDTO> getAllStreamingPlatfroms() {
+		SqlParameterSource input = new MapSqlParameterSource();
 
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                                .withProcedureName("GetAllStreamingPlatforms")
-                                .withSchemaName("dbo")
-                                .returningResultSet("platforms",
-                                                BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetAllStreamingPlatforms")
+				.withSchemaName("dbo")
+				.returningResultSet("platforms",
+						BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
 
-                Map<String, Object> output = jdbcCall.execute(input);
-                return (List<StreamingPlatformDTO>) output.get("platforms");
-        }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return (List<StreamingPlatformDTO>) output.get("platforms");
+	}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public Integer deleteStreamingPlatfromById(Integer id) {
-                SqlParameterSource input = new MapSqlParameterSource()
-                                .addValue("tableName", "StreamingPlatform")
-                                .addValue("primaryKeyColumn", "platformId")
-                                .addValue("primaryKeyValue", id);
+	@Override
+	public Integer deleteStreamingPlatfromById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("tableName", "StreamingPlatform")
+				.addValue("primaryKeyColumn", "platformId")
+				.addValue("primaryKeyValue", id)
+				.addValue("deletedId", null, Types.INTEGER);
 
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                                .withProcedureName("SoftDeleteRecord")
-                                .withSchemaName("dbo")
-                                .returningResultSet("platformId", BeanPropertyRowMapper.newInstance(Integer.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("SoftDeleteRecord")
+				.withSchemaName("dbo");
 
-                Map<String, Object> output = jdbcCall.execute(input);
-                return ((List<Integer>) output.get("platformId")).get(0);
-        }
+		Map<String, Object> out = jdbcCall.execute(input);
+		return Integer.valueOf(out.get("deletedId").toString());
+	}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public StreamingPlatformDTO updateStreamingPlatform(StreamingPlatformRequestDTO streamingPlatfromRequest,
-                        Integer id) {
-                SqlParameterSource input = new MapSqlParameterSource()
-                                .addValue("platformName", streamingPlatfromRequest.getPlatformName())
-                                .addValue("email", streamingPlatfromRequest.getEmail())
-                                .addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
-                                .addValue("authToken", streamingPlatfromRequest.getAuthToken())
-                                .addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
-                                .addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())
-                                .addValue("serviceType", streamingPlatfromRequest.getServiceType())
-                                .addValue("platformId", id);
+	@SuppressWarnings("unchecked")
+	@Override
+	public StreamingPlatformDTO updateStreamingPlatform(StreamingPlatformRequestDTO streamingPlatfromRequest,
+			Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("platformName", streamingPlatfromRequest.getPlatformName())
+				.addValue("email", streamingPlatfromRequest.getEmail())
+				.addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
+				.addValue("authToken", streamingPlatfromRequest.getAuthToken())
+				.addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
+				.addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())
+				.addValue("serviceType", streamingPlatfromRequest.getServiceType())
+				.addValue("platformId", id);
 
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                                .withProcedureName("UpdateStreamingPlatform")
-                                .withSchemaName("dbo")
-                                .returningResultSet("platform",
-                                                BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("UpdateStreamingPlatform")
+				.withSchemaName("dbo")
+				.returningResultSet("platform",
+						BeanPropertyRowMapper.newInstance(StreamingPlatformDTO.class));
 
-                Map<String, Object> output = jdbcCall.execute(input);
-                return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
-        }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<StreamingPlatformDTO>) output.get("platform")).get(0);
+	}
 }

@@ -40,7 +40,10 @@ public class BatchService {
     @Autowired
     private final AdvertiserApiClientService advertiserApiClientService;
 
-    public void updateAdvertisings(List<ServiceResponseMapperBean<AdvertisingResponseBean>> clientAdvertisings) {
+    public String updateAdvertisings() throws Exception {
+
+        List<ServiceResponseMapperBean<AdvertisingResponseBean>> clientAdvertisings = advertiserApiClientService
+                .getAllAdvertisingsFromAdvertisers();
 
         List<BannerDTO> banners = new ArrayList<>();
 
@@ -61,9 +64,8 @@ public class BatchService {
             });
         });
 
-        advertisingRepository.updateBatchBanner(banners);
+        return advertisingRepository.updateBatchBanner(banners);
 
-        return;
     }
 
     public void updateFilms(List<ServiceResponseMapperBean<FilmResponseBean>> clientFilms) throws Exception {
@@ -71,8 +73,6 @@ public class BatchService {
         Set<String> filmCodes = new HashSet<>();
 
         List<PlatformFilmDTO> platformFilms = new ArrayList<>();
-
-        System.out.println("--------------> clientsFilms" + clientFilms.toString());
 
         if (Objects.isNull(clientFilms) || clientFilms.size() == 0) {
             throw new NoSuchElementException("No films availables");
@@ -112,8 +112,6 @@ public class BatchService {
             });
         });
 
-        System.out.println("---------------> platformFilms" + platformFilms.toString());
-
         int filmsCreated = filmRepository.updateBatchFilm(allFilms);
 
         if (filmsCreated != 0) {
@@ -129,16 +127,11 @@ public class BatchService {
 
     }
 
-    public String sendWeeklyReport() throws Exception{
+    public String sendWeeklyReport() throws Exception {
         Map<Integer, String> platformsResult = platformApiClientService.sendWeeklyReport();
         Map<Integer, String> advertisersResult = advertiserApiClientService.sendWeeklyReport();
 
-        System.out.println("----------->" + platformsResult);
-        System.out.println("----------->" + advertisersResult);
-
         return platformsResult.toString() + advertisersResult.toString();
     }
-
-   
 
 }

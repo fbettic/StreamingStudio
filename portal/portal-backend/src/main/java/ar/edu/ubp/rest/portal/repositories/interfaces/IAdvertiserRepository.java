@@ -8,8 +8,6 @@ import ar.edu.ubp.rest.portal.models.users.Advertiser;
 
 public interface IAdvertiserRepository {
     public AdvertiserDTO createAdvertiser(Advertiser advertiser);
-    
-    public AdvertiserDTO getAdvertiserByEmail(String email);
 
     public List<AdvertiserDTO> getAllAdvertisers();
 

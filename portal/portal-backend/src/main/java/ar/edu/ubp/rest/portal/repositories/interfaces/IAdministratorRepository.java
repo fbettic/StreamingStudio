@@ -5,8 +5,6 @@ import ar.edu.ubp.rest.portal.models.users.Administrator;
 
 public interface IAdministratorRepository {
 
-    public AdministratorDTO getAdministratorByEmail(String email);
-
     public AdministratorDTO createAdministrator(Administrator administrator);
 
 }

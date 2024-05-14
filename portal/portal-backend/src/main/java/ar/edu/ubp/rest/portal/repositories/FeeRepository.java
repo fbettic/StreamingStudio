@@ -1,5 +1,6 @@
 package ar.edu.ubp.rest.portal.repositories;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -18,48 +19,47 @@ import ar.edu.ubp.rest.portal.repositories.interfaces.IFeeRepository;
 @Repository
 public class FeeRepository implements IFeeRepository {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public FeeDTO createFee(FeeRequestDTO fee) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("feeType", fee.getFeeType())
-                .addValue("feeValue", fee.getFeeValue());
+	@SuppressWarnings("unchecked")
+	@Override
+	public FeeDTO createFee(FeeRequestDTO fee) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("feeType", fee.getFeeType())
+				.addValue("feeValue", fee.getFeeValue());
 
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("CreateFee")
-                .withSchemaName("dbo")
-                .returningResultSet("fee", BeanPropertyRowMapper.newInstance(FeeDTO.class));
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CreateFee")
+				.withSchemaName("dbo")
+				.returningResultSet("fee", BeanPropertyRowMapper.newInstance(FeeDTO.class));
 
-        Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<FeeDTO>) output.get("fee")).get(0);
-    }
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<FeeDTO>) output.get("fee")).get(0);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public FeeDTO updateFee(FeeRequestDTO fee, Integer id) {
-        SqlParameterSource input = new MapSqlParameterSource()
-                .addValue("feeType", fee.getFeeType())
-                .addValue("feeValue", fee.getFeeValue())
-                .addValue("feeId", id);
-
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName("UpdateFee")
-                .withSchemaName("dbo")
-                .returningResultSet("fee", BeanPropertyRowMapper.newInstance(FeeDTO.class));
-
-        Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<FeeDTO>) output.get("fee")).get(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public FeeDTO getFeeById(Integer id) {
-        SqlParameterSource input = new MapSqlParameterSource()
+	@SuppressWarnings("unchecked")
+	@Override
+	public FeeDTO updateFee(FeeRequestDTO fee, Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("feeType", fee.getFeeType())
+				.addValue("feeValue", fee.getFeeValue())
 				.addValue("feeId", id);
-				
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("UpdateFee")
+				.withSchemaName("dbo")
+				.returningResultSet("fee", BeanPropertyRowMapper.newInstance(FeeDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<FeeDTO>) output.get("fee")).get(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public FeeDTO getFeeById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("feeId", id);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("GetFeeById")
@@ -68,13 +68,13 @@ public class FeeRepository implements IFeeRepository {
 
 		Map<String, Object> output = jdbcCall.execute(input);
 		return ((List<FeeDTO>) output.get("fee")).get(0);
-    }
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<FeeDTO> getAllFees() {
-        SqlParameterSource input = new MapSqlParameterSource();
-				
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<FeeDTO> getAllFees() {
+		SqlParameterSource input = new MapSqlParameterSource();
+
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("GetAllFees")
 				.withSchemaName("dbo")
@@ -82,23 +82,23 @@ public class FeeRepository implements IFeeRepository {
 
 		Map<String, Object> output = jdbcCall.execute(input);
 		return (List<FeeDTO>) output.get("fee");
-    }
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Integer deleteFeeById(Integer id) {
-        SqlParameterSource input = new MapSqlParameterSource()
+	@Override
+	public Integer deleteFeeById(Integer id) {
+		SqlParameterSource input = new MapSqlParameterSource()
 				.addValue("tableName", "FeeType")
 				.addValue("primaryKeyColumn", "feeId")
-				.addValue("primaryKeyValue", id);
+				.addValue("primaryKeyValue", id)
+
+				.addValue("deletedId", null, Types.INTEGER);
 
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
 				.withProcedureName("SoftDeleteRecord")
-				.withSchemaName("dbo")
-				.returningResultSet("feeId", BeanPropertyRowMapper.newInstance(Integer.class));
+				.withSchemaName("dbo");
 
-		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<Integer>) output.get("feeId")).get(0);
-    }
+		Map<String, Object> out = jdbcCall.execute(input);
+		return Integer.valueOf(out.get("deletedId").toString());
+	}
 
 }

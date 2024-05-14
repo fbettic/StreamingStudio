@@ -29,8 +29,7 @@ public class AdvertisingResponseBean extends ServiceResponseBean {
     private Date fromDate;
     private Date toDate;
 
-    public AdvertisingResponseBean(Document xmlDocument) {
-        Element advertisingElement = (Element) xmlDocument.getElementsByTagName("advertisings").item(0);
+    public AdvertisingResponseBean(Element advertisingElement ) {
         this.advertisingId = Integer.parseInt(getElementValue(advertisingElement, "advertisingId"));
         this.bannerId = Integer.parseInt(getElementValue(advertisingElement, "bannerId"));
         this.serviceId = Integer.parseInt(getElementValue(advertisingElement, "serviceId"));

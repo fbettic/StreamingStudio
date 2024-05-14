@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,7 +44,6 @@ public class AdvertisingRepository implements IAdvertisingRepository {
         .addValue("fromDate", advertising.getFromDate())
         .addValue("toDate", advertising.getToDate());
 
-    System.out.println("----------------->" + input.toString());
     SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
         .withProcedureName("CreateAdvertising")
         .withSchemaName("dbo")
@@ -51,7 +51,6 @@ public class AdvertisingRepository implements IAdvertisingRepository {
 
     Map<String, Object> output = jdbcCall.execute(input);
 
-    System.out.println("----------------->" + output.toString());
     return ((List<AdvertisingDTO>) output.get("advertising")).get(0);
   }
 
@@ -83,32 +82,33 @@ public class AdvertisingRepository implements IAdvertisingRepository {
   }
 
   @Override
-  public Integer updateBatchBanner(List<BannerDTO> banners) {
-    String sql = "EXEC UpdateAdvertisingBanner @advertiserId=?, @bannerId=?, @redirectUrl=?, @imageUrl=?, @bannerText=?";
+  public String updateBatchBanner(List<BannerDTO> banners) {
+    try {
+      String sql = "EXEC UpdateAdvertisingBanner @advertiserId=?, @bannerId=?, @redirectUrl=?, @imageUrl=?, @bannerText=?";
 
-    int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-      @Override
-      public void setValues(PreparedStatement ps, int i) throws SQLException {
-        BannerDTO banner = banners.get(i);
-        ps.setInt(1, banner.getAdvertiserId());
-        ps.setInt(2, banner.getBannerId());
-        ps.setString(3, banner.getRedirectUrl());
-        ps.setString(4, banner.getImageUrl());
-        ps.setString(5, banner.getText());
-      }
+      jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        @Override
+        public void setValues(PreparedStatement ps, int i) throws SQLException {
+          BannerDTO banner = banners.get(i);
+          ps.setInt(1, banner.getAdvertiserId());
+          ps.setInt(2, banner.getBannerId());
+          ps.setString(3, banner.getRedirectUrl());
+          ps.setString(4, banner.getImageUrl());
+          ps.setString(5, banner.getText());
+        }
 
-      @Override
-      public int getBatchSize() {
-        return banners.size();
-      }
-    });
+        @Override
+        public int getBatchSize() {
+          return banners.size();
+        }
+      });
 
-    int totalAffectedRows = 0;
-    for (int rows : affectedRows) {
-      totalAffectedRows += rows;
+      return "Success";
+    } catch (DataAccessException e) {
+      System.out.println(e);
+      throw e;
     }
 
-    return totalAffectedRows;
   }
 
   @SuppressWarnings("unchecked")

@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class AssociationRequestPayloadBean extends ServiceRequestPayloadBean {
+public class AssociationRequestPayloadBean extends AbstractServicePayload {
     private String associationType;
     private String redirectUrl;
 

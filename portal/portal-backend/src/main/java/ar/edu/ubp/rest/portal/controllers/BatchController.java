@@ -29,15 +29,13 @@ public class BatchController {
     @Autowired
     private final FilmService filmServices;
 
-    @Autowired
-    private final AdvertisingService advertisingService;
 
     @Autowired
     private final BatchService batchService;
 
     @GetMapping("advertisings")
     public ResponseEntity<String> getAllAdvertisingsFromAdvertisers() throws Exception {
-        return new ResponseEntity<String>(advertisingService.getAllAdvertisingsFromAdvertisers(),
+        return new ResponseEntity<String>(batchService.updateAdvertisings(),
                 HttpStatus.CREATED);
     }
 

@@ -93,24 +93,3 @@ END;
 GO
 
 
-
-DECLARE @json NVARCHAR(MAX)
-
-SET @json = '{
-  "authToken": "STREAMING_STUDIO_SECRET_KEY",
-  "reportId": 19,
-  "fromDate": 1714532400000,
-  "toDate": 1717124400000,
-  "clicks": [
-   
-  ]
-}
-
-'
-
-EXEC CreateWeeklyReportFromJson @json
-
-select *
-from WeeklyReport
-select *
-from WeeklyAdvertisingClickReport

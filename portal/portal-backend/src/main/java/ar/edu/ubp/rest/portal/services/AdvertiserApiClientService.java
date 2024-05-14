@@ -10,10 +10,8 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ar.edu.ubp.rest.portal.beans.request.BasicPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.BannerPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
@@ -38,7 +36,7 @@ public class AdvertiserApiClientService {
         this.advertiserClientFactory = AdvertiserApiClientFactory.getInstance();
     }
 
-    public String ping(String companyName, String serviceType, String url, BasicPayloadBean authToken)
+    public String ping(String companyName, String serviceType, String url, ServicePayloadBean authToken)
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
             IllegalAccessException {
         AbstractAdvertiserApiClient advertiserClient = advertiserClientFactory.buildAdvertiserClient(companyName,
@@ -65,9 +63,9 @@ public class AdvertiserApiClientService {
         if (Objects.isNull(advertiserClient))
             return null;
 
-        BasicPayloadBean authToken = new BasicPayloadBean(advertiser.getAuthToken());
+        BannerPayloadBean payload = new BannerPayloadBean(advertiser.getAuthToken(), bannerId);
 
-        BannerResponseBean banner = advertiserClient.getBannerById(bannerId, authToken);
+        BannerResponseBean banner = advertiserClient.getBannerById(payload);
 
         return banner;
     }
@@ -95,7 +93,7 @@ public class AdvertiserApiClientService {
             if (Objects.isNull(advertiserClient))
                 return;
 
-            BasicPayloadBean authToken = new BasicPayloadBean(advertiser.getAuthToken());
+            ServicePayloadBean authToken = new ServicePayloadBean(advertiser.getAuthToken());
 
             List<AdvertisingResponseBean> advertisings = advertiserClient.getAllAdvertisings(authToken);
 
@@ -133,6 +131,7 @@ public class AdvertiserApiClientService {
                     | IllegalAccessException e) {
                 System.out.println(e);
                 e.printStackTrace();
+                continue;
             }
 
             if (Objects.isNull(advertiserClient)) {
@@ -143,20 +142,11 @@ public class AdvertiserApiClientService {
             WeeklyAdvertiserReportPayloadBean report = reportService.createWeeklyAdvertiserReport(
                     advertiser.getAdvertiserId(),
                     advertiser.getAuthToken());
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = null;
-            try {
-                jsonString = objectMapper.writeValueAsString(report);
-            } catch (JsonProcessingException e) {
-                throw e;
-            }
-
-            System.out.println(jsonString);
             try {
                 result = advertiserClient.sendWeeklyReport(report);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println(e);
+                e.printStackTrace();
                 continue;
             }
 

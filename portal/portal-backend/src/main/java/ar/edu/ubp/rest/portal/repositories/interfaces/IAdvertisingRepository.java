@@ -13,7 +13,7 @@ public interface IAdvertisingRepository {
 
     public List<AdvertisingDTO> getAllAdvertisings();
 
-    public Integer updateBatchBanner(List<BannerDTO> banners);
+    public String updateBatchBanner(List<BannerDTO> banners);
 
     public List<AdvertisingDTO> getAllAdvertisingsByAdvertiser(Integer advertiserId);
 

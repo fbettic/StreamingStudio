@@ -37,12 +37,10 @@ public class AssociationService {
 	// Association management
 	public AssociationRequestDTO createAssociationRequest(NewAssociationRequestDTO newAssociationRequest) {
 
-		System.out.println("------------>createAssociationRequest");
 		AssociationRequestDTO association = associationRequestRepository
 				.getLastOpenAssociationRequest(newAssociationRequest);
 
 		if (!Objects.isNull(association)) {
-			System.out.println("------------>" + association.toString());
 			return association;
 		}
 
@@ -68,17 +66,14 @@ public class AssociationService {
 	}
 
 	public AssociationDTO getAssociationData(String uuid) {
-		System.out.println("------->" + uuid);
+
 		AssociationRequestDTO associationRequest = associationRequestRepository
 				.getAssociationRequestByUuid(uuid);
-
-		System.out.println(associationRequest.toString());
 
 		AssociationResponseBean response = platformApiClientService
 				.getAssociationData(associationRequest.getPlatformId(),
 						associationRequest.getTransactionId());
 
-		System.out.println(response.toString());
 		AssociationDTO association = AssociationDTO.builder()
 				.transactionId(associationRequest.getTransactionId())
 				.platformId(associationRequest.getPlatformId())
@@ -91,14 +86,11 @@ public class AssociationService {
 	}
 
 	public AssociationDTO cancelAssociationRequest(Integer platformId, Integer subscriberId) throws Exception {
-		System.out.println("------->cancelAssociationRequest");
 		AssociationDTO association = associationRepository.getAssociationToken(platformId, subscriberId);
 
 		if (Objects.isNull(association)) {
 			throw new Exception("association data not found");
 		}
-
-		System.out.println("------->" + association.toString());
 
 		try {
 			platformApiClientService.cancelAssociationResponse(platformId, association.getUserToken());

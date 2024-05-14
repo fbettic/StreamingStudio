@@ -106,16 +106,15 @@ public class AuthService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         } else {
             System.out.println("ServiceType desconocido: " + serviceType);
+            // TODO error
         }
-
-       
 
         user.setId(advertiserRepository.createAdvertiser(user).getAdvertiserId());
         return buildAuthResponse(user);
     }
 
     private AuthResponseDTO buildAuthResponse(CustomUserDetails user) {
-       
+
         return AuthResponseDTO.builder()
                 .id(user.getId())
                 .token(jwtService.getToken(user))

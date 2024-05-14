@@ -5,7 +5,6 @@ import ar.edu.ubp.rest.portal.dto.request.SubscriberRequestDTO;
 import ar.edu.ubp.rest.portal.models.users.Subscriber;
 
 public interface ISubscriberRepository {
-    public SubscriberDTO getSubscriberByEmail(String email);
 
     public SubscriberDTO createSubscriber(Subscriber subscriber);
 

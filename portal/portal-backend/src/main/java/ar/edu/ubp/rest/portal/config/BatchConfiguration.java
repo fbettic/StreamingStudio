@@ -15,8 +15,6 @@ public class BatchConfiguration {
     @Autowired
     private BatchService batchService;
 
-    @Autowired
-    private AdvertiserApiClientService advertiserApiClientService;
 
     @Autowired
     private PlatformApiClientService platformApiClientService;
@@ -24,7 +22,7 @@ public class BatchConfiguration {
     @Scheduled(cron = "0 0 3 * * ?")
     public void executeBatchTask() throws Exception {
         // Llama a los métodos de actualización de películas y anuncios
-        batchService.updateAdvertisings(advertiserApiClientService.getAllAdvertisingsFromAdvertisers());
+        batchService.updateAdvertisings();
 
         batchService.updateFilms(platformApiClientService.getAllFilmsFromPlatforms());
     }

@@ -57,48 +57,53 @@ GO
 
 ------------------- AdvertisingTarget procedures -------------------
 
--- DROP PROCEDURE IF EXISTS AddAdvertisingTarget
-CREATE OR ALTER PROCEDURE AddAdvertisingTarget
-    @advertisingId INT,
-    @targetId INT
+-- DROP PROCEDURE IF EXISTS UpdateAdvertisingTargetsFromJson
+CREATE OR ALTER PROCEDURE UpdateAdvertisingTargetsFromJson
+    @json NVARCHAR(MAX)
 AS
 BEGIN
-    INSERT INTO AdvertisingTarget
-        (advertisingId, targetId)
-    VALUES
-        (@advertisingId, @targetId);
+    BEGIN TRY
+    SET NOCOUNT ON;
 
-    SELECT *
-    FROM AdvertisingTarget
-    WHERE  advertisingId=@advertisingId
-        AND targetId=@targetId
-END;
-GO
+    DECLARE @advertisingId INT;
+    DECLARE @targets NVARCHAR(MAX);
 
--- DROP PROCEDURE IF EXISTS RemoveAdvertisingTarget
-CREATE OR ALTER PROCEDURE RemoveAllAdvertisingTarget
-    @advertisingId INT,
-    @deletedId INT OUTPUT
-AS
-BEGIN
+
+    SELECT
+        @advertisingId = JSON_VALUE(@json, '$.id'),
+        @targets = JSON_QUERY(@json, '$.targets');
+
+    CREATE TABLE #TempTargets
+    (
+        targetId INT
+    );
+
+    INSERT INTO #TempTargets
+        (targetId)
+    SELECT value
+    FROM OPENJSON(@targets);
+
     DELETE FROM AdvertisingTarget
     WHERE advertisingId = @advertisingId
+        AND targetId NOT IN (SELECT targetId
+        FROM #TempTargets);
 
-    SET @deletedId = @advertisingId
-END;
-GO
+    INSERT INTO AdvertisingTarget
+        (advertisingId, targetId)
+    SELECT @advertisingId, targetId
+    FROM #TempTargets
+    WHERE targetId NOT IN (
+        SELECT targetId
+    FROM AdvertisingTarget
+    WHERE advertisingId = @advertisingId
+    );
 
+    DROP TABLE #TempTargets;
 
--- DROP PROCEDURE IF EXISTS RemoveAdvertisingTarget
-CREATE OR ALTER PROCEDURE RemoveAdvertisingTarget
-    @advertisingId INT,
-    @targetId INT
-AS
-BEGIN
-    DELETE FROM AdvertisingTarget
-    WHERE advertisingId = @advertisingId AND targetId = @targetId;
-
-    SELECT @advertisingId, @targetId
+    END TRY
+  BEGIN CATCH
+    SELECT ERROR_MESSAGE() AS Result;
+  END CATCH
 END;
 GO
 
@@ -117,50 +122,54 @@ GO
 
 ------------------- MarketingPreference procedures -------------------
 
--- DROP PROCEDURE IF EXISTS AddMarketingPreference
-CREATE OR ALTER PROCEDURE AddMarketingPreference
-    @subscriberId INT,
-    @targetId INT
+-- DROP PROCEDURE IF EXISTS UpdateMarketingPreferencesFromJson
+CREATE OR ALTER PROCEDURE UpdateMarketingPreferencesFromJson
+    @json NVARCHAR(MAX)
 AS
 BEGIN
+    BEGIN TRY
+    SET NOCOUNT ON;
+
+    DECLARE @subscriberId INT;
+    DECLARE @targets NVARCHAR(MAX);
+
+
+    SELECT
+        @subscriberId = JSON_VALUE(@json, '$.id'),
+        @targets = JSON_QUERY(@json, '$.targets');
+
+    CREATE TABLE #TempTargets
+    (
+        targetId INT
+    );
+
+    INSERT INTO #TempTargets
+        (targetId)
+    SELECT value
+    FROM OPENJSON(@targets);
+
+    DELETE FROM MarketingPreferences
+    WHERE subscriberId = @subscriberId
+        AND targetId NOT IN (SELECT targetId
+        FROM #TempTargets);
+
     INSERT INTO MarketingPreferences
         (subscriberId, targetId)
-    VALUES
-        (@subscriberId, @targetId);
-
-    SELECT *
+    SELECT @subscriberId, targetId
+    FROM #TempTargets
+    WHERE targetId NOT IN (
+        SELECT targetId
     FROM MarketingPreferences
     WHERE subscriberId = @subscriberId
-        AND targetId = @targetId
-END;
-GO
+    );
 
--- DROP PROCEDURE IF EXISTS RemoveMarketingPreference
-CREATE OR ALTER PROCEDURE RemoveMarketingPreference
-    @subscriberId INT,
-    @targetId INT
-AS
-BEGIN
-    DELETE FROM MarketingPreferences
-    WHERE subscriberId = @subscriberId AND targetId = @targetId;
+    DROP TABLE #TempTargets;
 
-    SELECT @subscriberId, @targetId
 
-END;
-GO
-
--- DROP PROCEDURE IF EXISTS RemoveMarketingPreference
-CREATE OR ALTER PROCEDURE RemoveAllMarketingPreference
-    @subscriberId INT,
-    @deletedId INT OUTPUT
-AS
-BEGIN
-    DELETE FROM MarketingPreferences
-    WHERE subscriberId = @subscriberId
-
-    SELECT @subscriberId
-
-    SET @deletedId = @subscriberId
+    END TRY
+  BEGIN CATCH
+    SELECT ERROR_MESSAGE() AS Result;
+    END CATCH
 END;
 GO
 
@@ -176,5 +185,3 @@ BEGIN
         AND subscriberId = @subscriberId
 END;
 GO
-
-EXEC GetAllMarketingPreferencesBySubscriberId 1

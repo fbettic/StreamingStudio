@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class ServiceRequestPayloadBean {
+public abstract class AbstractServicePayload {
     
     protected String authToken;
 

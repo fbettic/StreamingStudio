@@ -6,8 +6,6 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +20,7 @@ import ar.edu.ubp.rest.portal.dto.SubscriberDTO;
 import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.TargetRequestDTO;
-import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import ar.edu.ubp.rest.portal.services.SubscriberService;
 import ar.edu.ubp.rest.portal.services.TargetServices;
 import lombok.RequiredArgsConstructor;
@@ -39,28 +37,19 @@ public class SubscriberController {
     @Autowired
     private final SubscriberService subscriberService;
 
-    private Integer getCurrentUserId() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Integer userId = userDetails.getId();
-            return userId;
-        } else {
-            throw new Exception("User id not found");
-        }
-    }
+    @Autowired
+    private final CustomUserDetailsService userService;
 
     @PutMapping("subscribers")
     public ResponseEntity<SubscriberDTO> updateSubscriber(@RequestBody SubscriberRequestDTO subscriber)
             throws Exception {
 
-        return ResponseEntity.ok(subscriberService.updateSubscriber(getCurrentUserId(), subscriber));
+        return ResponseEntity.ok(subscriberService.updateSubscriber(userService.getCurrentUserId(), subscriber));
     }
 
     @GetMapping("subscribers")
     public ResponseEntity<SubscriberDTO> getSubcriberById() throws Exception {
-        Integer id = getCurrentUserId();
+        Integer id = userService.getCurrentUserId();
         SubscriberDTO response = subscriberService.getSubscriberById(id);
         List<TargetCategoryDTO> targets = targetServices.getAllMarketingPreferencesBySubscriberId(id);
 

@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +20,9 @@ import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
-import ar.edu.ubp.rest.portal.enums.Role;
-import ar.edu.ubp.rest.portal.models.users.CustomUserDetails;
 import ar.edu.ubp.rest.portal.services.AdvertiserService;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
+import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,30 +34,8 @@ public class AdvertiserController {
     private final AdvertiserService advertiserService;
     @Autowired
     private final AdvertisingService advertisingService;
-
-    private Integer getCurrentUserId() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Integer userId = userDetails.getId();
-            return userId;
-        } else {
-            throw new Exception("User id not found");
-        }
-    }
-
-    private Role getCurrentRole() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            Role userId = userDetails.getRole();
-            return userId;
-        } else {
-            throw new Exception("User role not found");
-        }
-    }
+    @Autowired
+    private final CustomUserDetailsService userService;
 
     @PostMapping("/ping")
     public ResponseEntity<String> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser) throws Exception {
@@ -76,10 +50,9 @@ public class AdvertiserController {
 
     @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<AdvertiserDTO> updateAdvertiserById(@PathVariable Integer id,
-            @RequestBody AdvertiserRequestDTO advertiserData)
-            throws Exception {
+            @RequestBody AdvertiserRequestDTO advertiserData) {
 
-        if (!getCurrentRole().name().equals("ADMINISTRATOR")  && id != getCurrentUserId()) {
+        if (!userService.getCurrentRole().name().equals("ADMINISTRATOR") && id != userService.getCurrentUserId()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -87,7 +60,6 @@ public class AdvertiserController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AdvertiserDTO>> getAllAdvertisers() {
         return ResponseEntity.ok(advertiserService.getAllAdvertisers());
     }

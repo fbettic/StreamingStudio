@@ -21,12 +21,6 @@ public class AdmistratorRepository implements IAdministratorRepository {
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public AdministratorDTO getAdministratorByEmail(String email) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAdministratorByEmail'");
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public AdministratorDTO createAdministrator(Administrator administrator) {
 		SqlParameterSource input = new MapSqlParameterSource()

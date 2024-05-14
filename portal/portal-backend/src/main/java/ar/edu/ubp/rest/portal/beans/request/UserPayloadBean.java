@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UserPayloadBean extends ServiceRequestPayloadBean {
+public class UserPayloadBean extends AbstractServicePayload {
     private String userToken;
 
     @Builder

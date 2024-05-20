@@ -5,7 +5,7 @@
         <h2 class="text-center mb-4">StreamingStudio</h2>
         <div class="text-danger">
           @if (loginError !== '') {
-          <div>Error al ingresar</div>
+          <div>Error on login</div>
           }
         </div>
         <form [formGroup]="loginFormGroup">
@@ -28,7 +28,7 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label" i18n>Password</label>
             <input
               formControlName="password"
               type="password"

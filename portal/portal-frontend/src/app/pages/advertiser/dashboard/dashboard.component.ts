@@ -13,7 +13,7 @@ import { AdvertisingsTableComponent } from '../../../components/tables/advertisi
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent {
+export default class DashboardComponent {
   private _loginService: LoginService = inject(LoginService);
   private _advertiserService: AdvertiserService = inject(AdvertiserService);
   userId = 0;

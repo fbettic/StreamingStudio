@@ -56,9 +56,8 @@ public class AdvertisingController {
     public ResponseEntity<AdvertisingDTO> createAdvertising(@RequestBody AdvertisingRequestDTO advertisingRequest)
             throws Exception {
 
-        if (userService.getCurrentRole().equals(Role.ADMINISTRATOR)) {
+        if (userService.getCurrentRole().equals(Role.ADVERTISER)) {
             Integer userId = userService.getCurrentUserId();
-
             advertisingRequest.setAdvertiserId(userId);
         }
 

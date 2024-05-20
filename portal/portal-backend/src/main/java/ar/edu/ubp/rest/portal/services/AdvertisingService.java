@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
@@ -33,13 +33,14 @@ public class AdvertisingService {
     private final TargetServices targetServices;
 
     private void getBannerData(AdvertisingRequestDTO advertisingRequest) {
-        if (advertisingRequest.getBannerId() != null && advertisingRequest.getBannerId() > 0) {
-            BannerResponseBean bannerData = advertiserApiClientService.getBannerById(advertisingRequest.getBannerId(),
+        if (advertisingRequest.getReferenceId() != null && advertisingRequest.getReferenceId() > 0) {
+            AdvertisingResponseBean data = advertiserApiClientService.getAdvertisingData(
+                    advertisingRequest.getReferenceId(),
                     advertisingRequest.getAdvertiserId());
 
-            advertisingRequest.setBannerText(bannerData.getText());
-            advertisingRequest.setImageUrl(bannerData.getImageUrl());
-            advertisingRequest.setRedirectUrl(bannerData.getRedirectUrl());
+            advertisingRequest.setBannerText(data.getText());
+            advertisingRequest.setImageUrl(data.getImageUrl());
+            advertisingRequest.setRedirectUrl(data.getRedirectUrl());
         }
     }
 

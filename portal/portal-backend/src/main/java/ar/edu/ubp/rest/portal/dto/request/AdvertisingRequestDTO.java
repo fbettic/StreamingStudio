@@ -19,7 +19,7 @@ public class AdvertisingRequestDTO {
     private String redirectUrl;
     private String imageUrl;
     private String bannerText;
-    private Integer bannerId;
+    private Integer referenceId;
     private String fromDate;
     private String toDate;
     private List<Integer> targets;

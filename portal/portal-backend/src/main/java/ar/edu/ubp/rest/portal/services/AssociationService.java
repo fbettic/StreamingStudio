@@ -2,6 +2,7 @@ package ar.edu.ubp.rest.portal.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ public class AssociationService {
 		AssociationDTO association = associationRepository.getAssociationToken(platformId, subscriberId);
 
 		if (Objects.isNull(association)) {
-			throw new Exception("association data not found");
+			throw new NoSuchElementException("association data not found");
 		}
 
 		try {

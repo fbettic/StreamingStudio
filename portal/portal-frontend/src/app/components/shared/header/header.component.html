@@ -1,5 +1,5 @@
 <nav
-  class="navbar navbar-expand-lg bg-body-tertiary bg-dark fixed-top"
+  class="navbar navbar-expand-lg bg-body-tertiary bg-dark sticky-top"
   data-bs-theme="dark"
 >
   <div class="container-fluid">
@@ -7,46 +7,82 @@
       <img
         src="../../../../assets/ss-logo.svg"
         alt=""
-        style="width: 36px"
-        class="me-2" />
+        style="width: 32px"
+        class="me-3 ms-3"
+      />
       <img
         src="../../../../assets/ss-name.svg"
         alt=""
         style="width: 65px"
         class="navbar-brand"
-    /></a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"> </span>
-    </button>
+      />
+    </a>
+   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown" ngbDropdown>
-          <a class="nav-link dropdown-toggle" id="id01" ngbDropdownToggle
-            >Account</a
-          >
+          <a class="nav-link dropdown-toggle" id="id01" ngbDropdownToggle>
+            <img
+              src="../../../../assets/user-menu.svg"
+              alt=""
+              style="width: 24px"
+              class="me-2"
+            />
+          </a>
           <div
             class="dropdown-menu dropdown-menu-end"
             aria-labelledby="id01"
             ngbDropdownMenu
           >
-            @if (isLoggedIn){
-            <a class="dropdown-item" (click)="logout()">Logout</a>
-            @if (user?.role === "SUBSCRIBER") {
-            <a class="dropdown-item" routerLink="platforms"
-              >Platform Management</a
-            >
-            <a class="dropdown-item" routerLink="profile">Profile</a>
-            } }@else{
-            <a routerLink="login" class="dropdown-item">Login</a>
-            <a routerLink="signup" class="dropdown-item">Signup</a>
+            @if (isLoggedIn){ @if (user?.role === "SUBSCRIBER") {
+            <a class="dropdown-item" routerLink="profile">
+              <img
+                src="../../../../assets/profile.svg"
+                alt=""
+                style="width: 18px"
+                class="me-3"
+              />
+              <span i18n>Profile</span>
+            </a>
+            <a class="dropdown-item" routerLink="platforms">
+              <img
+                src="../../../../assets/platforms.svg"
+                alt=""
+                style="width: 18px"
+                class="me-3"
+              />
+              <span i18n>Platforms</span>
+            </a>
+            <hr class="dropdown-divider" />
+            }
+            <a class="dropdown-item" (click)="logout()">
+              <img
+                src="../../../../assets/logout.svg"
+                alt=""
+                style="width: 18px"
+                class="me-3"
+              />
+              <span i18n>Logout</span>
+            </a>
+            }@else{
+            <a routerLink="login" class="dropdown-item">
+              <img
+                src="../../../../assets/login.svg"
+                alt=""
+                style="width: 18px"
+                class="me-3"
+              />
+              <span i18n>Login</span>
+            </a>
+            <a routerLink="signup" class="dropdown-item">
+              <img
+                src="../../../../assets/signup.svg"
+                alt=""
+                style="width: 18px"
+                class="me-3"
+              />
+              <span i18n>Signup</span>
+            </a>
             }
           </div>
         </li>

@@ -12,9 +12,22 @@ export class FilmService {
 
   constructor() {}
 
-  getAllFilms(): Observable<IFilm[]> {
+  getAllFilms(query?: string, by?: string): Observable<IFilm[]> {
+    let url: string = 'films';
+
+    if (query) {
+      console.log('🚀 ~ FilmService ~ getAllFilms ~ query:', query);
+      url = url.concat('?query=', query);
+      if (by) {
+        url = url.concat('&by=', by);
+      }
+    }
+
+    
+
+    console.log('🚀 ~ FilmService ~ getAllFilms ~ url:', url);
     return this.http
-      .get<IFilm[]>(environment.urlApi + 'films')
+      .get<IFilm[]>(environment.urlApi + url)
       .pipe(catchError(this.handleError));
   }
 

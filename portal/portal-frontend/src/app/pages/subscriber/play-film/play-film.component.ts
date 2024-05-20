@@ -19,7 +19,7 @@ import { SubscriberService } from '../../../services/subscriber.service';
   templateUrl: './play-film.component.html',
   styleUrl: './play-film.component.scss',
 })
-export class PlayFilmComponent {
+export default class PlayFilmComponent {
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _router: Router = inject(Router)
   private _sanitizar: DomSanitizer = inject(DomSanitizer);

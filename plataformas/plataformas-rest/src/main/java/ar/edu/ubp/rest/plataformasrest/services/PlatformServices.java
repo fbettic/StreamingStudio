@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.AuthTokenRequestBean;
+import ar.edu.ubp.rest.plataformasrest.beans.BasicResponseBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteLoginAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteSignupAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.FilmBean;
@@ -82,7 +83,6 @@ public class PlatformServices {
         AssociationRequestBean response = associationRequestRepository.completeAssociationRequest(user.getUserId(),
                 loginRequest.getUuid());
 
-        System.out.println("------>" + response);
         return response;
     }
 
@@ -111,9 +111,7 @@ public class PlatformServices {
         final Integer serviceId = serviceConnectionRepository
                 .getServiceConnectionByToken(request.getAuthToken()).getServiceId();
 
-        System.out.println("--------> serviceId" + serviceId);
         final Integer userId = platformUserRepository.getPlatformUserByToken(request.getUserToken()).getUserId();
-        System.out.println("--------> userId" + userId);
 
         if (serviceId == null || serviceId == 0 || userId == null) {
             throw new Exception("Invalid token");
@@ -122,7 +120,6 @@ public class PlatformServices {
         final AssociationRequestBean association = associationRequestRepository
                 .getAssociationRequestByToken(request.getUserToken());
 
-        System.out.println("-------->" + association.toString());
 
         if (!Objects.isNull(association)
                 && (association.getState().equals("CANCELED")
@@ -177,7 +174,7 @@ public class PlatformServices {
         return filmRepository.getAllFilms();
     }
 
-    public String createWeeklyReport(WeeklyReportBean report) throws JsonProcessingException {
+    public BasicResponseBean createWeeklyReport(WeeklyReportBean report) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -186,15 +183,14 @@ public class PlatformServices {
         } catch (JsonProcessingException e) {
             throw e;
         }
-        System.out.println("------------------------->" + jsonString);
-        return reportRepository.createWeekleyReport(jsonString);
+        return new BasicResponseBean(reportRepository.createWeekleyReport(jsonString));
     }
 
-    public String ping(String authToken) throws Exception {
+    public BasicResponseBean ping(String authToken) throws Exception {
         Integer serviceId = serviceConnectionRepository.getServiceConnectionByToken(authToken).getServiceId();
         if (serviceId == null || serviceId == 0) {
             throw new Exception("Invalid token");
         }
-        return "pong";
+        return new BasicResponseBean("pong");
     }
 }

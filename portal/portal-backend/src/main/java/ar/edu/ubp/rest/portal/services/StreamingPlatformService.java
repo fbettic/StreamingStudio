@@ -1,13 +1,11 @@
 package ar.edu.ubp.rest.portal.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ar.edu.ubp.rest.portal.dto.AssociationDTO;
+import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.dto.StreamingPlatformDTO;
 import ar.edu.ubp.rest.portal.dto.request.StreamingPlatformRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.StreamingPlatformSubscriberResponseDTO;
@@ -19,41 +17,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StreamingPlatformService {
     @Autowired
+    private final PlatformApiClientService platformApiClientService;
+
+    @Autowired
     private final StreamingPlatformRepository streamingPlatformRepository;
+
+    @Autowired
     private final AssociationRepository associationRepository;
 
-    public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO streamingPlatformRequest) {
-        return streamingPlatformRepository.createStreamingPlatform(streamingPlatformRequest);
+    public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO request) throws Exception {
+        String result = platformApiClientService.ping(
+                request.getPlatformName(),
+                request.getServiceType(),
+                request.getApiUrl(),
+                new ServicePayloadBean(request.getAuthToken()));
+
+        if (!result.equals("pong")) {
+            throw new Exception(
+                    "Failed to establish a connection with the specified API. Please verify the accuracy of the connection details provided.");
+        }
+
+        return streamingPlatformRepository.createStreamingPlatform(request);
     }
 
     public List<StreamingPlatformDTO> getAllStreamingPlatforms() {
         return streamingPlatformRepository.getAllStreamingPlatfroms();
     }
 
-
     public List<StreamingPlatformSubscriberResponseDTO> getStreamingPlatformSubscriber(Integer susbscriberId) {
-        List<StreamingPlatformDTO> platforms = streamingPlatformRepository.getAllStreamingPlatfroms();
 
-        List<AssociationDTO> associations = associationRepository.getAllAssociationsBySubscriber(susbscriberId);
-
-        List<StreamingPlatformSubscriberResponseDTO> result = new ArrayList<StreamingPlatformSubscriberResponseDTO>();
-
-        platforms.forEach((platform) -> {
-            AtomicBoolean linked = new AtomicBoolean(false);
-
-            associations.forEach(association -> {
-                if (association.getPlatformId() == platform.getPlatformId()) {
-                    linked.set(true);
-                }
-            });
-
-            StreamingPlatformSubscriberResponseDTO element = StreamingPlatformSubscriberResponseDTO.builder()
-                    .platformId(platform.getPlatformId()).platformName(platform.getPlatformName()).linked(linked.get())
-                    .build();
-            result.add(element);
-        });
-
-        return result;
+        return streamingPlatformRepository.getAllStreamingPlatformsBySubscriberId(susbscriberId);
     }
 
     public StreamingPlatformDTO getStreamingPlatformById(Integer platformId) {
@@ -65,7 +58,17 @@ public class StreamingPlatformService {
     }
 
     public StreamingPlatformDTO updateStreamingPlatfromById(Integer id,
-            StreamingPlatformRequestDTO streamingPlatformRequest) {
-        return streamingPlatformRepository.updateStreamingPlatform(streamingPlatformRequest, id);
+            StreamingPlatformRequestDTO request) throws Exception {
+        String result = platformApiClientService.ping(
+                request.getPlatformName(),
+                request.getServiceType(),
+                request.getApiUrl(),
+                new ServicePayloadBean(request.getAuthToken()));
+
+        if (!result.equals("pong")) {
+            throw new Exception(
+                    "Failed to establish a connection with the specified API. Please verify the accuracy of the connection details provided.");
+        }
+        return streamingPlatformRepository.updateStreamingPlatform(request, id);
     }
 }

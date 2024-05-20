@@ -1,5 +1,7 @@
 package ar.edu.ubp.rest.portal.services;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +13,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
@@ -54,7 +55,7 @@ public class BatchService {
 
                 BannerDTO banner = BannerDTO.builder()
                         .advertiserId(client.getId())
-                        .bannerId(advertising.getBannerId())
+                        .referenceId(advertising.getAdvertisingId())
                         .text(advertising.getText())
                         .imageUrl(advertising.getImageUrl())
                         .redirectUrl(advertising.getRedirectUrl())
@@ -68,68 +69,76 @@ public class BatchService {
 
     }
 
-    public void updateFilms(List<ServiceResponseMapperBean<FilmResponseBean>> clientFilms) throws Exception {
+    public String updateFilms() throws Exception {
+
+        List<ServiceResponseMapperBean<FilmResponseBean>> clientFilms = platformApiClientService
+                .getAllFilmsFromPlatforms();
+
         List<FilmDTO> allFilms = new ArrayList<>();
         Set<String> filmCodes = new HashSet<>();
 
         List<PlatformFilmDTO> platformFilms = new ArrayList<>();
 
-        if (Objects.isNull(clientFilms) || clientFilms.size() == 0) {
+        if (Objects.isNull(clientFilms) || clientFilms.isEmpty()) {
             throw new NoSuchElementException("No films availables");
         }
 
         clientFilms.forEach((client) -> {
 
             client.getResponseList().forEach((response) -> {
+                try {
+                    FilmResponseBean film = (FilmResponseBean) response;
 
-                FilmResponseBean film = (FilmResponseBean) response;
+                    if (!filmCodes.contains(film.getFilmCode())) {
+                        FilmDTO newFilm = FilmDTO.builder()
+                                .filmCode(film.getFilmCode())
+                                .title(film.getTitle())
+                                .cover(film.getCover())
+                                .description(film.getDescription())
+                                .director(film.getDirector())
+                                .countryCode(film.getCountryCode())
+                                .year(film.getYear())
+                                .actors(film.getActors())
+                                .genres(film.getGenres())
+                                .build();
 
-                if (!filmCodes.contains(film.getFilmCode())) {
-                    FilmDTO newFilm = FilmDTO.builder()
+                        allFilms.add(newFilm);
+                        filmCodes.add(film.getFilmCode());
+                    }
+
+                    PlatformFilmDTO platformFilm = PlatformFilmDTO.builder()
                             .filmCode(film.getFilmCode())
-                            .title(film.getTitle())
-                            .cover(film.getCover())
-                            .description(film.getDescription())
-                            .director(film.getDirector())
-                            .countryCode(film.getCountryCode())
-                            .year(film.getYear())
-                            .actors(film.getActors())
-                            .genres(film.getGenres())
+                            .platformId(client.getId())
+                            .highlighted(film.getHighlighted())
+                            .newContent(film.getNewContent())
                             .build();
 
-                    allFilms.add(newFilm);
-                    filmCodes.add(film.getFilmCode());
+                    platformFilms.add(platformFilm);
+                } catch (Exception e) {
+                    throw e;
                 }
 
-                PlatformFilmDTO platformFilm = PlatformFilmDTO.builder()
-                        .filmCode(film.getFilmCode())
-                        .platformId(client.getId())
-                        .highlighted(film.getHighlighted())
-                        .newContent(film.getNewContent())
-                        .build();
-
-                platformFilms.add(platformFilm);
             });
         });
 
-        int filmsCreated = filmRepository.updateBatchFilm(allFilms);
+        filmRepository.updateBatchFilm(allFilms);
 
-        if (filmsCreated != 0) {
+        try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = null;
-            try {
-                jsonString = objectMapper.writeValueAsString(platformFilms);
-            } catch (JsonProcessingException e) {
-                throw e;
-            }
-            filmRepository.updateBatchPlatformFilm(jsonString);
+            filmRepository.updateBatchPlatformFilm(objectMapper.writeValueAsString(platformFilms));
+            return "Success";
+        } catch (Exception e) {
+            throw e;
         }
 
     }
 
     public String sendWeeklyReport() throws Exception {
-        Map<Integer, String> platformsResult = platformApiClientService.sendWeeklyReport();
-        Map<Integer, String> advertisersResult = advertiserApiClientService.sendWeeklyReport();
+        LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate toDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+
+        Map<Integer, String> platformsResult = platformApiClientService.sendWeeklyReport(fromDate, toDate);
+        Map<Integer, String> advertisersResult = advertiserApiClientService.sendWeeklyReport(fromDate, toDate);
 
         return platformsResult.toString() + advertisersResult.toString();
     }

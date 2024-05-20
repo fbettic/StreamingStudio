@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +28,7 @@ public class AdvertisingResponseBean extends ServiceResponseBean {
     private Date fromDate;
     private Date toDate;
 
-    public AdvertisingResponseBean(Element advertisingElement ) {
+    public AdvertisingResponseBean(Element advertisingElement) {
         this.advertisingId = Integer.parseInt(getElementValue(advertisingElement, "advertisingId"));
         this.bannerId = Integer.parseInt(getElementValue(advertisingElement, "bannerId"));
         this.serviceId = Integer.parseInt(getElementValue(advertisingElement, "serviceId"));

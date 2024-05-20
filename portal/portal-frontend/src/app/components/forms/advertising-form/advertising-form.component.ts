@@ -63,7 +63,7 @@ export class AdvertisingFormComponent {
   id: number = 0;
   fromDate: string = '';
   toDate: string = '';
-  useBannerId: boolean = true;
+  useReferenceId: boolean = true;
 
   constructor() {
     effect(() => {
@@ -149,7 +149,7 @@ export class AdvertisingFormComponent {
       redirectUrl: [{ value: '', disabled: true }, [Validators.required]],
       imageUrl: [{ value: '', disabled: true }, [Validators.required]],
       bannerText: [{ value: '', disabled: true }, [Validators.required]],
-      bannerId: [{ value: '', disabled: true }, []],
+      referenceId: [{ value: '', disabled: true }, []],
       fromDate: [this.fromDate, [Validators.required]],
       toDate: [this.toDate, [Validators.required]],
       targets: new FormArray([]),
@@ -188,7 +188,7 @@ export class AdvertisingFormComponent {
           redirectUrl: advertising.redirectUrl,
           imageUrl: advertising.imageUrl,
           bannerText: advertising.bannerText,
-          bannerId: advertising.bannerId,
+          referenceId: advertising.referenceId,
           fromDate: this.getDate(advertising.fromDate),
           toDate: this.getDate(advertising.toDate),
           targets: advertising.targets,
@@ -206,24 +206,24 @@ export class AdvertisingFormComponent {
           '🚀 ~ AdvertisingFormComponent ~ this._advertiserService.getAdvertiserById ~ data:',
           data
         );
-        this.useBannerId = data.serviceType !== 'ACCOUNT';
+        this.useReferenceId = data.serviceType !== 'ACCOUNT';
         this.bannerDataSet();
       },
     });
   }
 
   bannerDataSet(): void {
-    if (this.useBannerId) {
+    if (this.useReferenceId) {
       this.advertisingFormGroup.get('redirectUrl')?.disable();
       this.advertisingFormGroup.get('imageUrl')?.disable();
       this.advertisingFormGroup.get('bannerText')?.disable();
-      this.advertisingFormGroup.get('bannerId')?.enable();
+      this.advertisingFormGroup.get('referenceId')?.enable();
       return;
     } else {
       this.advertisingFormGroup.get('redirectUrl')?.enable();
       this.advertisingFormGroup.get('imageUrl')?.enable();
       this.advertisingFormGroup.get('bannerText')?.enable();
-      this.advertisingFormGroup.get('bannerId')?.disable();
+      this.advertisingFormGroup.get('referenceId')?.disable();
     }
   }
 
@@ -325,7 +325,7 @@ export class AdvertisingFormComponent {
       redirectUrl: '',
       imageUrl: '',
       bannerText: '',
-      bannerId: '',
+      referenceId: '',
       fromDate: this.fromDate,
       toDate: this.toDate,
       targets: [],

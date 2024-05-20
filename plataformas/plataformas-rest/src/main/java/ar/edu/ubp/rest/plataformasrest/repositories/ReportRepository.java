@@ -22,7 +22,6 @@ public class ReportRepository implements IReportRepository {
     @SuppressWarnings("unchecked")
     @Override
     public String createWeekleyReport(String reportJson) {
-        System.out.println("---------->" + reportJson);
         SqlParameterSource input = new MapSqlParameterSource()
                 .addValue("json", reportJson);
 

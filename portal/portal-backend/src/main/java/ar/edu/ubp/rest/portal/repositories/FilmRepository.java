@@ -28,61 +28,63 @@ public class FilmRepository implements IFilmRepository {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public Integer loadAllCountries(List<CountryDTO> countries) {
-        String sql = "EXEC CreateCountries @countryCode = ?, @countryName = ?";
+    public String loadAllCountries(List<CountryDTO> countries) {
+        try {
+            String sql = "EXEC CreateCountries @countryCode = ?, @countryName = ?";
 
-        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                CountryDTO country = countries.get(i);
-                ps.setString(1, country.getCountryCode());
-                ps.setString(2, country.getCountryName());
-            }
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    CountryDTO country = countries.get(i);
+                    ps.setString(1, country.getCountryCode());
+                    ps.setString(2, country.getCountryName());
+                }
 
-            @Override
-            public int getBatchSize() {
-                return countries.size();
-            }
-        });
+                @Override
+                public int getBatchSize() {
+                    return countries.size();
+                }
+            });
 
-        int totalAffectedRows = 0;
-        for (int rows : affectedRows) {
-            totalAffectedRows += rows;
+            return "Success";
+
+        } catch (Exception e) {
+            throw e;
         }
-
-        return totalAffectedRows;
     }
 
     @Override
-    public Integer updateBatchFilm(List<FilmDTO> films) {
-        String sql = "EXEC CreateFilmIfNotExists @filmCode = ?, @title = ?, @cover = ?, @description = ?, @directorName = ?, @countryCode = ?, @year = ?, @actorNames = ?, @genreNames = ?";
-        int[] affectedRows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                FilmDTO film = films.get(i);
-                ps.setString(1, film.getFilmCode());
-                ps.setString(2, film.getTitle());
-                ps.setString(3, film.getCover());
-                ps.setString(4, film.getDescription());
-                ps.setString(5, film.getDirector());
-                ps.setString(6, film.getCountryCode());
-                ps.setInt(7, film.getYear());
-                ps.setString(8, film.getActors());
-                ps.setString(9, film.getGenres());
-            }
+    public String updateBatchFilm(List<FilmDTO> films) {
+        try {
+            String sql = "EXEC CreateFilmIfNotExists @filmCode = ?, @title = ?, @cover = ?, @description = ?, @directorName = ?, @countryCode = ?, @year = ?, @actorNames = ?, @genreNames = ?";
 
-            @Override
-            public int getBatchSize() {
-                return films.size();
-            }
-        });
+            jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    FilmDTO film = films.get(i);
+                    ps.setString(1, film.getFilmCode());
+                    ps.setString(2, film.getTitle());
+                    ps.setString(3, film.getCover());
+                    ps.setString(4, film.getDescription());
+                    ps.setString(5, film.getDirector());
+                    ps.setString(6, film.getCountryCode());
+                    ps.setInt(7, film.getYear());
+                    ps.setString(8, film.getActors());
+                    ps.setString(9, film.getGenres());
+                }
 
-        int totalAffectedRows = 0;
-        for (int rows : affectedRows) {
-            totalAffectedRows += rows;
+                @Override
+                public int getBatchSize() {
+                    return films.size();
+                }
+            });
+
+            return "Success";
+
+        } catch (Exception e) {
+            throw e;
         }
 
-        return totalAffectedRows;
     }
 
     @Override

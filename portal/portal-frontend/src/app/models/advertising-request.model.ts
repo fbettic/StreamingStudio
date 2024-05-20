@@ -6,7 +6,7 @@ export interface IAdvertisingRequest {
   redirectUrl?: string;
   imageUrl?: string;
   bannerText?: string;
-  bannerId?: string;
+  referenceId?: string;
   fromDate: Date;
   toDate: Date;
   targets?: number[];

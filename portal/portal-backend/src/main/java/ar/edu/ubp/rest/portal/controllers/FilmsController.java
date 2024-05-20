@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
@@ -28,8 +29,10 @@ public class FilmsController {
     private final CustomUserDetailsService userService;
 
     @GetMapping("")
-    public ResponseEntity<List<FilmSubscriberResponseDTO>> getAllFilms() throws Exception {
-        return ResponseEntity.ok(filmServices.getAllFilms(userService.getCurrentUserId()));
+    public ResponseEntity<List<FilmSubscriberResponseDTO>> getAllFilms(
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "by", required = false, defaultValue = "all") String by) throws Exception {
+        return ResponseEntity.ok(filmServices.getAllFilms(userService.getCurrentUserId(), query, by));
     }
 
     @GetMapping("/{id}")

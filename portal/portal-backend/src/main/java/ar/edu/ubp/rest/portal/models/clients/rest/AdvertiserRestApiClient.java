@@ -10,17 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import ar.edu.ubp.rest.portal.beans.request.BannerPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.AdvertisingPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
 
 public class AdvertiserRestApiClient extends AbstractAdvertiserApiClient {
     private static final String PING_URL = "/ping";
-    private static final String BANNERS_URL = "/banners";
     private static final String ADVERTISINGS_URL = "/advertisings";
     private static final String REPORT_URL = "/report";
 
@@ -41,18 +39,25 @@ public class AdvertiserRestApiClient extends AbstractAdvertiserApiClient {
     }
 
     @Override
-    public String ping(ServicePayloadBean authToken) {
-        return restTemplate.postForObject(url + PING_URL, authToken, String.class);
+    public BasicResponseBean ping(ServicePayloadBean payload) {
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(payload);
+        ResponseEntity<BasicResponseBean> responseEntity = restTemplate.exchange(
+                url + PING_URL,
+                HttpMethod.POST,
+                requestEntity,
+                BasicResponseBean.class);
+
+        return processResponse(responseEntity);
     }
 
     @Override
-    public BannerResponseBean getBannerById(BannerPayloadBean payload) {
+    public AdvertisingResponseBean getAdvertisingById(AdvertisingPayloadBean payload) {
         HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(payload.getServicePayload());
-        ResponseEntity<BannerResponseBean> responseEntity = restTemplate.exchange(
-                url + BANNERS_URL + "/" + payload.getBannerId(),
+        ResponseEntity<AdvertisingResponseBean> responseEntity = restTemplate.exchange(
+                url + ADVERTISINGS_URL + "/" + payload.getAdvertisingId(),
                 HttpMethod.POST,
                 requestEntity,
-                BannerResponseBean.class);
+                AdvertisingResponseBean.class);
 
         return processResponse(responseEntity);
     }

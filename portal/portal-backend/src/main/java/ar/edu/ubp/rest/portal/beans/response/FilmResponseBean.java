@@ -1,6 +1,5 @@
 package ar.edu.ubp.rest.portal.beans.response;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import lombok.AllArgsConstructor;

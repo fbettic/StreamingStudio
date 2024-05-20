@@ -34,7 +34,7 @@ public class StreamingPlatformController {
 
     @PostMapping("")
     public ResponseEntity<StreamingPlatformDTO> createStreamingPlatform(
-            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) {
+            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) throws Exception {
 
         return ResponseEntity.ok(streamingPlatform.createStreamingPlatform(streamingPlatformRequest));
     }
@@ -57,7 +57,7 @@ public class StreamingPlatformController {
 
     @PutMapping("/{id}")
     public ResponseEntity<StreamingPlatformDTO> updateStreamingPlatform(@PathVariable Integer id,
-            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) {
+            @RequestBody StreamingPlatformRequestDTO streamingPlatformRequest) throws Exception {
         return ResponseEntity
                 .ok(streamingPlatform.updateStreamingPlatfromById(id, streamingPlatformRequest));
     }

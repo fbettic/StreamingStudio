@@ -40,7 +40,7 @@ public class AdvertisingRepository implements IAdvertisingRepository {
         .addValue("redirectUrl", advertising.getRedirectUrl())
         .addValue("imageUrl", advertising.getImageUrl())
         .addValue("bannerText", advertising.getBannerText())
-        .addValue("bannerId", advertising.getBannerId())
+        .addValue("referenceId", advertising.getReferenceId())
         .addValue("fromDate", advertising.getFromDate())
         .addValue("toDate", advertising.getToDate());
 
@@ -84,14 +84,14 @@ public class AdvertisingRepository implements IAdvertisingRepository {
   @Override
   public String updateBatchBanner(List<BannerDTO> banners) {
     try {
-      String sql = "EXEC UpdateAdvertisingBanner @advertiserId=?, @bannerId=?, @redirectUrl=?, @imageUrl=?, @bannerText=?";
+      String sql = "EXEC UpdateAdvertisingBanner @advertiserId=?, @referenceId=?, @redirectUrl=?, @imageUrl=?, @bannerText=?";
 
       jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
         @Override
         public void setValues(PreparedStatement ps, int i) throws SQLException {
           BannerDTO banner = banners.get(i);
           ps.setInt(1, banner.getAdvertiserId());
-          ps.setInt(2, banner.getBannerId());
+          ps.setInt(2, banner.getReferenceId());
           ps.setString(3, banner.getRedirectUrl());
           ps.setString(4, banner.getImageUrl());
           ps.setString(5, banner.getText());
@@ -153,7 +153,7 @@ public class AdvertisingRepository implements IAdvertisingRepository {
         .addValue("redirectUrl", advertising.getRedirectUrl())
         .addValue("imageUrl", advertising.getImageUrl())
         .addValue("bannerText", advertising.getBannerText())
-        .addValue("bannerId", advertising.getBannerId())
+        .addValue("referenceId", advertising.getReferenceId())
         .addValue("fromDate", advertising.getFromDate())
         .addValue("toDate", advertising.getToDate())
         .addValue("advertisingId", id);

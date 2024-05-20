@@ -11,7 +11,7 @@ import { ILoginResponse } from '../../../models/login-response.model';
   templateUrl: './platform-management.component.html',
   styleUrl: './platform-management.component.scss',
 })
-export class PlatformManagementComponent {
+export default class PlatformManagementComponent {
   private _loginService: LoginService = inject(LoginService);
 
   user: ILoginResponse | null = null;

@@ -18,7 +18,7 @@ import lombok.Data;
 public abstract class AbstractPlatformApiClient {
     protected String url = "";
 
-    public abstract String ping(ServicePayloadBean payload);
+    public abstract BasicResponseBean ping(ServicePayloadBean payload);
 
     public abstract List<FilmResponseBean> getAllFilms(ServicePayloadBean payload);
 

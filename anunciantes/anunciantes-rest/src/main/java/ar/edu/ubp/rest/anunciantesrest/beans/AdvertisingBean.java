@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdvertisingBean {
-    private int advertisingId;
-    private int bannerId;
+    private Integer advertisingId;
+    private Integer bannerId;
     private String text;
     private String imageUrl;
     private String redirectUrl;
-    private int serviceId;
+    private Integer serviceId;
     private String priorityTitle;
     private Date fromDate;
     private Date toDate;

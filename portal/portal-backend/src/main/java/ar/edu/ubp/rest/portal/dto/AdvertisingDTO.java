@@ -30,7 +30,7 @@ public class AdvertisingDTO {
     private String redirectUrl;
     private String imageUrl;
     private String bannerText;
-    private Integer bannerId;
+    private Integer referenceId;
     private Date fromDate;
     private Date toDate;
     private List<Integer> targets;

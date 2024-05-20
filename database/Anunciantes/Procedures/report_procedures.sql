@@ -51,11 +51,11 @@ BEGIN
 
     -- Insert data into PlayRegisterReport table
     INSERT INTO WeeklyAdvertisingClickReport
-    (reportId, bannerId, subscriberId, clickedAt)
-  SELECT @insertedReportId, bannerId, subscriberId, dbo.ConvertirUnixTimestamp(clickedAt)
+    (reportId, advertisingId, subscriberId, clickedAt)
+  SELECT @insertedReportId, advertisingId, subscriberId, dbo.ConvertirUnixTimestamp(clickedAt)
   FROM OPENJSON((SELECT clicks FROM #TempData))
     WITH (
-        bannerId INT '$.bannerId',
+        advertisingId INT '$.advertisingId',
         clickedAt BIGINT '$.clickedAt',
         subscriberId INT '$.subscriberId'
     );

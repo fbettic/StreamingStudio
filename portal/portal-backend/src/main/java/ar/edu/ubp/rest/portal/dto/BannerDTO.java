@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BannerDTO {
     private Integer advertiserId;
-    private Integer bannerId;
+    private Integer referenceId;
     private String text;
     private String imageUrl;
     private String redirectUrl;

@@ -1,12 +1,10 @@
-<app-header />
+<div class="d-flex flex-column vh-100">
+  <app-loading-screen></app-loading-screen>
+  <app-header />
 
-<div class="d-flex flex-column nav-padding vh-100">
-    <div>
-      <router-outlet></router-outlet>
-    </div>
-    <div class="mt-auto">
-      <app-footer></app-footer>
-    </div>
+  <router-outlet class="mt-auto"></router-outlet>
+
+  <div class="mt-auto">
+    <app-footer></app-footer>
+  </div>
 </div>
-
-

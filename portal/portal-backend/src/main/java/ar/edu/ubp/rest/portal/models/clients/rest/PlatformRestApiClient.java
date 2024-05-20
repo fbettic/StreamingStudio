@@ -17,8 +17,8 @@ import ar.edu.ubp.rest.portal.beans.request.SessionPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.UserPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyPlatformReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AssociationResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.BasicResponseBean;
+import ar.edu.ubp.rest.portal.beans.response.FilmResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.SessionResponseBean;
 import ar.edu.ubp.rest.portal.models.clients.AbstractPlatformApiClient;
 
@@ -46,8 +46,15 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
     }
 
     @Override
-    public String ping(ServicePayloadBean payload) {
-        return restTemplate.postForObject(url + PING_URL, payload, String.class);
+    public BasicResponseBean ping(ServicePayloadBean payload) {
+        HttpEntity<ServicePayloadBean> requestEntity = createHttpEntity(payload);
+        ResponseEntity<BasicResponseBean> responseEntity = restTemplate.exchange(
+                url + PING_URL,
+                HttpMethod.POST,
+                requestEntity,
+                BasicResponseBean.class);
+
+        return processResponse(responseEntity);
     }
 
     @Override
@@ -111,7 +118,7 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
     }
 
     @Override
-    public String sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
+    public BasicResponseBean sendWeeklyReport(WeeklyPlatformReportPayloadBean payload) {
         HttpEntity<WeeklyPlatformReportPayloadBean> requestEntity = createHttpEntity(payload);
         ResponseEntity<BasicResponseBean> responseEntity = restTemplate.exchange(
                 url + REPORT_URL,
@@ -119,7 +126,7 @@ public class PlatformRestApiClient extends AbstractPlatformApiClient {
                 requestEntity,
                 BasicResponseBean.class);
 
-        return processResponse(responseEntity).getResponse();
+        return processResponse(responseEntity);
     }
 
 }

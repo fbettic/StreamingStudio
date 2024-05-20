@@ -1,10 +1,12 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,6 @@ import ar.edu.ubp.rest.portal.repositories.StreamingPlatformRepository;
 
 @Service
 public class PlatformApiClientService {
-    private PlatformApiClientFactory platformClientFactory;
 
     @Autowired
     private StreamingPlatformRepository streamingPlatformRepository;
@@ -42,51 +43,57 @@ public class PlatformApiClientService {
     @Autowired
     private ReportService reportService;
 
+    private final PlatformApiClientFactory platformClientFactory;
+
     public PlatformApiClientService() {
         this.platformClientFactory = PlatformApiClientFactory.getInstance();
     }
 
-    public String ping(String platformName, String serviceType, String url, ServicePayloadBean authToken)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
-            IllegalAccessException {
-        AbstractPlatformApiClient platformClient = platformClientFactory.buildPlatformClient(platformName,
-                serviceType, url, false);
-        return platformClient.ping(authToken);
+    private AbstractPlatformApiClient getPlatformClient(StreamingPlatformDTO platform) {
+        try {
+            return platformClientFactory.buildPlatformClient(
+                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                | IllegalAccessException e) {
+            throw new RuntimeException("Error creating PlatformApiClient", e);
+        }
+    }
+
+    public String ping(String platformName, String serviceType, String url, ServicePayloadBean authToken) {
+        try {
+            AbstractPlatformApiClient platformClient = platformClientFactory.buildPlatformClient(platformName,
+                    serviceType, url, false);
+            return platformClient.ping(authToken).getResponse();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                | IllegalAccessException e) {
+            throw new RuntimeException("Error during ping", e);
+        }
     }
 
     public List<ServiceResponseMapperBean<FilmResponseBean>> getAllFilmsFromPlatforms() throws Exception {
         List<StreamingPlatformDTO> platforms = streamingPlatformRepository.getAllStreamingPlatfroms();
+        if (Objects.isNull(platforms) || platforms.isEmpty()) {
+            throw new NoSuchElementException("Failed to retrieve data from registered platforms.");
+        }
 
         List<ServiceResponseMapperBean<FilmResponseBean>> filmsByPlatform = new ArrayList<>();
 
-        if (Objects.isNull(platforms) || platforms.size() == 0)
-            throw new Exception("Failed to retrieve data from registered platforms.");
-
         platforms.forEach((platform) -> {
 
-            if (Objects.isNull(platform))
-                return;
+            if (Objects.nonNull(platform)) {
+                try {
+                    AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+                    ServicePayloadBean authToken = new ServicePayloadBean(platform.getAuthToken());
+                    List<FilmResponseBean> films = platformClient.getAllFilms(authToken);
 
-            AbstractPlatformApiClient platformClient = null;
+                    if (!films.isEmpty()) {
+                        filmsByPlatform.add(new ServiceResponseMapperBean<>(platform.getPlatformId(), films));
+                    }
+                } catch (Exception e) {
 
-            try {
-                platformClient = platformClientFactory.buildPlatformClient(platform.getPlatformName(),
-                        platform.getServiceType(), platform.getApiUrl(), true);
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                    | IllegalAccessException e) {
-                System.out.println(e);
-                e.printStackTrace();
-            }
-
-            if (Objects.isNull(platformClient))
-                return;
-
-            ServicePayloadBean authToken = new ServicePayloadBean(platform.getAuthToken());
-
-            List<FilmResponseBean> films = platformClient.getAllFilms(authToken);
-
-            if (!films.isEmpty()) {
-                filmsByPlatform.add(new ServiceResponseMapperBean<FilmResponseBean>(platform.getPlatformId(), films));
+                    System.err
+                            .println("Error processing platform " + platform.getPlatformName() + ": " + e.getMessage());
+                }
             }
         });
 
@@ -98,83 +105,54 @@ public class PlatformApiClientService {
         StreamingPlatformDTO platform = streamingPlatformRepository
                 .getStreamingPlatformById(newAssociationRequest.getPlatformId());
 
-        if (Objects.isNull(platform))
-            return null;
-
-        AbstractPlatformApiClient platformClient = null;
-        try {
-            platformClient = platformClientFactory.buildPlatformClient(
-                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                | IllegalAccessException e) {
-            System.out.println(e);
-            e.printStackTrace();
+        if (Objects.isNull(platform)) {
+            throw new NoSuchElementException("Failed to retrieve data from registered platforms.");
         }
 
-        if (Objects.isNull(platformClient))
+        try {
+            AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+            AssociationRequestPayloadBean associationRequest = new AssociationRequestPayloadBean(
+                    platform.getAuthToken(), newAssociationRequest.getAssociationType(), redirectUrl);
+            return platformClient.createAssociationRequest(associationRequest);
+        } catch (Exception e) {
+            System.err.println("Error creating association request for platform " + platform.getPlatformName() + ": "
+                    + e.getMessage());
             return null;
-
-        AssociationRequestPayloadBean associationRequest = new AssociationRequestPayloadBean(platform.getAuthToken(),
-                newAssociationRequest.getAssociationType(), redirectUrl);
-
-        AssociationResponseBean associationResponse = platformClient.createAssociationRequest(associationRequest);
-
-        return associationResponse;
+        }
     }
 
     public AssociationResponseBean getAssociationData(Integer platformId, Integer transactionId) {
-        StreamingPlatformDTO platform = streamingPlatformRepository
-                .getStreamingPlatformById(platformId);
-
-        if (Objects.isNull(platform))
-            return null;
-
-        AbstractPlatformApiClient platformClient = null;
-        try {
-            platformClient = platformClientFactory.buildPlatformClient(
-                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                | IllegalAccessException e) {
-
-            e.printStackTrace();
+        StreamingPlatformDTO platform = streamingPlatformRepository.getStreamingPlatformById(platformId);
+        if (Objects.isNull(platform)) {
+            throw new NoSuchElementException("Failed to retrieve data from registered platforms.");
         }
 
-        if (Objects.isNull(platformClient))
+        try {
+            AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+            AssociationPayloadBean userTokenRequest = new AssociationPayloadBean(platform.getAuthToken(),
+                    transactionId);
+            return platformClient.getAssociationData(userTokenRequest);
+        } catch (Exception e) {
+            System.err.println("Error getting association data for platform " + platform.getPlatformName() + ": "
+                    + e.getMessage());
             return null;
-
-        AssociationPayloadBean userTokenRequest = new AssociationPayloadBean(platform.getAuthToken(),
-                transactionId);
-
-        AssociationResponseBean associationResponse = platformClient.getAssociationData(userTokenRequest);
-
-        return associationResponse;
+        }
     }
 
     public AssociationResponseBean cancelAssociationResponse(Integer platformId, String userToken) {
-        StreamingPlatformDTO platform = streamingPlatformRepository
-                .getStreamingPlatformById(platformId);
-
+        StreamingPlatformDTO platform = streamingPlatformRepository.getStreamingPlatformById(platformId);
         if (Objects.isNull(platform))
             return null;
 
-        AbstractPlatformApiClient platformClient = null;
         try {
-            platformClient = platformClientFactory.buildPlatformClient(
-                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                | IllegalAccessException e) {
-
-            e.printStackTrace();
-        }
-
-        if (Objects.isNull(platformClient))
+            AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+            UserPayloadBean credentials = new UserPayloadBean(platform.getAuthToken(), userToken);
+            return platformClient.cancelAssociationRequest(credentials);
+        } catch (Exception e) {
+            System.err.println("Error canceling association response for platform " + platform.getPlatformName() + ": "
+                    + e.getMessage());
             return null;
-
-        UserPayloadBean credentials = new UserPayloadBean(platform.getAuthToken(), userToken);
-
-        AssociationResponseBean associationResponse = platformClient.cancelAssociationRequest(credentials);
-
-        return associationResponse;
+        }
     }
 
     public SessionResponseBean createSession(SessionRequestDTO newSessionRequest) {
@@ -186,76 +164,40 @@ public class PlatformApiClientService {
         if (Objects.isNull(platform))
             return null;
 
-        AbstractPlatformApiClient platformClient = null;
         try {
-            platformClient = platformClientFactory.buildPlatformClient(
-                    platform.getPlatformName(), platform.getServiceType(), platform.getApiUrl(), true);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                | IllegalAccessException e) {
-            System.out.println(e);
-            e.printStackTrace();
-        }
-
-        if (Objects.isNull(platformClient))
+            AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+            SessionPayloadBean sessionRequest = new SessionPayloadBean(platform.getAuthToken(),
+                    newSessionRequest.getFilmCode(), association.getUserToken());
+            return platformClient.createSession(sessionRequest);
+        } catch (Exception e) {
+            System.err.println(
+                    "Error creating session for platform " + platform.getPlatformName() + ": " + e.getMessage());
             return null;
-
-        SessionPayloadBean sessionRequest = new SessionPayloadBean(platform.getAuthToken(),
-                newSessionRequest.getFilmCode(), association.getUserToken());
-
-        SessionResponseBean sessionResponse = platformClient.createSession(sessionRequest);
-
-        return sessionResponse;
+        }
     }
 
-    public Map<Integer, String> sendWeeklyReport() throws Exception {
+    public Map<Integer, String> sendWeeklyReport(LocalDate fromDate, LocalDate toDate) throws Exception {
         List<StreamingPlatformDTO> platforms = streamingPlatformRepository.getAllStreamingPlatfroms();
-
-        Map<Integer, String> response = new HashMap<Integer, String>();
-
-        if (Objects.isNull(platforms) || platforms.size() == 0)
-            throw new Exception("Failed to retrieve data from registered platforms.");
-
-        for (StreamingPlatformDTO platform : platforms) {
-            String result = "error";
-
-            if (Objects.isNull(platform)) {
-                continue;
-            }
-
-            AbstractPlatformApiClient platformClient = null;
-
-            try {
-                platformClient = platformClientFactory.buildPlatformClient(platform.getPlatformName(),
-                        platform.getServiceType(), platform.getApiUrl(), true);
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                    | IllegalAccessException e) {
-                System.out.println(e);
-                e.printStackTrace();
-                continue;
-            }
-
-            if (Objects.isNull(platformClient)) {
-                response.put(platform.getPlatformId(), result);
-                continue;
-            }
-
-            WeeklyPlatformReportPayloadBean report = reportService.createWeeklyPlatformReport(platform.getPlatformId(),
-                    platform.getAuthToken());
-
-            try {
-                result = platformClient.sendWeeklyReport(report);
-            } catch (Exception e) {
-                System.out.println(e);
-                e.printStackTrace();
-                continue;
-            }
-
-            if (Objects.nonNull(result) && result.equals("Success")) {
-                response.put(platform.getPlatformId(), result);
-            }
+        if (Objects.isNull(platforms) || platforms.isEmpty()) {
+            throw new RuntimeException("Failed to retrieve data from registered platforms.");
         }
-        ;
+
+        Map<Integer, String> response = new HashMap<>();
+        platforms.forEach(platform -> {
+            if (Objects.nonNull(platform)) {
+                try {
+                    AbstractPlatformApiClient platformClient = getPlatformClient(platform);
+                    WeeklyPlatformReportPayloadBean report = reportService.createWeeklyPlatformReport(platform.getPlatformId(), platform.getAuthToken(), fromDate, toDate);
+                    String result = platformClient.sendWeeklyReport(report).getResponse();
+                    response.put(platform.getPlatformId(), result);
+                } catch (Exception e) {
+                    System.err.println("Error sending weekly report for platform " + platform.getPlatformName() + ": " + e.getMessage());
+                    response.put(platform.getPlatformId(), "error");
+                }
+            }
+        });
 
         return response;
+
     }
 }

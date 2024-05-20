@@ -10,7 +10,7 @@ import { Role } from '../../../enums/role.enum';
   templateUrl: './association-processing.component.html',
   styleUrl: './association-processing.component.scss',
 })
-export class AssociationProcessingComponent {
+export default class AssociationProcessingComponent {
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _router: Router = inject(Router);
   private _subscriberServices: SubscriberService = inject(SubscriberService);

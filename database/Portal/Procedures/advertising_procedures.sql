@@ -18,7 +18,7 @@ CREATE OR ALTER PROCEDURE CreateAdvertising
     @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255),
-    @bannerId INT,
+    @referenceId INT,
     @fromDate DATE,
     @toDate DATE
 AS
@@ -34,7 +34,7 @@ BEGIN
         redirectUrl,
         imageUrl,
         bannerText,
-        bannerId,
+        referenceId,
         fromDate,
         toDate
         )
@@ -47,7 +47,7 @@ BEGIN
             @redirectUrl,
             @imageUrl,
             @bannerText,
-            @bannerId,
+            @referenceId,
             @fromDate,
             @toDate
         );
@@ -66,7 +66,7 @@ CREATE OR ALTER PROCEDURE UpdateAdvertising
     @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255),
-    @bannerId INT,
+    @referenceId INT,
     @fromDate DATE,
     @toDate DATE
 AS
@@ -81,7 +81,7 @@ BEGIN
         redirectUrl = @redirectUrl,
         imageUrl = @imageUrl,
         bannerText = @bannerText,
-        bannerId = @bannerId,
+        referenceId = @referenceId,
         fromDate = @fromDate,
         toDate = @toDate
     WHERE advertisingId = @advertisingId;
@@ -122,7 +122,7 @@ BEGIN
         redirectUrl,
         imageUrl,
         bannerText,
-        bannerId,
+        referenceId,
         fromDate,
         toDate
     FROM Advertising a
@@ -170,7 +170,7 @@ BEGIN
         redirectUrl,
         imageUrl,
         bannerText,
-        bannerId,
+        referenceId,
         fromDate,
         toDate
     FROM Advertising a
@@ -184,8 +184,6 @@ BEGIN
 END
 GO
 
-EXEC GetAllAdvertisings
-GO
 -- DROP PROCEDURE IF EXISTS GetAdvertisingById
 CREATE OR ALTER PROCEDURE GetAllAdvertisings
 AS
@@ -217,7 +215,7 @@ BEGIN
         redirectUrl,
         imageUrl,
         bannerText,
-        bannerId,
+        referenceId,
         fromDate,
         toDate
     FROM Advertising a
@@ -233,7 +231,7 @@ GO
 -- DROP PROCEDURE IF EXISTS UpdateAdvertisingBanner
 CREATE OR ALTER PROCEDURE UpdateAdvertisingBanner
     @advertiserId INT,
-    @bannerId INT,
+    @referenceId INT,
     @redirectUrl VARCHAR(255),
     @imageUrl VARCHAR(255),
     @bannerText VARCHAR(255)
@@ -243,7 +241,7 @@ BEGIN
     SET redirectUrl = @redirectUrl,
     imageUrl = @imageUrl,
     bannerText = @bannerText
-    WHERE bannerId = @bannerId
+    WHERE referenceId = @referenceId
         AND advertiserId = @advertiserId
 END
 GO
@@ -288,7 +286,3 @@ BEGIN
 END
 GO
 
-EXEC GetAdvertisingsForSubscriber 1 
-
-
-update Advertising set allPagesFeeId=7 WHERE advertisingId = 7

@@ -100,6 +100,7 @@ BEGIN
 
     DROP TABLE #TempTargets;
 
+    SELECT 'success' AS message
     END TRY
   BEGIN CATCH
     SELECT ERROR_MESSAGE() AS Result;

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StreamingPlatformSubscriberResponseDTO {
     private Integer platformId;
+    private String imageUrl;
     private String platformName;
     private Boolean linked;
 }

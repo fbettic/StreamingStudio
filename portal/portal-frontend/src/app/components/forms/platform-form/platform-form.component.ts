@@ -52,6 +52,7 @@ export class PlatformFormComponent {
     this.streamingPlatformFormGroup = this._formBuilder.group({
       platformName: ['', Validators.required],
       email: ['', Validators.required],
+      imageUrl: ['', Validators.required],
       apiUrl: ['', Validators.required],
       authToken: ['', Validators.required],
       signupFeeId: ['', Validators.required],
@@ -100,6 +101,7 @@ export class PlatformFormComponent {
     this.streamingPlatformFormGroup.setValue({
       platformName: streamingPlatform.platformName,
       email: streamingPlatform.email,
+      imageUrl: streamingPlatform.imageUrl,
       apiUrl: streamingPlatform.apiUrl,
       authToken: streamingPlatform.authToken,
       signupFeeId: streamingPlatform.signupFeeId,
@@ -112,6 +114,7 @@ export class PlatformFormComponent {
     const isValid = this.streamingPlatformFormGroup.valid;
     if (isValid) {
       const data: IStreamingPlatform = this.streamingPlatformFormGroup.value;
+      console.log("🚀 ~ PlatformFormComponent ~ submit ~  data:",  data)
       this.id != 0
         ? this.updateStreamingPlatform(data)
         : this.createStreamingPlatform(data);
@@ -165,6 +168,7 @@ export class PlatformFormComponent {
     this.streamingPlatformFormGroup.reset({
       platformName: '',
       email: '',
+      imageUrl: '',
       apiUrl: '',
       authToken: '',
       signupFeeId: '',

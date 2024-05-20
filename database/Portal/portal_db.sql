@@ -1,42 +1,42 @@
- 
+
 -- CREATE DATABASE portal_db
 USE portal_db
 
 /*
-DROP TABLE IF EXISTS AdvertisingInvoiceDetail
-DROP TABLE IF EXISTS AssociationsToCharge
-DROP TABLE IF EXISTS PlatformInvoiceDetail
-DROP TABLE IF EXISTS Invoice
-DROP TABLE IF EXISTS AdvertisingClickReport
-DROP TABLE IF EXISTS SubscriberAdvertisingClick
-DROP TABLE IF EXISTS WeeklyAdvertiserReport
-DROP TABLE IF EXISTS PlayRegister
-DROP TABLE IF EXISTS WeeklyPlatformFilmReport
-DROP TABLE IF EXISTS MarketingPreferences
-DROP TABLE IF EXISTS AdvertisingTarget
-DROP TABLE IF EXISTS TargetCategory
-DROP TABLE IF EXISTS Advertising
-DROP TABLE IF EXISTS BannerPriority
-DROP TABLE IF EXISTS SizeType
-DROP TABLE IF EXISTS Advertiser
-DROP TABLE IF EXISTS AssociationsToPay
-DROP TABLE IF EXISTS Sessions
-DROP TABLE IF EXISTS Association
-DROP TABLE IF EXISTS AssociationRequest
-DROP TABLE IF EXISTS Subscriber
-DROP TABLE IF EXISTS PlatformPaymentRegister
-DROP TABLE IF EXISTS PlatformFilm
-DROP TABLE IF EXISTS StreamingPlatform
-DROP TABLE IF EXISTS FeeHistory
-DROP TABLE IF EXISTS FeeType
-DROP TABLE IF EXISTS FilmGenre
-DROP TABLE IF EXISTS Genre
-DROP TABLE IF EXISTS FilmActor
-DROP TABLE IF EXISTS Actor
-DROP TABLE IF EXISTS Film
-DROP TABLE IF EXISTS Country
-DROP TABLE IF EXISTS Director
 DROP TABLE IF EXISTS Administrator
+DROP TABLE IF EXISTS Director
+DROP TABLE IF EXISTS Country
+DROP TABLE IF EXISTS Film
+DROP TABLE IF EXISTS Actor
+DROP TABLE IF EXISTS FilmActor
+DROP TABLE IF EXISTS Genre
+DROP TABLE IF EXISTS FilmGenre
+DROP TABLE IF EXISTS FeeType
+DROP TABLE IF EXISTS FeeHistory
+DROP TABLE IF EXISTS StreamingPlatform
+DROP TABLE IF EXISTS PlatformFilm
+DROP TABLE IF EXISTS PlatformPaymentRegister
+DROP TABLE IF EXISTS Subscriber
+DROP TABLE IF EXISTS AssociationRequest
+DROP TABLE IF EXISTS Association
+DROP TABLE IF EXISTS Sessions
+DROP TABLE IF EXISTS AssociationsToPay
+DROP TABLE IF EXISTS Advertiser
+DROP TABLE IF EXISTS SizeType
+DROP TABLE IF EXISTS BannerPriority
+DROP TABLE IF EXISTS Advertising
+DROP TABLE IF EXISTS TargetCategory
+DROP TABLE IF EXISTS AdvertisingTarget
+DROP TABLE IF EXISTS MarketingPreferences
+DROP TABLE IF EXISTS WeeklyPlatformReport
+DROP TABLE IF EXISTS PlayRegister
+DROP TABLE IF EXISTS WeeklyAdvertiserReport
+DROP TABLE IF EXISTS SubscriberAdvertisingClick
+DROP TABLE IF EXISTS AdvertisingClickReport
+DROP TABLE IF EXISTS Invoice
+DROP TABLE IF EXISTS PlatformInvoiceDetail
+DROP TABLE IF EXISTS AssociationsToCharge
+DROP TABLE IF EXISTS AdvertisingInvoiceDetail
 */
 
 
@@ -148,6 +148,7 @@ CREATE TABLE StreamingPlatform
   platformId INT NOT NULL IDENTITY(1,1),
   platformName VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
+  imageUrl VARCHAR(233),
   apiUrl VARCHAR(255) NOT NULL,
   authToken NVARCHAR(MAX),
   signupFeeId INT NOT NULL,
@@ -328,7 +329,7 @@ CREATE TABLE Advertising
   redirectUrl VARCHAR(255) NOT NULL,
   imageUrl VARCHAR(255) NOT NULL,
   bannerText VARCHAR(255) NOT NULL,
-  bannerId INT,
+  referenceId INT,
   fromDate DATE NOT NULL,
   toDate DATE NOT NULL,
   deletedAt DATETIME
@@ -486,17 +487,5 @@ CREATE TABLE AdvertisingInvoiceDetail
 );
 GO
 
-select *
-from Film
-where filmCode = 'F00000013'
 
-EXEC GetFilmById 7
-
-Insert into AdvertisingTarget
-  (targetId, advertisingId)
-VALUEs
-  (1, 2)
-
-select *
-from Advertiser
 

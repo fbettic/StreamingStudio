@@ -7,9 +7,9 @@ import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
 
 public interface IFilmRepository {
-    public Integer loadAllCountries(List<CountryDTO> countries);
+    public String loadAllCountries(List<CountryDTO> countries);
 
-    public Integer updateBatchFilm(List<FilmDTO> films);
+    public String updateBatchFilm(List<FilmDTO> films);
 
     public String updateBatchPlatformFilm(String streamingPlatformFilmsJson);
 

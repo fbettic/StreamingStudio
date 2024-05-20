@@ -13,6 +13,7 @@ CREATE OR ALTER PROCEDURE CreateStreamingPlatform
     @platformName VARCHAR(255),
     @email VARCHAR(255),
     @apiUrl VARCHAR(255),
+    @imageUrl VARCHAR(255),
     @authToken TEXT,
     @signupFeeId INT,
     @loginFeeId INT,
@@ -31,9 +32,9 @@ BEGIN
     END
 
     INSERT INTO StreamingPlatform
-        (platformName, email, apiUrl, authToken, signupFeeId, loginFeeId, serviceType)
+        (platformName, email, apiUrl, authToken, signupFeeId, loginFeeId, serviceType, imageUrl)
     VALUES
-        (@platformName, @email, @apiUrl, @authToken, @signupFeeId, @loginFeeId, @serviceType);
+        (@platformName, @email, @apiUrl, @authToken, @signupFeeId, @loginFeeId, @serviceType, @imageUrl);
 
     EXEC GetStreamingPlatformById @@IDENTITY
 END;
@@ -45,6 +46,7 @@ CREATE OR ALTER PROCEDURE UpdateStreamingPlatform
     @platformName VARCHAR(255),
     @email VARCHAR(255),
     @apiUrl VARCHAR(255),
+    @imageUrl VARCHAR(255),
     @authToken TEXT,
     @signupFeeId INT,
     @loginFeeId INT,
@@ -69,7 +71,8 @@ BEGIN
         authToken = @authToken,
         signupFeeId = @signupFeeId,
         loginFeeId = @loginFeeId,
-        serviceType = @serviceType
+        serviceType = @serviceType,
+        imageUrl=@imageUrl
     WHERE platformId = @platformId;
 
     EXEC GetStreamingPlatformById @platformId
@@ -82,7 +85,7 @@ CREATE OR ALTER PROCEDURE GetStreamingPlatformById
 AS
 BEGIN
     SET NOCOUNT ON;
-    
+
     DECLARE @AllFees AS dbo.AllFees
 
     INSERT INTO @AllFees
@@ -90,16 +93,17 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        platformId, 
-        platformName, 
-        email, 
-        apiUrl, 
+        platformId,
+        platformName,
+        email,
+        apiUrl,
+        imageUrl,
         authToken,
         sp.signupFeeId AS signupFeeId,
         af_s.feeValue AS signupFee,
         af_s.feeType AS signupFeeType,
         sp.loginFeeId AS loginFeeId,
-        af_l.feeValue AS loginFee, 
+        af_l.feeValue AS loginFee,
         af_l.feeType AS loginFeeType,
         serviceType
     FROM StreamingPlatform sp
@@ -123,16 +127,17 @@ BEGIN
     EXEC GetAllFees
 
     SELECT
-        platformId, 
-        platformName, 
-        email, 
-        apiUrl, 
+        platformId,
+        platformName,
+        email,
+        apiUrl,
+        imageUrl,
         authToken,
         sp.signupFeeId AS signupFeeId,
         af_s.feeValue AS signupFee,
         af_s.feeType AS signupFeeType,
         sp.loginFeeId AS loginFeeId,
-        af_l.feeValue AS loginFee, 
+        af_l.feeValue AS loginFee,
         af_l.feeType AS loginFeeType,
         serviceType
     FROM StreamingPlatform sp
@@ -141,3 +146,29 @@ BEGIN
     WHERE deletedAt IS NULL
 END
 GO
+
+CREATE OR ALTER PROCEDURE GetAllStreamingPlatformsBySubscriberId
+    @subscriberId INT
+AS
+BEGIN
+    SELECT
+        sp.platformId,
+        sp.platformName,
+        sp.imageUrl,
+        CASE 
+            WHEN EXISTS (
+                SELECT 1
+        FROM Association a
+        WHERE a.platformId = sp.platformId
+            AND a.subscriberId = @subscriberId
+            ) 
+            THEN CAST(1 AS BIT)
+            ELSE CAST(0 AS BIT)
+        END AS linked
+    FROM
+        StreamingPlatform sp
+    WHERE sp.deletedAt IS NULL
+END
+GO
+
+select * from Sessions

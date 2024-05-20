@@ -15,18 +15,23 @@ EXEC CreateFee 'BANNER_PRIORITY_HIGH', 9.8
 EXEC CreateFee 'BANNER_SIZE_SMALL', 4.5
 EXEC CreateFee 'BANNER_SIZE_MEDIUM', 8.5
 EXEC CreateFee 'BANNER_SIZE_LARGE', 10.6
-EXEC CreateFee 'ALLPAGES', 15.5
+EXEC CreateFee 'ALL_PAGES', 15.5
 EXEC CreateFee 'LOGIN_FEE', 12.3
 EXEC CreateFee 'SIGNUP_FEE', 13.5
 
 -- Crear Priorities
-EXEC CreateBannerPriority "LOW", 5, 1
-EXEC CreateBannerPriority "MEDIUM", 10, 2
-EXEC CreateBannerPriority "HIGH", 15, 3
+EXEC CreateBannerPriority "LOW", 1, 1
+EXEC CreateBannerPriority "MEDIUM", 2, 2
+EXEC CreateBannerPriority "HIGH", 3, 3
 
 -- Crear Sizes
-EXEC CreateSizeType 4, 'SMALL', 5, 150, 100
-EXEC CreateSizeType 5, 'MEDIUM', 5, 300, 100
-EXEC CreateSizeType 6, 'LARGE', 5, 150, 600
+EXEC CreateSizeType 4, 'SMALL', 5, 300, 200
+EXEC CreateSizeType 5, 'MEDIUM', 5, 600, 200
+EXEC CreateSizeType 6, 'LARGE', 5, 200, 1500
 
-select * from FeeType
+EXEC CreateTargetCategory 'Cars'
+EXEC CreateTargetCategory 'Travels'
+EXEC CreateTargetCategory 'Hobbies'
+EXEC CreateTargetCategory 'Animals'
+
+select * from SizeType

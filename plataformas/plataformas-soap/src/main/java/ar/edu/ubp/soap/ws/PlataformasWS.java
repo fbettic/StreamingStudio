@@ -8,15 +8,7 @@ import org.apache.cxf.interceptor.Fault;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ar.edu.ubp.soap.beans.AssociationRequestBean;
-import ar.edu.ubp.soap.beans.FilmBean;
-import ar.edu.ubp.soap.beans.LoginRequestBean;
-import ar.edu.ubp.soap.beans.NewAssociationRequestBean;
-import ar.edu.ubp.soap.beans.NewPlatformUserBean;
-import ar.edu.ubp.soap.beans.NewSessionBean;
-import ar.edu.ubp.soap.beans.PlatformUserBean;
-import ar.edu.ubp.soap.beans.SessionBean;
-import ar.edu.ubp.soap.beans.WeeklyReportBean;
+import ar.edu.ubp.soap.beans.*;
 import ar.edu.ubp.soap.db.AuthManager;
 import ar.edu.ubp.soap.db.FilmManager;
 import ar.edu.ubp.soap.db.ReportManager;
@@ -29,7 +21,6 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @WebService
 @XmlSeeAlso({})
-
 public class PlataformasWS {
 
     private AuthManager authManager;
@@ -47,9 +38,12 @@ public class PlataformasWS {
     // crear usuario no relacionado a plataforma
     @WebMethod()
     @WebResult(name = "platformUser")
-    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser)
-            throws Exception {
-        return userManager.creatPlatformUser(newPlatformUser);
+    public PlatformUserBean createPlatformUser(@WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser) {
+        try {
+            return userManager.creatPlatformUser(newPlatformUser);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error creating platform user: " + e.getMessage()));
+        }
     }
 
     // se crea el usuario y se setea el token
@@ -57,153 +51,174 @@ public class PlataformasWS {
     @WebResult(name = "signupAssociationCompleted")
     public AssociationRequestBean completeSignupAssociationRequest(
             @WebParam(name = "newPlatformUser") NewPlatformUserBean newPlatformUser,
-            @WebParam(name = "uuid") String uuid) throws Exception {
-        Integer userId = userManager.creatPlatformUser(newPlatformUser).getUserId();
-
-        System.out.println("-------------> " + userId);
-
-        AssociationRequestBean response = userManager.completeAssociationRequest(userId, uuid);
-
-        System.out.println("-------------> " + response);
-
-        return response;
+            @WebParam(name = "uuid") String uuid) {
+        try {
+            Integer userId = userManager.creatPlatformUser(newPlatformUser).getUserId();
+            return userManager.completeAssociationRequest(userId, uuid);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error completing signup association request: " + e.getMessage()));
+        }
     }
 
     // se busca el usuario y se setea el token
     @WebMethod()
     @WebResult(name = "loginAssociationCompleted")
     public AssociationRequestBean completeLoginAssociationRequest(
-            @WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid)
-            throws Exception {
+            @WebParam(name = "loginRequest") LoginRequestBean loginRequest, @WebParam(name = "uuid") String uuid) {
+        try {
+            PlatformUserBean user = userManager.getUserByEmail(loginRequest.getEmail());
 
-        System.out.println("-------------> " + loginRequest.toString() + ", " + uuid);
-        PlatformUserBean user = userManager.getUserByEmail(loginRequest.getEmail());
+            if (user == null || !user.getPassword().equals(loginRequest.getPassword())) {
+                throw new Fault(new Exception("Invalid user credentials"));
+            }
 
-        if (user == null || !user.getPassword().equals(loginRequest.getPassword())) {
-            throw new Fault(new Exception("Invalid user credentials"));
+            return userManager.completeAssociationRequest(user.getUserId(), uuid);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error completing login association request: " + e.getMessage()));
         }
-
-        System.out.println("-------------> " + user.toString());
-
-        AssociationRequestBean response = userManager.completeAssociationRequest(user.getUserId(), uuid);
-
-        System.out.println("-------------> " + response);
-
-        return response;
     }
 
     // se abre el proceso de associacion
     @WebMethod()
     @WebResult(name = "associationRequest")
     public AssociationRequestBean getAssociationData(
-            @WebParam(name = "authToken") String authToken, @WebParam(name = "associationId") Integer associationId)
-            throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(authToken);
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+            @WebParam(name = "authToken") String authToken, @WebParam(name = "associationId") Integer associationId) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(authToken);
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
+            return userManager.getAssociationData(associationId);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error getting association data: " + e.getMessage()));
         }
-        return userManager.getAssociationData(associationId);
     }
 
     @WebMethod()
     @WebResult(name = "associationRequest")
     public AssociationRequestBean cancelAssociationRequest(
             @WebParam(name = "authToken") String authToken,
-            @WebParam(name = "userToken") String userToken) throws Exception {
+            @WebParam(name = "userToken") String userToken) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(authToken);
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
 
-        final Integer serviceId = authManager.validateServiceToken(authToken);
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+            final AssociationRequestBean association = userManager.getAssociationRequestByToken(userToken);
+
+            if (!Objects.isNull(association)
+                    && (association.getState().equals("CANCELED")
+                    || !Objects.isNull(association.getCanceledAt()))) {
+                return association;
+            }
+            return userManager.cancelAssociationRequest(userToken);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error canceling association request: " + e.getMessage()));
         }
-
-        final AssociationRequestBean association = userManager.getAssociationRequestByToken(userToken);
-
-        if (!Objects.isNull(association)
-                && (association.getState().equals("CANCELED")
-                        || !Objects.isNull(association.getCanceledAt()))) {
-            return association;
-        }
-        return userManager.cancelAssociationRequest(userToken);
     }
 
     @WebMethod()
     @WebResult(name = "associationRequest")
     public AssociationRequestBean createAssociationRequest(
-            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest)
-            throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(newAssociationRequest.getAuthToken());
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+            @WebParam(name = "newAssociationRequest") NewAssociationRequestBean newAssociationRequest) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(newAssociationRequest.getAuthToken());
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
+            return userManager.createAssociationRequest(newAssociationRequest, serviceId);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error creating association request: " + e.getMessage()));
         }
-        return userManager.createAssociationRequest(newAssociationRequest, serviceId);
     }
 
     // se obtienen los datos de reproduccion de la pelicula
     @WebMethod()
     @WebResult(name = "session")
-    public SessionBean createSession(@WebParam(name = "newSession") NewSessionBean newSession) throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(newSession.getAuthToken());
-        final Integer userId = authManager.validateUserToken(newSession.getUserToken());
-        return userManager.createSession(newSession, serviceId, userId);
+    public SessionBean createSession(@WebParam(name = "newSession") NewSessionBean newSession) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(newSession.getAuthToken());
+            final Integer userId = authManager.validateUserToken(newSession.getUserToken());
+            return userManager.createSession(newSession, serviceId, userId);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error creating session: " + e.getMessage()));
+        }
     }
 
     @WebMethod()
     @WebResult(name = "session")
     public SessionBean markSessionAsUsed(@WebParam(name = "sessionId") Integer sessionId,
-            @WebParam(name = "authToken") String authToken) throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(authToken);
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+                                         @WebParam(name = "authToken") String authToken) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(authToken);
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
+            return userManager.markSessionAsUsed(sessionId);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error marking session as used: " + e.getMessage()));
         }
-        return userManager.markSessionAsUsed(sessionId);
     }
 
     @WebMethod()
     @WebResult(name = "session")
     public SessionBean markSessionAsExpired(@WebParam(name = "sessionId") Integer sessionId,
-            @WebParam(name = "authToken") String authToken) throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(authToken);
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+                                            @WebParam(name = "authToken") String authToken) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(authToken);
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
+            return userManager.markSessionAsExpired(sessionId);
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error marking session as expired: " + e.getMessage()));
         }
-        return userManager.markSessionAsExpired(sessionId);
     }
 
     // obtener todas las peliculas
     @WebMethod()
     @WebResult(name = "films")
-    public List<FilmBean> getAllFilms(@WebParam(name = "authToken") String authToken) throws Fault {
-        authManager.validateServiceToken(authToken);
-        return filmManager.getAllFilms();
+    public List<FilmBean> getAllFilms(@WebParam(name = "authToken") String authToken) {
+        try {
+            authManager.validateServiceToken(authToken);
+            return filmManager.getAllFilms();
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error getting all films: " + e.getMessage()));
+        }
     }
 
-    // TODO añadir logica de almacenamiento de reporte
     @WebMethod()
-    @WebResult(name = "result")
-    public String receiveWeeklyReport(@WebParam(name = "report") WeeklyReportBean report) throws Exception {
-        final Integer serviceId = authManager.validateServiceToken(report.getAuthToken());
+    @WebResult(name = "report")
+    public BasicResponseBean receiveWeeklyReport(@WebParam(name = "report") WeeklyReportBean report) {
+        try {
+            final Integer serviceId = authManager.validateServiceToken(report.getAuthToken());
 
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
-        }
-         ObjectMapper objectMapper = new ObjectMapper();
-            String jsonString = null;
-            try {
-                jsonString = objectMapper.writeValueAsString(report);
-            } catch (JsonProcessingException e) {
-                throw e;
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
             }
-        
-        return reportManager.createWeeklyReport(jsonString);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = objectMapper.writeValueAsString(report);
+
+            return new BasicResponseBean(reportManager.createWeeklyReport(jsonString));
+        } catch (JsonProcessingException e) {
+            throw new Fault(new Exception("Error processing weekly report: " + e.getMessage()));
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error receiving weekly report: " + e.getMessage()));
+        }
     }
 
     @WebMethod()
     @WebResult(name = "pong")
-    public String ping(@WebParam(name = "authToken") String authToken) throws Fault {
-        Integer serviceId = authManager.validateServiceToken(authToken);
-        if (serviceId == null || serviceId == 0) {
-            throw new Fault(new Exception("Invalid token"));
+    public BasicResponseBean ping(@WebParam(name = "authToken") String authToken) {
+        try {
+            Integer serviceId = authManager.validateServiceToken(authToken);
+            if (serviceId == null || serviceId == 0) {
+                throw new Fault(new Exception("Invalid token"));
+            }
+            return new BasicResponseBean("pong");
+        } catch (Exception e) {
+            throw new Fault(new Exception("Error pinging service: " + e.getMessage()));
         }
-        return "pong";
     }
 }

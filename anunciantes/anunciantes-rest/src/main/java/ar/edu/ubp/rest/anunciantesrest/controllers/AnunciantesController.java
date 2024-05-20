@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.ubp.rest.anunciantesrest.beans.AdvertisingBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.AuthTokenRequestBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.BasicResponseBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.WeeklyReportBean;
 import ar.edu.ubp.rest.anunciantesrest.services.AdvertiserServices;
 
@@ -47,15 +48,14 @@ public class AnunciantesController {
     }
 
     @PostMapping(path = "/report")
-    public ResponseEntity<String> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
+    public ResponseEntity<BasicResponseBean> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
 
-        return new ResponseEntity<String>(advertiserServices.createWeeklyReport(report), HttpStatus.OK);
+        return new ResponseEntity<BasicResponseBean>(advertiserServices.createWeeklyReport(report), HttpStatus.OK);
     }
 
     @PostMapping(path = "/ping")
-    public ResponseEntity<String> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
-        System.out.println("---------------> " + authToken);
+    public ResponseEntity<BasicResponseBean> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
 
-        return new ResponseEntity<>(advertiserServices.ping(authToken), HttpStatus.OK);
+        return new ResponseEntity<BasicResponseBean>(advertiserServices.ping(authToken), HttpStatus.OK);
     }
 }

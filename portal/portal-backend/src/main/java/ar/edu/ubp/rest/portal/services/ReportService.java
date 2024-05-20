@@ -1,7 +1,6 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,8 @@ public class ReportService {
         @Autowired
         private ReportRepository reportRepository;
 
-        public WeeklyPlatformReportPayloadBean createWeeklyPlatformReport(Integer platformId, String authToken) {
-                LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
-                LocalDate toDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+        public WeeklyPlatformReportPayloadBean createWeeklyPlatformReport(Integer platformId, String authToken,
+                        LocalDate fromDate, LocalDate toDate) {
 
                 WeeklyPlatformReportPayloadBean report = reportRepository.createWeeklyPlatformReport(platformId,
                                 fromDate,
@@ -39,9 +37,8 @@ public class ReportService {
 
         };
 
-        public WeeklyAdvertiserReportPayloadBean createWeeklyAdvertiserReport(Integer platformId, String authToken) {
-                LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
-                LocalDate toDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+        public WeeklyAdvertiserReportPayloadBean createWeeklyAdvertiserReport(Integer platformId, String authToken,
+                        LocalDate fromDate, LocalDate toDate) {
 
                 WeeklyAdvertiserReportPayloadBean report = reportRepository.createWeeklyAdvertiserReport(platformId,
                                 fromDate,

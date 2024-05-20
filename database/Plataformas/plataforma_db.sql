@@ -8,7 +8,7 @@
 
 -- USE plataforma1_db
 -- USE plataforma2_db
-USE plataforma1_db
+USE plataforma3_db
 
 /*
 DROP TABLE IF EXISTS AssociationRegisterReport
@@ -212,13 +212,4 @@ CREATE TABLE AssociationRegisterReport
 GO
 
 
-select *
-from Film
-
-select *
-from PlatformUser
-select *
-from AssociationRequest
-WHERE userToken = '0E06FE89-D2B5-4F0E-B7AD-0736B520753F'
-
-EXEC GetAssociationRequestByToken '98F28D9F-AF50-4EFD-A7D0-C0D3BA0AE213'
+select * from Sessions

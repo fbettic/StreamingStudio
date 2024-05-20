@@ -23,6 +23,7 @@ ar\edu\ubp\soap\beans\CancelAssociationRequest.class
 ar\edu\ubp\soap\beans\NewSessionBean.class
 ar\edu\ubp\soap\beans\AssociationReportBean.class
 ar\edu\ubp\soap\db\AuthManager.class
+ar\edu\ubp\soap\beans\BasicResponseBean$BasicResponseBeanBuilder.class
 ar\edu\ubp\soap\db\UserManager.class
 ar\edu\ubp\soap\beans\NewAssociationRequestBean$NewAssociationRequestBeanBuilder.class
 ar\edu\ubp\soap\beans\AssociationRequestBean.class
@@ -30,3 +31,4 @@ ar\edu\ubp\soap\beans\PlatformUserBean.class
 ar\edu\ubp\soap\db\ReportManager.class
 ar\edu\ubp\soap\beans\PlayRegisterBean.class
 ar\edu\ubp\soap\beans\ServiceConnectionBean$ServiceConnectionBeanBuilder.class
+ar\edu\ubp\soap\beans\BasicResponseBean.class

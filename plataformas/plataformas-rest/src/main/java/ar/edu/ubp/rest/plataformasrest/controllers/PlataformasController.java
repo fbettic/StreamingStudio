@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.plataformasrest.beans.AssociationRequestBean;
 import ar.edu.ubp.rest.plataformasrest.beans.AuthTokenRequestBean;
+import ar.edu.ubp.rest.plataformasrest.beans.BasicResponseBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteLoginAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.CompleteSignupAssociationBean;
 import ar.edu.ubp.rest.plataformasrest.beans.FilmBean;
@@ -73,7 +74,6 @@ public class PlataformasController {
     @PostMapping(path = "/associations/cancel")
     public ResponseEntity<AssociationRequestBean> cancelAssociationRequest(@RequestBody UserRequest request)
             throws Exception {
-                System.out.println("----------->" + request.toString());
         return new ResponseEntity<>(platformServices.cancelAssociationRequest(request), HttpStatus.OK);
     }
 
@@ -100,13 +100,13 @@ public class PlataformasController {
     }
 
     @PostMapping(path = "/report")
-    public ResponseEntity<String> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
+    public ResponseEntity<BasicResponseBean> receiveWeeklyReport(@RequestBody WeeklyReportBean report) throws Exception {
         
-        return new ResponseEntity<String>(platformServices.createWeeklyReport(report), HttpStatus.OK);
+        return new ResponseEntity<BasicResponseBean>(platformServices.createWeeklyReport(report), HttpStatus.OK);
     }
 
     @PostMapping(path = "/ping")
-    public ResponseEntity<String> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
-        return new ResponseEntity<>(platformServices.ping(authToken.getAuthToken()), HttpStatus.OK);
+    public ResponseEntity<BasicResponseBean> ping(@RequestBody AuthTokenRequestBean authToken) throws Exception {
+        return new ResponseEntity<BasicResponseBean>(platformServices.ping(authToken.getAuthToken()), HttpStatus.OK);
     }
 }

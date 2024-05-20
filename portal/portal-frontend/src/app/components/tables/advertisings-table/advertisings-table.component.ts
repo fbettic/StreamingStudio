@@ -28,7 +28,7 @@ export class AdvertisingsTableComponent {
   headers: Header[] = [
     { key: 'advertisingId', label: 'ID' },
     { key: 'advertiserId', label: 'Advertiser ID' },
-    { key: 'bannerId', label: 'Banner ID' },
+    { key: 'referenceId', label: 'Reference ID' },
     { key: 'size', label: 'Size' },
     { key: 'priority', label: 'Priority' },
     { key: 'allPagesFee', label: 'All Pages' },

@@ -1,5 +1,6 @@
 package ar.edu.ubp.soap.app;
 
+import ar.edu.ubp.soap.db.DatabaseConnection;
 import ar.edu.ubp.soap.ws.AnunciantesWS;
 import jakarta.xml.ws.Endpoint;
 
@@ -14,7 +15,9 @@ public class Server {
         String databaseName = args[0];
         String port = args[1];
 
-        AnunciantesWS implementor = new AnunciantesWS(databaseName);
+        DatabaseConnection.getInstance().setDatabaseName(databaseName);
+
+        AnunciantesWS implementor = new AnunciantesWS();
         String address = "http://localhost:" + port + "/soap/anunciante";
         Endpoint.publish(address, implementor);
     }

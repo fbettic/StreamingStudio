@@ -10,10 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceConnectionBean {
-    private int serviceId;
+    private Integer serviceId;
     private String name;
-    private String authToken;
-
-    
+    private String authToken;    
 }
 

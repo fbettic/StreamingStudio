@@ -34,7 +34,7 @@ public class AdvertiserApiClientFactory {
         Class<?> dynamicClass;
         if (ServiceType.SOAP.name().equals(serviceType)) {
             dynamicClass = Class.forName(SOAP_CLASS);
-        } else if (ServiceType.SOAP.name().equals(serviceType)) {
+        } else if (ServiceType.REST.name().equals(serviceType)) {
             dynamicClass = Class.forName(REST_CLASS);
         } else {
             throw new ClassNotFoundException();

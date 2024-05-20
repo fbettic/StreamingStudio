@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.StreamingPlatformDTO;
 import ar.edu.ubp.rest.portal.dto.request.StreamingPlatformRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.StreamingPlatformSubscriberResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IStreamingPlatformRepository;
 
 @Repository
@@ -29,6 +30,7 @@ public class StreamingPlatformRepository implements IStreamingPlatformRepository
 				.addValue("platformName", streamingPlatfromRequest.getPlatformName())
 				.addValue("email", streamingPlatfromRequest.getEmail())
 				.addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
+				.addValue("imageUrl", streamingPlatfromRequest.getImageUrl())
 				.addValue("authToken", streamingPlatfromRequest.getAuthToken())
 				.addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
 				.addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())
@@ -75,6 +77,22 @@ public class StreamingPlatformRepository implements IStreamingPlatformRepository
 		return (List<StreamingPlatformDTO>) output.get("platforms");
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<StreamingPlatformSubscriberResponseDTO> getAllStreamingPlatformsBySubscriberId(Integer subscriberId) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("subscriberId", subscriberId);
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("GetAllStreamingPlatformsBySubscriberId")
+				.withSchemaName("dbo")
+				.returningResultSet("platforms",
+						BeanPropertyRowMapper.newInstance(StreamingPlatformSubscriberResponseDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return (List<StreamingPlatformSubscriberResponseDTO>) output.get("platforms");
+	}
+
 	@Override
 	public Integer deleteStreamingPlatfromById(Integer id) {
 		SqlParameterSource input = new MapSqlParameterSource()
@@ -99,6 +117,7 @@ public class StreamingPlatformRepository implements IStreamingPlatformRepository
 				.addValue("platformName", streamingPlatfromRequest.getPlatformName())
 				.addValue("email", streamingPlatfromRequest.getEmail())
 				.addValue("apiUrl", streamingPlatfromRequest.getApiUrl())
+				.addValue("imageUrl", streamingPlatfromRequest.getImageUrl())
 				.addValue("authToken", streamingPlatfromRequest.getAuthToken())
 				.addValue("signupFeeId", streamingPlatfromRequest.getSignupFeeId())
 				.addValue("loginFeeId", streamingPlatfromRequest.getLoginFeeId())

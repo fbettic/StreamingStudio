@@ -18,7 +18,7 @@ import { ILoginResponse } from '../../models/login-response.model';
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
-export class SignupComponent {
+export default class SignupComponent {
   private signupService: SignupService = inject(SignupService);
   private loginService: LoginService = inject(LoginService);
   

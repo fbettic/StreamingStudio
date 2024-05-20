@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PriorityBean {
-    private int priorityId;
+    private Integer priorityId;
     private String priorityTitle;
 }

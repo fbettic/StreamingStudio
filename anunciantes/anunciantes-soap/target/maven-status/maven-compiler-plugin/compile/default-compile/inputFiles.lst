@@ -1,8 +1,13 @@
-D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\app\Server.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\AdvertisingClickReportBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\ServiceConnectionBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\ws\AnunciantesWS.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\BannerBean.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\db\AdvertisingManager.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\db\AuthManager.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\db\ReportManager.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\app\Server.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\PriorityBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\AdvertisingBean.java
-D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\BannerBean.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\BasicResponseBean.java
 D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\beans\WeeklyReportBean.java
+D:\DAS\Final\Proyecto\StreamingStudio\anunciantes\anunciantes-soap\src\main\java\ar\edu\ubp\soap\db\DatabaseConnection.java

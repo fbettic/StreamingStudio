@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ar.edu.ubp.rest.anunciantesrest.beans.AdvertisingBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.AuthTokenRequestBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.BannerBean;
+import ar.edu.ubp.rest.anunciantesrest.beans.BasicResponseBean;
 import ar.edu.ubp.rest.anunciantesrest.beans.WeeklyReportBean;
 import ar.edu.ubp.rest.anunciantesrest.repositories.AdvertisingRepository;
 import ar.edu.ubp.rest.anunciantesrest.repositories.BannerRepository;
@@ -47,6 +48,7 @@ public class AdvertiserServices {
         if (serviceId == null || serviceId == 0) {
             throw new Exception("Invalid token");
         }
+        
         try {
             return advertisingRepository.getAdvertisingById(Id);
         } catch (Exception e) {
@@ -56,7 +58,6 @@ public class AdvertiserServices {
 
     public List<AdvertisingBean> getAllAdvertisings(String token) throws Exception {
 
-        System.out.println("-------------------------> " + token + "<-------------------------");
         Integer serviceId = serviceConnectionRepository.getServiceId(token);
         if (serviceId == null || serviceId == 0) {
             throw new Exception("Invalid token");
@@ -69,7 +70,7 @@ public class AdvertiserServices {
         }
     }
 
-     public String createWeeklyReport(WeeklyReportBean report) throws JsonProcessingException {
+    public BasicResponseBean createWeeklyReport(WeeklyReportBean report) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = null;
@@ -78,16 +79,16 @@ public class AdvertiserServices {
         } catch (JsonProcessingException e) {
             throw e;
         }
-        System.out.println("------------------------->" + jsonString);
-        return reportRepository.createWeekleyReport(jsonString);
+
+        return new BasicResponseBean(reportRepository.createWeekleyReport(jsonString));
     }
 
-    public String ping(AuthTokenRequestBean authToken) throws Exception {
+    public BasicResponseBean ping(AuthTokenRequestBean authToken) throws Exception {
         Integer serviceId = serviceConnectionRepository.getServiceId(authToken.getAuthToken());
         if (serviceId == null || serviceId == 0) {
             throw new Exception("Invalid token");
         }
-        return "pong";
+        return new BasicResponseBean("pong");
     }
 
 }

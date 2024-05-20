@@ -1,6 +1,7 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,35 +17,64 @@ public class FilmService {
     @Autowired
     private final FilmRepository filmRepository;
 
-    // Services
     @Autowired
     private BatchService batchService;
 
-    @Autowired
-    private final PlatformApiClientService platformApiClientService;
-
     public String loadAllCountries(List<CountryDTO> countries) {
-        int countriesLoaded = filmRepository.loadAllCountries(countries);
-
-        if (countriesLoaded == 0) {
-            return "No countries were created.";
-        } else {
-            return "Successfully loaded " + countriesLoaded + " countries.";
-        }
+        return filmRepository.loadAllCountries(countries);
     }
 
     public String getAllFilmsFromPlatforms() throws Exception {
-
-        try {
-            batchService.updateFilms(platformApiClientService.getAllFilmsFromPlatforms());
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        return "Films have been updated";
+        return batchService.updateFilms();
     }
 
-    public List<FilmSubscriberResponseDTO> getAllFilms(Integer subscriberId) {
-        return filmRepository.getAllFilms(subscriberId);
+    public List<FilmSubscriberResponseDTO> getAllFilms(Integer subscriberId, String query, String by) {
+        List<FilmSubscriberResponseDTO> allFilms = filmRepository.getAllFilms(subscriberId);
+
+        if (query.equals("")) {
+            return allFilms;
+        }
+
+        String lowerCaseQuery = query.toLowerCase();
+
+        List<FilmSubscriberResponseDTO> filteredFilms = allFilms.stream()
+                .filter(film -> {
+                    switch (by) {
+                        case "description":
+                            return film.getDescription() != null
+                                    && film.getDescription().toLowerCase().contains(lowerCaseQuery);
+                        case "director":
+                            return film.getDirector() != null
+                                    && film.getDirector().toLowerCase().contains(lowerCaseQuery);
+                        case "year":
+                            return film.getYear() != null && film.getYear().toString().contains(lowerCaseQuery);
+                        case "actors":
+                            return film.getActors() != null && film.getActors().toLowerCase().contains(lowerCaseQuery);
+                        case "genres":
+                            return film.getGenres() != null && film.getGenres().toLowerCase().contains(lowerCaseQuery);
+                        case "title":
+                            return film.getTitle() != null && film.getTitle().toLowerCase().contains(lowerCaseQuery);
+                        case "all":
+                            return (film.getDescription() != null
+                                    && film.getDescription().toLowerCase().contains(lowerCaseQuery)) ||
+                                    (film.getDirector() != null
+                                            && film.getDirector().toLowerCase().contains(lowerCaseQuery))
+                                    ||
+                                    (film.getYear() != null && film.getYear().toString().contains(lowerCaseQuery)) ||
+                                    (film.getActors() != null
+                                            && film.getActors().toLowerCase().contains(lowerCaseQuery))
+                                    ||
+                                    (film.getGenres() != null
+                                            && film.getGenres().toLowerCase().contains(lowerCaseQuery))
+                                    ||
+                                    (film.getTitle() != null && film.getTitle().toLowerCase().contains(lowerCaseQuery));
+                        default:
+                            return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        return filteredFilms;
     }
 
     public FilmSubscriberResponseDTO getFilmById(Integer filmId, Integer subscriberId) {

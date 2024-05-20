@@ -1,168 +1,166 @@
-
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 20px 0;
+  background-color: #333;
+  color: #fff;
 }
 
 /* Hero */
 .hero {
-    text-align: center;
-    padding: 100px 0;
-}
-
-.hero h1 {
+  text-align: center;
+  padding: 80px 0;
+  background-image: url("../../../assets/galaxy.jpg");
+  background-size: cover; /* Opcional, para ajustar el tamaño */
+  background-position: center; /* Opcional, para centrar la imagen */
+  background-repeat: no-repeat;
+  h1 {
     font-size: 3em;
     margin-bottom: 20px;
-}
-
-.hero p {
+  }
+  p {
     font-size: 1.2em;
     margin-bottom: 20px;
+  }
 }
 
 /* Features */
 .features {
-    padding: 100px 0;
+  padding: 100px 0;
 }
 
 .features h2 {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .feature {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .feature img {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 /* How it works */
 .how-it-works {
-    padding: 100px 0;
+  padding: 100px 0;
 }
 
 .how-it-works h2 {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .step {
-    text-align: center;
-    margin-bottom: 60px;
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .step img {
-    max-width: 100%;
-    height: auto;
-    
+  max-width: 100%;
+  height: auto;
 }
 
-.number{
-    margin: 0 auto; /* Esta línea centra el div */
-    margin-bottom: 10px;
-    display: flex;
-    height: 80px;
-    width: 80px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    background-color: #DEE2E6 ;
-    h1{
-        color: #212529;
-    }
+.number {
+  margin: 0 auto; /* Esta línea centra el div */
+  margin-bottom: 10px;
+  display: flex;
+  height: 80px;
+  width: 80px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #dee2e6;
+  h1 {
+    color: #212529;
+  }
 }
 
 /* Pricing */
 .pricing {
-    padding: 100px 0;
-    h2, p {
-        text-align: center;
-        margin-bottom: 40px;
-    }
+  padding: 100px 0;
+  h2,
+  p {
+    text-align: center;
+    margin-bottom: 40px;
+  }
 }
 
-
 .plans {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .plan {
-    width: 300px;
-    min-height: 310px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 0 10px;
+  width: 300px;
+  min-height: 310px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 0 10px;
 }
 
 .plan h3 {
-    text-align: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .plan p {
-    font-size: 1.5em;
-    text-align: center;
-    margin-bottom: 20px;
+  font-size: 1.5em;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .plan ul {
-    list-style: none;
+  list-style: none;
 }
 
 .plan ul li {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 /* Contact */
 .contact {
-    background-color: #333;
-    color: #fff;
-    padding: 100px 0;
-}
-
-.contact h2 {
+  background-color: #333;
+  color: #fff;
+  padding: 100px 0;
+  h2,
+  p {
     text-align: center;
     margin-bottom: 40px;
-}
+  }
 
-.contact form {
+  form {
     max-width: 600px;
     margin: 0 auto;
-}
+  }
 
-.contact input,
-.contact textarea {
+  input,
+  textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: none;
     border-radius: 5px;
-}
+  }
 
-.contact button {
+  button {
     background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     cursor: pointer;
-}
+  }
 
-.contact button:hover {
+  button:hover {
     background-color: #0056b3;
+  }
 }

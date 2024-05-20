@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdvertisingClickReportBean {
     private Integer clickId;
-    private Integer bannerId;
+    private Integer advertisingId; //referenceId
     private Integer subscriberId;
     private Date clickedAt;
 
@@ -24,7 +24,7 @@ public class AdvertisingClickReportBean {
         xmlBuilder.append("<clicks>");
         xmlBuilder.append("<clickId>").append(this.clickId).append("</clickId>\n");
         xmlBuilder.append("<subscriberId>").append(this.subscriberId).append("</subscriberId>\n");
-        xmlBuilder.append("<bannerId>").append(this.bannerId).append("</bannerId>\n");
+        xmlBuilder.append("<advertisingId>").append(this.advertisingId).append("</advertisingId>\n");
         xmlBuilder.append("<clickedAt>").append(clickedAt).append("</clickedAt>\n");
         xmlBuilder.append("</clicks>");
 

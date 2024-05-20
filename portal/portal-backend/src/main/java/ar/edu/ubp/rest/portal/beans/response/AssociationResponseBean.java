@@ -4,9 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class AssociationResponseBean extends ServiceResponseBean {
     private Integer associationId;
     private Integer userId;
@@ -30,9 +28,8 @@ public class AssociationResponseBean extends ServiceResponseBean {
     private Date requestedAt;
     private String userToken;
 
+    public AssociationResponseBean(Element associationElement) {
 
-    public AssociationResponseBean(Document xmlDocument) {
-        Element associationElement = (Element) xmlDocument.getElementsByTagName("associationRequest").item(0);
         this.associationId = Integer.parseInt(getElementValue(associationElement, "associationId"));
         this.serviceId = Integer.parseInt(getElementValue(associationElement, "serviceId"));
         this.associationType = getElementValue(associationElement, "associationType");
@@ -42,7 +39,8 @@ public class AssociationResponseBean extends ServiceResponseBean {
         this.userToken = getElementValue(associationElement, "userToken");
 
         try {
-            this.requestedAt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").parse(getElementValue(associationElement, "requestedAt"));
+            this.requestedAt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+                    .parse(getElementValue(associationElement, "requestedAt"));
         } catch (ParseException e) {
             throw new RuntimeException("Error parsing dates", e);
         }

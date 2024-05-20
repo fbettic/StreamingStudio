@@ -32,17 +32,16 @@ public class JwtService {
         return getToken(new HashMap<>(), user);
     }
 
-    private String getToken(Map<String,Object> extraClaims, UserDetails user){
+    private String getToken(Map<String, Object> extraClaims, UserDetails user) {
         Long currentTime = System.currentTimeMillis();
-        
-        
+
         return Jwts.builder()
-        .claims(extraClaims)
-        .subject(user.getUsername())
-        .issuedAt(new Date(currentTime))
-        .expiration(new Date(currentTime + Long.parseLong(timeExpiration)))
-        .signWith(getKey())
-        .compact();
+                .claims(extraClaims)
+                .subject(user.getUsername())
+                .issuedAt(new Date(currentTime))
+                .expiration(new Date(currentTime + Long.parseLong(timeExpiration)))
+                .signWith(getKey())
+                .compact();
     }
 
     public String getUsernameFromToken(String token) {
@@ -51,7 +50,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername())&& !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private SecretKey getKey() {
@@ -59,24 +58,24 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretBytes);
     }
 
-    private Claims getAllClaims(String token){
+    private Claims getAllClaims(String token) {
         return Jwts.parser()
-        .verifyWith(getKey())
-        .build()
-        .parseSignedClaims(token)
-        .getPayload();
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public <T> T getClaim(String token, Function<Claims,T> claimsResolver){
-        final Claims claims=getAllClaims(token);
+    public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    private Date getExpiration(String token){
+    private Date getExpiration(String token) {
         return getClaim((token), Claims::getExpiration);
     }
 
-    private Boolean isTokenExpired(String token){
+    private Boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }
 }

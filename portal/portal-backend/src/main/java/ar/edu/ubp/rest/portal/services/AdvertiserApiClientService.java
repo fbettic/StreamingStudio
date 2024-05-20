@@ -1,20 +1,21 @@
 package ar.edu.ubp.rest.portal.services;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ar.edu.ubp.rest.portal.beans.request.BannerPayloadBean;
+import ar.edu.ubp.rest.portal.beans.request.AdvertisingPayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.beans.request.WeeklyAdvertiserReportPayloadBean;
 import ar.edu.ubp.rest.portal.beans.response.AdvertisingResponseBean;
-import ar.edu.ubp.rest.portal.beans.response.BannerResponseBean;
 import ar.edu.ubp.rest.portal.beans.response.ServiceResponseMapperBean;
 import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.models.clients.AbstractAdvertiserApiClient;
@@ -36,71 +37,70 @@ public class AdvertiserApiClientService {
         this.advertiserClientFactory = AdvertiserApiClientFactory.getInstance();
     }
 
-    public String ping(String companyName, String serviceType, String url, ServicePayloadBean authToken)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
-            IllegalAccessException {
-        AbstractAdvertiserApiClient advertiserClient = advertiserClientFactory.buildAdvertiserClient(companyName,
-                serviceType, url, false);
-        return advertiserClient.ping(authToken);
-    }
-
-    public BannerResponseBean getBannerById(Integer bannerId, Integer advertiserId) {
-        AdvertiserDTO advertiser = advertiserRepository.getAdvertiserById(advertiserId);
-
-        if (Objects.isNull(advertiser) || advertiser.getServiceType() == "ACCOUNT")
-            return null;
-
-        AbstractAdvertiserApiClient advertiserClient = null;
+    private AbstractAdvertiserApiClient getAdvertiserClient(AdvertiserDTO advertiser) {
         try {
-            advertiserClient = advertiserClientFactory.buildAdvertiserClient(
+            return advertiserClientFactory.buildAdvertiserClient(
                     advertiser.getCompanyName(), advertiser.getServiceType(), advertiser.getApiUrl(), true);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
                 | IllegalAccessException e) {
-            System.out.println(e);
-            e.printStackTrace();
+            throw new RuntimeException("Error creating AdvertiserApiClient", e);
+        }
+    }
+
+    public String ping(String companyName, String serviceType, String url, ServicePayloadBean authToken) {
+        try {
+            AbstractAdvertiserApiClient advertiserClient = advertiserClientFactory.buildAdvertiserClient(companyName,
+                    serviceType, url, false);
+            return advertiserClient.ping(authToken).getResponse();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                | IllegalAccessException e) {
+            throw new RuntimeException("Error during ping", e);
+        }
+    }
+
+    public AdvertisingResponseBean getAdvertisingData(Integer referenceId, Integer advertiserId) {
+        AdvertiserDTO advertiser = advertiserRepository.getAdvertiserById(advertiserId);
+
+        if (Objects.isNull(advertiser) || advertiser.getServiceType() == "ACCOUNT")
+            throw new NoSuchElementException("Failed to retrieve data from registered advertisers.");
+
+        try {
+            AbstractAdvertiserApiClient advertiserClient = getAdvertiserClient(advertiser);
+            AdvertisingPayloadBean payload = new AdvertisingPayloadBean(advertiser.getAuthToken(), referenceId);
+            return advertiserClient.getAdvertisingById(payload);
+        } catch (Exception e) {
+            System.err
+                    .println("Error processing advertiser " + advertiser.getCompanyName() + ": " + e.getMessage());
+            return null;
         }
 
-        if (Objects.isNull(advertiserClient))
-            return null;
-
-        BannerPayloadBean payload = new BannerPayloadBean(advertiser.getAuthToken(), bannerId);
-
-        BannerResponseBean banner = advertiserClient.getBannerById(payload);
-
-        return banner;
     }
 
     public List<ServiceResponseMapperBean<AdvertisingResponseBean>> getAllAdvertisingsFromAdvertisers()
             throws Exception {
         List<AdvertiserDTO> advertisers = advertiserRepository.getAllAdvertisers();
+        if (Objects.isNull(advertisers) || advertisers.isEmpty()) {
+            throw new NoSuchElementException("Failed to retrieve data from registered advertisers.");
+        }
 
         List<ServiceResponseMapperBean<AdvertisingResponseBean>> advertisingsByAdvertisers = new ArrayList<>();
 
         advertisers.forEach((advertiser) -> {
-            if (advertiser.getServiceType() == "ACCOUNT")
-                return;
+            if (Objects.nonNull(advertiser) && advertiser.getServiceType() != "ACCOUNT") {
+                try {
+                    AbstractAdvertiserApiClient advertiserClient = getAdvertiserClient(advertiser);
+                    ServicePayloadBean authToken = new ServicePayloadBean(advertiser.getAuthToken());
+                    List<AdvertisingResponseBean> advertisings = advertiserClient.getAllAdvertisings(authToken);
+                    if (!advertisings.isEmpty()) {
 
-            AbstractAdvertiserApiClient advertiserClient = null;
-            try {
-                advertiserClient = advertiserClientFactory.buildAdvertiserClient(
-                        advertiser.getCompanyName(), advertiser.getServiceType(), advertiser.getApiUrl(), true);
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                    | IllegalAccessException e) {
-                System.out.println(e);
-                e.printStackTrace();
-            }
-
-            if (Objects.isNull(advertiserClient))
-                return;
-
-            ServicePayloadBean authToken = new ServicePayloadBean(advertiser.getAuthToken());
-
-            List<AdvertisingResponseBean> advertisings = advertiserClient.getAllAdvertisings(authToken);
-
-            if (!advertisings.isEmpty()) {
-
-                advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(
-                        advertiser.getAdvertiserId(), advertisings));
+                        advertisingsByAdvertisers.add(new ServiceResponseMapperBean<AdvertisingResponseBean>(
+                                advertiser.getAdvertiserId(), advertisings));
+                    }
+                } catch (Exception e) {
+                    System.err
+                            .println("Error processing advertiser " + advertiser.getCompanyName() + ": "
+                                    + e.getMessage());
+                }
             }
 
         });
@@ -108,53 +108,37 @@ public class AdvertiserApiClientService {
         return advertisingsByAdvertisers;
     }
 
-    public Map<Integer, String> sendWeeklyReport() throws Exception {
+    public Map<Integer, String> sendWeeklyReport(LocalDate fromDate, LocalDate toDate) throws Exception {
         List<AdvertiserDTO> advertisers = advertiserRepository.getAllAdvertisers();
+
+        if (Objects.isNull(advertisers) || advertisers.isEmpty()) {
+            throw new NoSuchElementException("Failed to retrieve data from registered advertisers.");
+        }
 
         Map<Integer, String> response = new HashMap<Integer, String>();
 
-        if (Objects.isNull(advertisers) || advertisers.size() == 0)
-            throw new Exception("Failed to retrieve data from registered advertisers.");
+        advertisers.forEach((advertiser) -> {
 
-        for (AdvertiserDTO advertiser : advertisers) {
-            if (Objects.isNull(advertiser) || advertiser.getServiceType() == "ACCOUNT")
-                continue;
+            if (Objects.nonNull(advertiser) && advertiser.getServiceType() != "ACCOUNT") {
+                try {
+                    AbstractAdvertiserApiClient advertiserClient = getAdvertiserClient(advertiser);
 
-            String result = "error";
-
-            AbstractAdvertiserApiClient advertiserClient = null;
-
-            try {
-                advertiserClient = advertiserClientFactory.buildAdvertiserClient(advertiser.getCompanyName(),
-                        advertiser.getServiceType(), advertiser.getApiUrl(), true);
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
-                    | IllegalAccessException e) {
-                System.out.println(e);
-                e.printStackTrace();
-                continue;
+                    WeeklyAdvertiserReportPayloadBean report = reportService.createWeeklyAdvertiserReport(
+                            advertiser.getAdvertiserId(),
+                            advertiser.getAuthToken(),
+                            fromDate,
+                            toDate);
+                    String result = advertiserClient.sendWeeklyReport(report).getResponse();
+                    response.put(advertiser.getAdvertiserId(), result);
+                } catch (Exception e) {
+                    System.err
+                            .println("Error sending weekly report for advertiser " + advertiser.getCompanyName() + ": "
+                                    + e.getMessage());
+                    response.put(advertiser.getAdvertiserId(), "error");
+                }
             }
 
-            if (Objects.isNull(advertiserClient)) {
-                response.put(advertiser.getAdvertiserId(), result);
-                continue;
-            }
-
-            WeeklyAdvertiserReportPayloadBean report = reportService.createWeeklyAdvertiserReport(
-                    advertiser.getAdvertiserId(),
-                    advertiser.getAuthToken());
-            try {
-                result = advertiserClient.sendWeeklyReport(report);
-            } catch (Exception e) {
-                System.out.println(e);
-                e.printStackTrace();
-                continue;
-            }
-
-            if (Objects.nonNull(result) && result.equals("Success")) {
-                response.put(advertiser.getAdvertiserId(), result);
-            }
-        }
-        ;
+        });
 
         return response;
     }

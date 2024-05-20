@@ -59,7 +59,6 @@ public class AdvertiserService {
         return advertiserRepository.getAdvertiserById(id);
     }
 
-
     public Integer deleteAdvertiserById(Integer id) {
         return advertiserRepository.deleteAdvertiserById(id);
     }

@@ -13,6 +13,7 @@ public class StreamingPlatformRequestDTO {
     private String platformName;
     private String email;
     private String apiUrl;
+    private String imageUrl;
     private String authToken;
     private Integer signupFeeId;
     private Integer loginFeeId;

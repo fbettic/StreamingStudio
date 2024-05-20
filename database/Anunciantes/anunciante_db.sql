@@ -14,7 +14,7 @@ USE anunciante3_db
 DROP TABLE IF EXISTS WeeklyAdvertisingClickReport
 DROP TABLE IF EXISTS WeeklyReport
 DROP TABLE IF EXISTS Advertising
-DROP TABLE IF EXISTS Banner                
+DROP TABLE IF EXISTS Banner
 DROP TABLE IF EXISTS ServiceConnection
 DROP TABLE IF EXISTS Priorty
 */
@@ -77,21 +77,15 @@ GO
 CREATE TABLE WeeklyAdvertisingClickReport
 (
   reportId INT NOT NULL,
-  bannerId INT NOT NULL,
+  advertisingId INT NOT NULL,
   subscriberId INT NOT NULL,
   clickedAt DATETIME NOT NULL,
   PRIMARY KEY (reportId, subscriberId, clickedAt),
   FOREIGN KEY (reportId) REFERENCES WeeklyReport(reportId),
-  FOREIGN KEY (bannerId) REFERENCES Banner(bannerId)
+  FOREIGN KEY (advertisingId) REFERENCES Advertising(advertisingId)
 );
 GO
 
 
 
 
-
-use anunciante1_db
-
-EXEC GetBannerById 2
-
-EXEC UpdateBanner 2, "Oferta especial por tiempo limitado", "http://localhost:4210/images/small-banner-animales.jpg", 'https://example.net/sale'

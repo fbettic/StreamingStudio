@@ -28,11 +28,11 @@ public class LoginServlet extends HttpServlet {
             loginRequest.setPassword(request.getParameter("password"));
 
             String uuid = request.getParameter("uuid");
-            System.out.println(loginRequest.toString() + " " + uuid);
+       
 
             AssociationRequestBean result = client.completeLoginAssociationRequest(loginRequest, uuid);
 
-            System.out.println(result.toString());
+
 
             request.setAttribute("id", result.getUserId());
 

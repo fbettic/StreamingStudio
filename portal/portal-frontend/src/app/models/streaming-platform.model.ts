@@ -3,6 +3,7 @@ export interface IStreamingPlatform {
   platformName: string;
   email: string;
   apiUrl: string;
+  imageUrl: string;
   authToken: string;
   signupFeeId: number;
   signupFeeType: string;

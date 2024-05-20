@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdvertisingClickReportBean {
     private Integer clickId;
-    private Integer bannerId;
+    private Integer advertisingId;
     private Integer subscriberId;
     private Date clickedAt;
 }

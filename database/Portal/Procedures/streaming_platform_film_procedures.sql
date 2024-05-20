@@ -210,9 +210,4 @@ END
 
 
 
-EXEC GetAllFilms
-
-
-
-
 

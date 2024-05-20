@@ -6,8 +6,6 @@ import { SubscriberFormComponent } from '../../../components/forms/subscriber-fo
   standalone: true,
   imports: [SubscriberFormComponent],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss'
+  styleUrl: './profile.component.scss',
 })
-export class ProfileComponent {
-
-}
+export default class ProfileComponent {}

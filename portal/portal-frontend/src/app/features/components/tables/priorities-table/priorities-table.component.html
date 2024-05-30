@@ -1,0 +1,28 @@
+<div class="table-container">
+  <div class="row">
+    <div class="col">
+      <div class="section-title mb-4">
+        <h2 i18n>Priorities</h2>
+      </div>
+    </div>
+    <app-table
+      [headers]="headers"
+      [items]="filteredList"
+      (onEdit)="onEditItem($event)"
+      (onDelete)="onDeleteItem($event)"
+      (onFilterInput)="filterBannerPrioritys($event)"
+    />
+  </div>
+
+  <div>
+    <app-custom-modal
+      [modalTitle]="modalTitle"
+      (onClose)="onModalClose()"
+    >
+      <app-banner-priority-form
+        [bannerPriority]="itemSelected"
+        (doRefresh)="refreshList()"
+      />
+    </app-custom-modal>
+  </div>
+</div>

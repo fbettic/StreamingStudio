@@ -1,0 +1,45 @@
+@if(!advertising()){
+<div>
+  <div
+  class="d-flex justify-content-center slot rounded"
+    [style]="{
+    'height': height ? height + 'px' : '100%',
+    'width': width ? width + 'px' : '100%',
+  }"
+  >
+    <img
+      class="rounded"
+      src="../../../../assets/image-solid.svg"
+      i18n-alt
+      alt="Advertisement not found"
+      style="width: 24px"
+    />
+  </div>
+</div>
+}@else {
+<a
+  [href]="advertising()?.redirectUrl"
+  target="_blank"
+  
+  (click)="onClick()"
+>
+  <div
+  class="slot rounded"
+    [style]="{
+    'height': height ? height + 'px' : '100%',
+    'width': width ? width + 'px' : '100%',
+  }"
+  >
+    <img
+      class="rounded"
+      [src]="advertising()?.imageUrl"
+      [alt]="advertising()?.bannerText"
+      [style]="{
+    'height': height ? height + 'px' : '100%',
+    'width': width ? width + 'px' : '100%',
+  }"
+    />
+  </div>
+</a>
+
+}

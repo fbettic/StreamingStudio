@@ -102,7 +102,6 @@ public class AdvertiserRepository implements IAdvertiserRepository {
 				.addValue("companyName", advertiser.getCompanyName())
 				.addValue("email", advertiser.getEmail())
 				.addValue("phone", advertiser.getPhone())
-				.addValue("password", advertiser.getPassword())
 				.addValue("apiUrl", advertiser.getApiUrl())
 				.addValue("authToken", advertiser.getAuthToken())
 				.addValue("serviceType", advertiser.getServiceType().toString())

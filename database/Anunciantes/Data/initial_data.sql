@@ -102,3 +102,5 @@ SELECT @serviceId = serviceId FROM ServiceConnection WHERE name = 'Streaming Stu
 
 EXEC CreateAdvertising @bannerId6, @serviceId, 3, '2024-03-16', '2024-03-20'
 EXEC CreateAdvertising @bannerId7, @serviceId, 1, '2024-03-16', '2024-03-25'
+
+select * from Advertising

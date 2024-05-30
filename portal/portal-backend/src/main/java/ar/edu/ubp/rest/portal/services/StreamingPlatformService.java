@@ -9,7 +9,6 @@ import ar.edu.ubp.rest.portal.beans.request.ServicePayloadBean;
 import ar.edu.ubp.rest.portal.dto.StreamingPlatformDTO;
 import ar.edu.ubp.rest.portal.dto.request.StreamingPlatformRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.StreamingPlatformSubscriberResponseDTO;
-import ar.edu.ubp.rest.portal.repositories.AssociationRepository;
 import ar.edu.ubp.rest.portal.repositories.StreamingPlatformRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -21,9 +20,6 @@ public class StreamingPlatformService {
 
     @Autowired
     private final StreamingPlatformRepository streamingPlatformRepository;
-
-    @Autowired
-    private final AssociationRepository associationRepository;
 
     public StreamingPlatformDTO createStreamingPlatform(StreamingPlatformRequestDTO request) throws Exception {
         String result = platformApiClientService.ping(

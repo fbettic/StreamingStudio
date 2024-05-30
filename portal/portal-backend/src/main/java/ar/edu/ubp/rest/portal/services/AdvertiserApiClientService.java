@@ -119,7 +119,7 @@ public class AdvertiserApiClientService {
 
         advertisers.forEach((advertiser) -> {
 
-            if (Objects.nonNull(advertiser) && advertiser.getServiceType() != "ACCOUNT") {
+            if (Objects.nonNull(advertiser) && !advertiser.getServiceType().equals("ACCOUNT")) {
                 try {
                     AbstractAdvertiserApiClient advertiserClient = getAdvertiserClient(advertiser);
 

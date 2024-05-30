@@ -26,31 +26,10 @@ public interface PlataformasWS {
 
     /**
      * 
-     * @param associationId
-     * @param authToken
-     * @return
-     *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
-     * @throws Exception_Exception
-     */
-    @WebMethod
-    @WebResult(name = "associationRequest", targetNamespace = "")
-    @RequestWrapper(localName = "getAssociationData", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.GetAssociationData")
-    @ResponseWrapper(localName = "getAssociationDataResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.GetAssociationDataResponse")
-    public AssociationRequestBean getAssociationData(
-        @WebParam(name = "authToken", targetNamespace = "")
-        String authToken,
-        @WebParam(name = "associationId", targetNamespace = "")
-        Integer associationId)
-        throws Exception_Exception
-    ;
-
-    /**
-     * 
      * @param loginRequest
      * @param uuid
      * @return
      *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
-     * @throws Exception_Exception
      */
     @WebMethod
     @WebResult(name = "loginAssociationCompleted", targetNamespace = "")
@@ -60,9 +39,69 @@ public interface PlataformasWS {
         @WebParam(name = "loginRequest", targetNamespace = "")
         LoginRequestBean loginRequest,
         @WebParam(name = "uuid", targetNamespace = "")
-        String uuid)
-        throws Exception_Exception
-    ;
+        String uuid);
+
+    /**
+     * 
+     * @param newPlatformUser
+     * @return
+     *     returns ar.edu.ubp.soap.ws.PlatformUserBean
+     */
+    @WebMethod
+    @WebResult(name = "platformUser", targetNamespace = "")
+    @RequestWrapper(localName = "createPlatformUser", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreatePlatformUser")
+    @ResponseWrapper(localName = "createPlatformUserResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreatePlatformUserResponse")
+    public PlatformUserBean createPlatformUser(
+        @WebParam(name = "newPlatformUser", targetNamespace = "")
+        NewPlatformUserBean newPlatformUser);
+
+    /**
+     * 
+     * @param authToken
+     * @param sessionId
+     * @return
+     *     returns ar.edu.ubp.soap.ws.SessionBean
+     */
+    @WebMethod
+    @WebResult(name = "session", targetNamespace = "")
+    @RequestWrapper(localName = "markSessionAsExpired", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.MarkSessionAsExpired")
+    @ResponseWrapper(localName = "markSessionAsExpiredResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.MarkSessionAsExpiredResponse")
+    public SessionBean markSessionAsExpired(
+        @WebParam(name = "sessionId", targetNamespace = "")
+        Integer sessionId,
+        @WebParam(name = "authToken", targetNamespace = "")
+        String authToken);
+
+    /**
+     * 
+     * @param report
+     * @return
+     *     returns ar.edu.ubp.soap.ws.BasicResponseBean
+     */
+    @WebMethod
+    @WebResult(name = "report", targetNamespace = "")
+    @RequestWrapper(localName = "receiveWeeklyReport", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.ReceiveWeeklyReport")
+    @ResponseWrapper(localName = "receiveWeeklyReportResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.ReceiveWeeklyReportResponse")
+    public BasicResponseBean receiveWeeklyReport(
+        @WebParam(name = "report", targetNamespace = "")
+        WeeklyReportBean report);
+
+    /**
+     * 
+     * @param associationId
+     * @param authToken
+     * @return
+     *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
+     */
+    @WebMethod
+    @WebResult(name = "associationRequest", targetNamespace = "")
+    @RequestWrapper(localName = "getAssociationData", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.GetAssociationData")
+    @ResponseWrapper(localName = "getAssociationDataResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.GetAssociationDataResponse")
+    public AssociationRequestBean getAssociationData(
+        @WebParam(name = "authToken", targetNamespace = "")
+        String authToken,
+        @WebParam(name = "associationId", targetNamespace = "")
+        Integer associationId);
 
     /**
      * 
@@ -82,13 +121,13 @@ public interface PlataformasWS {
      * 
      * @param authToken
      * @return
-     *     returns java.lang.String
+     *     returns ar.edu.ubp.soap.ws.BasicResponseBean
      */
     @WebMethod
     @WebResult(name = "pong", targetNamespace = "")
     @RequestWrapper(localName = "ping", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.Ping")
     @ResponseWrapper(localName = "pingResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.PingResponse")
-    public String ping(
+    public BasicResponseBean ping(
         @WebParam(name = "authToken", targetNamespace = "")
         String authToken);
 
@@ -97,7 +136,6 @@ public interface PlataformasWS {
      * @param newAssociationRequest
      * @return
      *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
-     * @throws Exception_Exception
      */
     @WebMethod
     @WebResult(name = "associationRequest", targetNamespace = "")
@@ -105,26 +143,41 @@ public interface PlataformasWS {
     @ResponseWrapper(localName = "createAssociationRequestResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreateAssociationRequestResponse")
     public AssociationRequestBean createAssociationRequest(
         @WebParam(name = "newAssociationRequest", targetNamespace = "")
-        NewAssociationRequestBean newAssociationRequest)
-        throws Exception_Exception
-    ;
+        NewAssociationRequestBean newAssociationRequest);
 
     /**
      * 
-     * @param newPlatformUser
+     * @param authToken
+     * @param sessionId
      * @return
-     *     returns ar.edu.ubp.soap.ws.PlatformUserBean
-     * @throws Exception_Exception
+     *     returns ar.edu.ubp.soap.ws.SessionBean
      */
     @WebMethod
-    @WebResult(name = "platformUser", targetNamespace = "")
-    @RequestWrapper(localName = "createPlatformUser", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreatePlatformUser")
-    @ResponseWrapper(localName = "createPlatformUserResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreatePlatformUserResponse")
-    public PlatformUserBean createPlatformUser(
-        @WebParam(name = "newPlatformUser", targetNamespace = "")
-        NewPlatformUserBean newPlatformUser)
-        throws Exception_Exception
-    ;
+    @WebResult(name = "session", targetNamespace = "")
+    @RequestWrapper(localName = "markSessionAsUsed", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.MarkSessionAsUsed")
+    @ResponseWrapper(localName = "markSessionAsUsedResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.MarkSessionAsUsedResponse")
+    public SessionBean markSessionAsUsed(
+        @WebParam(name = "sessionId", targetNamespace = "")
+        Integer sessionId,
+        @WebParam(name = "authToken", targetNamespace = "")
+        String authToken);
+
+    /**
+     * 
+     * @param authToken
+     * @param userToken
+     * @return
+     *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
+     */
+    @WebMethod
+    @WebResult(name = "associationRequest", targetNamespace = "")
+    @RequestWrapper(localName = "cancelAssociationRequest", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CancelAssociationRequest")
+    @ResponseWrapper(localName = "cancelAssociationRequestResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CancelAssociationRequestResponse")
+    public AssociationRequestBean cancelAssociationRequest(
+        @WebParam(name = "authToken", targetNamespace = "")
+        String authToken,
+        @WebParam(name = "userToken", targetNamespace = "")
+        String userToken);
 
     /**
      * 
@@ -132,7 +185,6 @@ public interface PlataformasWS {
      * @param uuid
      * @return
      *     returns ar.edu.ubp.soap.ws.AssociationRequestBean
-     * @throws Exception_Exception
      */
     @WebMethod
     @WebResult(name = "signupAssociationCompleted", targetNamespace = "")
@@ -142,16 +194,13 @@ public interface PlataformasWS {
         @WebParam(name = "newPlatformUser", targetNamespace = "")
         NewPlatformUserBean newPlatformUser,
         @WebParam(name = "uuid", targetNamespace = "")
-        String uuid)
-        throws Exception_Exception
-    ;
+        String uuid);
 
     /**
      * 
      * @param newSession
      * @return
      *     returns ar.edu.ubp.soap.ws.SessionBean
-     * @throws Exception_Exception
      */
     @WebMethod
     @WebResult(name = "session", targetNamespace = "")
@@ -159,8 +208,6 @@ public interface PlataformasWS {
     @ResponseWrapper(localName = "createSessionResponse", targetNamespace = "http://ws.soap.ubp.edu.ar/", className = "ar.edu.ubp.soap.ws.CreateSessionResponse")
     public SessionBean createSession(
         @WebParam(name = "newSession", targetNamespace = "")
-        NewSessionBean newSession)
-        throws Exception_Exception
-    ;
+        NewSessionBean newSession);
 
 }

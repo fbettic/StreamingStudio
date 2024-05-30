@@ -1,0 +1,177 @@
+<div
+  class="container-fluid flex-column d-flex justify-content-center align-items-center"
+>
+  <div class="row card-container">
+    <div class="col-12">
+      <div class="card p-4">
+        <div class="row">
+          <div class="section-title mb-4">
+            <img
+              src="../../../../../assets/profile.svg"
+              alt=""
+              class="film-icon"
+            />
+            <h2 i18n>Profile</h2>
+          </div>
+        </div>
+        @if (error !== '') {
+        <span i18n class="text-danger">Registration error</span>
+        }
+
+        <form [formGroup]="subscriberFormGroup" class="form">
+          <div class="row mb-3">
+            <div class="col">
+              <label for="firstname" class="form-label" i18n>Firstname</label>
+              <input
+                formControlName="firstname"
+                type="text"
+                class="form-control"
+                id="firstname"
+                i18n-placeholder
+                placeholder="Firstname"
+              />
+              @if (firstname.invalid && (firstname.dirty || firstname.touched))
+              {
+              <span
+                class="text-danger"
+                *ngIf="firstname.errors?.['required']"
+                i18n
+              >
+                Firstname is required.
+              </span>
+              }
+            </div>
+            <div class="col">
+              <label for="lastname" class="form-label" i18n>Lastname</label>
+              <input
+                formControlName="lastname"
+                type="text"
+                class="form-control"
+                id="lastname"
+                i18n-placeholder
+                placeholder="Lastname"
+              />
+
+              @if (lastname.invalid && (lastname.dirty || lastname.touched)) {
+              <span
+                class="text-danger"
+                *ngIf="lastname.errors?.['required']"
+                i18n
+              >
+                Lastname is required.
+              </span>
+              }
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-7">
+              <label for="email" class="form-label" i18n>Email</label>
+              <input
+                formControlName="email"
+                type="email"
+                class="form-control"
+                id="email"
+                aria-describedby="email"
+                placeholder="example@email.com"
+                autocomplete="true"
+              />
+
+              @if (email.invalid && (email.dirty || email.touched)) {
+              <span *ngIf="email.errors?.['required']" class="text-danger" i18n>
+                Email is required.
+              </span>
+              <span *ngIf="email.errors?.['email']" class="text-danger" i18n
+                >Email is invalid.</span
+              >
+              }
+            </div>
+            <div class="col-5">
+              <label for="phone" class="form-label" i18n>Phone</label>
+              <input
+                formControlName="phone"
+                type="tel"
+                class="form-control"
+                id="phone"
+                i18n-placeholder
+                placeholder="Phone"
+              />
+
+              @if (phone.invalid && (phone.dirty || phone.touched)) {
+              <span *ngIf="phone.errors?.['required']" class="text-danger" i18n
+                >Phone is required.</span
+              >
+              }
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="birth" class="form-label" i18n>Birth</label>
+            <input
+              formControlName="birth"
+              type="date"
+              class="form-control"
+              id="birth"
+            />
+
+            @if (birth.invalid && (birth.dirty || birth.touched)) {
+            <span class="text-danger" *ngIf="birth.errors?.['required']" i18n
+              >Birth is required.</span
+            >
+            }
+          </div>
+
+          <label for="marketingPreferences" class="form-label" i18n
+            >Marketing Preferences</label
+          >
+          <div class="row mb-3" id="marketingPreferences">
+            @for(target of targets; track target.targetId){
+            <div class="col-md-6">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [value]="target.targetId"
+                  [id]="target.targetId"
+                  (change)="onCheckboxChange($event)"
+                  [disabled]="!editMode"
+                  [checked]="isChecked(target.targetId!)"
+                />
+                <label class="form-check-label" [for]="target.targetId">
+                  {{ target.targetTitle }}
+                </label>
+              </div>
+            </div>
+            }
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            @if(editMode){
+            <button
+              type="submit"
+              class="btn btn-light btn-lg"
+              (click)="submit()"
+              i18n
+            >
+              Submit
+            </button>
+            <button
+              class="btn btn-outline-light btn-lg"
+              (click)="toggleEditMode()"
+              i18n
+            >
+              Cancel
+            </button>
+            }@else{
+            <button
+              class="btn btn-outline-light btn-lg"
+              (click)="toggleEditMode()"
+              i18n
+            >
+              Edit
+            </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

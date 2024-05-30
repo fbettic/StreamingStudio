@@ -1,0 +1,19 @@
+.step {
+  text-align: center;
+
+}
+
+.icon {
+  margin: 0 auto; /* Esta línea centra el div */
+  margin-bottom: 20px;
+  display: flex;
+  height: 60px;
+  width: 60px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #dee2e6;
+  h1 {
+    color: #212529;
+  }
+}

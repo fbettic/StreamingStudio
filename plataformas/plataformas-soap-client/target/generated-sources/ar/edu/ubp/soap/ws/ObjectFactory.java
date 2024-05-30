@@ -24,6 +24,8 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private static final QName _CancelAssociationRequest_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "cancelAssociationRequest");
+    private static final QName _CancelAssociationRequestResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "cancelAssociationRequestResponse");
     private static final QName _CompleteLoginAssociationRequest_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "completeLoginAssociationRequest");
     private static final QName _CompleteLoginAssociationRequestResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "completeLoginAssociationRequestResponse");
     private static final QName _CompleteSignupAssociationRequest_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "completeSignupAssociationRequest");
@@ -38,15 +40,40 @@ public class ObjectFactory {
     private static final QName _GetAllFilmsResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAllFilmsResponse");
     private static final QName _GetAssociationData_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAssociationData");
     private static final QName _GetAssociationDataResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "getAssociationDataResponse");
+    private static final QName _MarkSessionAsExpired_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "markSessionAsExpired");
+    private static final QName _MarkSessionAsExpiredResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "markSessionAsExpiredResponse");
+    private static final QName _MarkSessionAsUsed_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "markSessionAsUsed");
+    private static final QName _MarkSessionAsUsedResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "markSessionAsUsedResponse");
     private static final QName _Ping_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "ping");
     private static final QName _PingResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "pingResponse");
-    private static final QName _Exception_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "Exception");
+    private static final QName _ReceiveWeeklyReport_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "receiveWeeklyReport");
+    private static final QName _ReceiveWeeklyReportResponse_QNAME = new QName("http://ws.soap.ubp.edu.ar/", "receiveWeeklyReportResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ar.edu.ubp.soap.ws
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link CancelAssociationRequest }
+     * 
+     * @return
+     *     the new instance of {@link CancelAssociationRequest }
+     */
+    public CancelAssociationRequest createCancelAssociationRequest() {
+        return new CancelAssociationRequest();
+    }
+
+    /**
+     * Create an instance of {@link CancelAssociationRequestResponse }
+     * 
+     * @return
+     *     the new instance of {@link CancelAssociationRequestResponse }
+     */
+    public CancelAssociationRequestResponse createCancelAssociationRequestResponse() {
+        return new CancelAssociationRequestResponse();
     }
 
     /**
@@ -190,6 +217,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MarkSessionAsExpired }
+     * 
+     * @return
+     *     the new instance of {@link MarkSessionAsExpired }
+     */
+    public MarkSessionAsExpired createMarkSessionAsExpired() {
+        return new MarkSessionAsExpired();
+    }
+
+    /**
+     * Create an instance of {@link MarkSessionAsExpiredResponse }
+     * 
+     * @return
+     *     the new instance of {@link MarkSessionAsExpiredResponse }
+     */
+    public MarkSessionAsExpiredResponse createMarkSessionAsExpiredResponse() {
+        return new MarkSessionAsExpiredResponse();
+    }
+
+    /**
+     * Create an instance of {@link MarkSessionAsUsed }
+     * 
+     * @return
+     *     the new instance of {@link MarkSessionAsUsed }
+     */
+    public MarkSessionAsUsed createMarkSessionAsUsed() {
+        return new MarkSessionAsUsed();
+    }
+
+    /**
+     * Create an instance of {@link MarkSessionAsUsedResponse }
+     * 
+     * @return
+     *     the new instance of {@link MarkSessionAsUsedResponse }
+     */
+    public MarkSessionAsUsedResponse createMarkSessionAsUsedResponse() {
+        return new MarkSessionAsUsedResponse();
+    }
+
+    /**
      * Create an instance of {@link Ping }
      * 
      * @return
@@ -210,23 +277,23 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Exception }
+     * Create an instance of {@link ReceiveWeeklyReport }
      * 
      * @return
-     *     the new instance of {@link Exception }
+     *     the new instance of {@link ReceiveWeeklyReport }
      */
-    public Exception createException() {
-        return new Exception();
+    public ReceiveWeeklyReport createReceiveWeeklyReport() {
+        return new ReceiveWeeklyReport();
     }
 
     /**
-     * Create an instance of {@link AssociationRequestBean }
+     * Create an instance of {@link ReceiveWeeklyReportResponse }
      * 
      * @return
-     *     the new instance of {@link AssociationRequestBean }
+     *     the new instance of {@link ReceiveWeeklyReportResponse }
      */
-    public AssociationRequestBean createAssociationRequestBean() {
-        return new AssociationRequestBean();
+    public ReceiveWeeklyReportResponse createReceiveWeeklyReportResponse() {
+        return new ReceiveWeeklyReportResponse();
     }
 
     /**
@@ -240,23 +307,13 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FilmBean }
+     * Create an instance of {@link AssociationRequestBean }
      * 
      * @return
-     *     the new instance of {@link FilmBean }
+     *     the new instance of {@link AssociationRequestBean }
      */
-    public FilmBean createFilmBean() {
-        return new FilmBean();
-    }
-
-    /**
-     * Create an instance of {@link NewAssociationRequestBean }
-     * 
-     * @return
-     *     the new instance of {@link NewAssociationRequestBean }
-     */
-    public NewAssociationRequestBean createNewAssociationRequestBean() {
-        return new NewAssociationRequestBean();
+    public AssociationRequestBean createAssociationRequestBean() {
+        return new AssociationRequestBean();
     }
 
     /**
@@ -280,6 +337,76 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SessionBean }
+     * 
+     * @return
+     *     the new instance of {@link SessionBean }
+     */
+    public SessionBean createSessionBean() {
+        return new SessionBean();
+    }
+
+    /**
+     * Create an instance of {@link WeeklyReportBean }
+     * 
+     * @return
+     *     the new instance of {@link WeeklyReportBean }
+     */
+    public WeeklyReportBean createWeeklyReportBean() {
+        return new WeeklyReportBean();
+    }
+
+    /**
+     * Create an instance of {@link AssociationReportBean }
+     * 
+     * @return
+     *     the new instance of {@link AssociationReportBean }
+     */
+    public AssociationReportBean createAssociationReportBean() {
+        return new AssociationReportBean();
+    }
+
+    /**
+     * Create an instance of {@link PlayRegisterBean }
+     * 
+     * @return
+     *     the new instance of {@link PlayRegisterBean }
+     */
+    public PlayRegisterBean createPlayRegisterBean() {
+        return new PlayRegisterBean();
+    }
+
+    /**
+     * Create an instance of {@link BasicResponseBean }
+     * 
+     * @return
+     *     the new instance of {@link BasicResponseBean }
+     */
+    public BasicResponseBean createBasicResponseBean() {
+        return new BasicResponseBean();
+    }
+
+    /**
+     * Create an instance of {@link FilmBean }
+     * 
+     * @return
+     *     the new instance of {@link FilmBean }
+     */
+    public FilmBean createFilmBean() {
+        return new FilmBean();
+    }
+
+    /**
+     * Create an instance of {@link NewAssociationRequestBean }
+     * 
+     * @return
+     *     the new instance of {@link NewAssociationRequestBean }
+     */
+    public NewAssociationRequestBean createNewAssociationRequestBean() {
+        return new NewAssociationRequestBean();
+    }
+
+    /**
      * Create an instance of {@link NewSessionBean }
      * 
      * @return
@@ -290,13 +417,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SessionBean }
+     * Create an instance of {@link JAXBElement }{@code <}{@link CancelAssociationRequest }{@code >}
      * 
+     * @param value
+     *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link SessionBean }
+     *     the new instance of {@link JAXBElement }{@code <}{@link CancelAssociationRequest }{@code >}
      */
-    public SessionBean createSessionBean() {
-        return new SessionBean();
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "cancelAssociationRequest")
+    public JAXBElement<CancelAssociationRequest> createCancelAssociationRequest(CancelAssociationRequest value) {
+        return new JAXBElement<>(_CancelAssociationRequest_QNAME, CancelAssociationRequest.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CancelAssociationRequestResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CancelAssociationRequestResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "cancelAssociationRequestResponse")
+    public JAXBElement<CancelAssociationRequestResponse> createCancelAssociationRequestResponse(CancelAssociationRequestResponse value) {
+        return new JAXBElement<>(_CancelAssociationRequestResponse_QNAME, CancelAssociationRequestResponse.class, null, value);
     }
 
     /**
@@ -482,6 +625,58 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MarkSessionAsExpired }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MarkSessionAsExpired }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "markSessionAsExpired")
+    public JAXBElement<MarkSessionAsExpired> createMarkSessionAsExpired(MarkSessionAsExpired value) {
+        return new JAXBElement<>(_MarkSessionAsExpired_QNAME, MarkSessionAsExpired.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MarkSessionAsExpiredResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MarkSessionAsExpiredResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "markSessionAsExpiredResponse")
+    public JAXBElement<MarkSessionAsExpiredResponse> createMarkSessionAsExpiredResponse(MarkSessionAsExpiredResponse value) {
+        return new JAXBElement<>(_MarkSessionAsExpiredResponse_QNAME, MarkSessionAsExpiredResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MarkSessionAsUsed }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MarkSessionAsUsed }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "markSessionAsUsed")
+    public JAXBElement<MarkSessionAsUsed> createMarkSessionAsUsed(MarkSessionAsUsed value) {
+        return new JAXBElement<>(_MarkSessionAsUsed_QNAME, MarkSessionAsUsed.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link MarkSessionAsUsedResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link MarkSessionAsUsedResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "markSessionAsUsedResponse")
+    public JAXBElement<MarkSessionAsUsedResponse> createMarkSessionAsUsedResponse(MarkSessionAsUsedResponse value) {
+        return new JAXBElement<>(_MarkSessionAsUsedResponse_QNAME, MarkSessionAsUsedResponse.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Ping }{@code >}
      * 
      * @param value
@@ -508,16 +703,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Exception }{@code >}
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReceiveWeeklyReport }{@code >}
      * 
      * @param value
      *     Java instance representing xml element's value.
      * @return
-     *     the new instance of {@link JAXBElement }{@code <}{@link Exception }{@code >}
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReceiveWeeklyReport }{@code >}
      */
-    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "Exception")
-    public JAXBElement<Exception> createException(Exception value) {
-        return new JAXBElement<>(_Exception_QNAME, Exception.class, null, value);
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "receiveWeeklyReport")
+    public JAXBElement<ReceiveWeeklyReport> createReceiveWeeklyReport(ReceiveWeeklyReport value) {
+        return new JAXBElement<>(_ReceiveWeeklyReport_QNAME, ReceiveWeeklyReport.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ReceiveWeeklyReportResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link ReceiveWeeklyReportResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.soap.ubp.edu.ar/", name = "receiveWeeklyReportResponse")
+    public JAXBElement<ReceiveWeeklyReportResponse> createReceiveWeeklyReportResponse(ReceiveWeeklyReportResponse value) {
+        return new JAXBElement<>(_ReceiveWeeklyReportResponse_QNAME, ReceiveWeeklyReportResponse.class, null, value);
     }
 
 }

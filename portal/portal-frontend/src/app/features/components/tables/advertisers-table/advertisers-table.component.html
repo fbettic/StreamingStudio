@@ -1,0 +1,34 @@
+<div class="table-container">
+  <div class="row">
+    <div class="col">
+      <div class="section-title mb-4">
+        <h2 i18n>Advertisers</h2>
+      </div>
+    </div>
+    <app-table
+      [headers]="headers"
+      [items]="filteredList"
+      [extraButton]="addAdvertisingButtonTitle"
+      (onFilterInput)="filterAdvertisers($event)"
+      (onEdit)="onEditItem($event)"
+      (onDelete)="onDeleteItem($event)"
+      (onExtraClick)="createAdvertising($event)"
+    />
+  </div>
+
+  <div class="row">
+    <app-custom-modal [modalTitle]="modalTitle" (onClose)="onModalClose()">
+      @if (advertisingMode) {
+      <app-advertising-form
+        [advertiserId]="itemSelected?.advertiserId!"
+        (doRefresh)="refreshList()"
+      />
+      }@else {
+      <app-advertiser-form
+        [advertiser]="itemSelected"
+        (doRefresh)="refreshList()"
+      />
+      }
+    </app-custom-modal>
+  </div>
+</div>

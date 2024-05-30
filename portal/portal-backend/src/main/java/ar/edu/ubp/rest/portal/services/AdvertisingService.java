@@ -15,6 +15,7 @@ import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingClickRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.AdvertisingRepository;
@@ -87,13 +88,14 @@ public class AdvertisingService {
         return advertisingRepository.deleteAdvertisingById(id);
     }
 
-    public String createSubscriberAdvertisingClick(Integer subscriberId, AdvertisingClickRequestDTO click) {
-        return advertisingRepository.createSubscriberAdvertisingClick(subscriberId, click);
+    public MessageResponseDTO createSubscriberAdvertisingClick(Integer subscriberId, AdvertisingClickRequestDTO click) {
+        return new MessageResponseDTO(advertisingRepository.createSubscriberAdvertisingClick(subscriberId, click));
     }
 
     public List<SubscriberAdvertisingResponseDTO> getAdvertisingsForSubscriber(Boolean allPages, Integer subscriberId,
             List<SubscriberAdvertisingRequestDTO> request) {
-        List<SubscriberAdvertisingDTO> advertisings = advertisingRepository
+
+                List<SubscriberAdvertisingDTO> advertisings = advertisingRepository
                 .getAllAdvertisingForSubscriber(subscriberId);
 
         List<SubscriberAdvertisingResponseDTO> response = new ArrayList<>();
@@ -159,6 +161,7 @@ public class AdvertisingService {
                     || responseItem.getAdvertising().getPoints() < ad.getPoints()) {
                 responseItem.setAdvertising(ad);
                 equalPointAdvertisings.clear();
+                equalPointAdvertisings.add(ad);
 
             } else if (responseItem.getAdvertising().getPoints().equals(ad.getPoints())) {
                 equalPointAdvertisings.add(ad);
@@ -166,8 +169,9 @@ public class AdvertisingService {
         }
 
         if (!equalPointAdvertisings.isEmpty()) {
+            Integer random = new Random().nextInt(equalPointAdvertisings.size());
             responseItem.setAdvertising(equalPointAdvertisings
-                    .get(new Random().nextInt(equalPointAdvertisings.size())));
+                    .get(random));
         }
     }
 

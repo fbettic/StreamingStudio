@@ -183,7 +183,7 @@ public class PlatformServices {
         } catch (JsonProcessingException e) {
             throw e;
         }
-        return new BasicResponseBean(reportRepository.createWeekleyReport(jsonString));
+        return reportRepository.createWeekleyReport(jsonString);
     }
 
     public BasicResponseBean ping(String authToken) throws Exception {

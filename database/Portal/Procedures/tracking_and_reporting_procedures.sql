@@ -109,6 +109,7 @@ BEGIN
         (advertisingId, subscriberId, clickedAt)
     VALUES
         (@advertisingId, @subscriberId, @clickedAt)
+
 END
 GO
 
@@ -234,3 +235,4 @@ BEGIN
 END
 GO
 
+Select * from SubscriberAdvertisingClick

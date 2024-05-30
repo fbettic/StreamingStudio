@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <ng-container *ngIf="message?.title">{{ message?.title }}</ng-container>
+    <ng-container *ngIf="!message?.title" i18n>Error Menssage</ng-container>
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+    aria-label="Cerrar"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="step">
+    <div class="icon">
+      <h1>!</h1>
+    </div>
+    <p [innerHTML]="message?.text"></p>
+  </div>
+  
+  
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    ngbAutofocus
+    class="btn btn-light"
+    (click)="close()"
+    i18n
+  >
+    Close
+  </button>
+</div>

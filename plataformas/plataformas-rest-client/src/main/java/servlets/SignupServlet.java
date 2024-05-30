@@ -7,6 +7,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -19,7 +20,6 @@ import com.google.gson.reflect.TypeToken;
 import beans.AssociationRequestBean;
 import beans.CompleteSignupAssociationBean;
 import beans.ErrorBean;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,63 +31,55 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
+    private static final URI SIGNUP_URI = URI.create("http://localhost:9130/rest/plataforma/associations/signup");
+    private static final Gson gson = new Gson();
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        CompleteSignupAssociationBean signupRequest = new CompleteSignupAssociationBean(request.getParameterMap());
+        StringEntity stringEntity = new StringEntity(gson.toJson(signupRequest));
 
-		CompleteSignupAssociationBean signupRequest = CompleteSignupAssociationBean.builder()
-				.firstname(request.getParameter("firstname"))
-				.lastname(request.getParameter("lastname"))
-				.email(request.getParameter("email"))
-				.password(request.getParameter("password"))
-				.phone(request.getParameter("phone"))
-				.uuid(request.getParameter("uuid"))
-				.build();
+        HttpResponse resp = handleRequest(stringEntity);
+        handleResponse(resp, request, response);
+    }
 
-		StringEntity stringEntity = new StringEntity(new Gson().toJson(signupRequest));
+    private HttpResponse handleRequest(StringEntity entity) throws ClientProtocolException, IOException {
+        HttpPost req = new HttpPost(SIGNUP_URI);
+        req.setHeader("Accept", "application/json");
+        req.setHeader("Content-type", "application/json");
+        req.setEntity(entity);
 
-		URI uri = URI.create("http://localhost:9130/rest/plataforma/associations/signup");
+        HttpClient client = HttpClientBuilder.create().build();
+        return client.execute(req);
+    }
 
-		HttpPost req = new HttpPost();
-		req.setURI(uri);
-		req.setHeader("Accept", "application/json");
-		req.setHeader("Content-type", "application/json");
-		req.setEntity(stringEntity);
+    private void handleResponse(HttpResponse resp, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        HttpEntity responseEntity = resp.getEntity();
+        StatusLine responseStatus = resp.getStatusLine();
 
-		HttpClient client = HttpClientBuilder.create().build();
-		HttpResponse resp = client.execute(req);
+        String restResp = EntityUtils.toString(responseEntity);
 
-		HttpEntity responseEntity = resp.getEntity();
-		StatusLine responseStatus = resp.getStatusLine();
+        try {
+            if (responseStatus.getStatusCode() != HttpStatus.SC_OK) {
+                ErrorBean error = gson.fromJson(restResp, new TypeToken<ErrorBean>() {
+                }.getType());
+                response.setStatus(400);
+                request.setAttribute("error", error.getMessage());
+                request.getRequestDispatcher("/signup.jsp").forward(request, response);
+            } else {
 
-		String restResp = EntityUtils.toString(responseEntity);
-		Gson gson = new Gson();
+                AssociationRequestBean associationRequest = gson.fromJson(restResp, AssociationRequestBean.class);
+                gotoExternalPage(associationRequest.getRedirectUrl(), response);
 
-		if (responseStatus.getStatusCode() != HttpStatus.SC_OK) {
-			ErrorBean error = gson.fromJson(restResp, new TypeToken<ErrorBean>() {
-			}.getType());
+            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Internal server error. Please try again later.");
+            request.getRequestDispatcher("/signup.jsp").forward(request, response);
+        }
+    }
 
-			response.setStatus(400);
-			request.setAttribute("error", error.getMessage());
-			this.gotoPage("/error.jsp", request, response);
-		} else {
-			AssociationRequestBean associationRequest = gson.fromJson(restResp, AssociationRequestBean.class);
-			int userId = associationRequest.getUserId();
-
-			request.setAttribute("id", userId);
-
-			this.gotoExternalPage(associationRequest.getRedirectUrl(), response);
-		}
-
-	}
-
-	private void gotoPage(String address, HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
-		dispatcher.forward(request, response);
-	}
-
-	private void gotoExternalPage(String address, HttpServletResponse response)
+    private void gotoExternalPage(String address, HttpServletResponse response)
             throws IOException {
         response.sendRedirect(address);
     }

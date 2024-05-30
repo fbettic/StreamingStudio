@@ -82,11 +82,11 @@ BEGIN
     -- Drop temporary table
     DROP TABLE #TempData;
 
-    SELECT 'Success' AS Result;
+    SELECT 'Success' AS response;
   END TRY
   BEGIN CATCH
     -- Error
-    SELECT ERROR_MESSAGE() AS Result;
+    SELECT ERROR_MESSAGE() AS response;
   END CATCH
 END;
 GO

@@ -1,0 +1,56 @@
+<app-advertising-frame [home]="false">
+  <div class="col">
+    <div class="ratio ratio-16x9 iframe-content">
+      @if(filmUrl){
+      <iframe
+        class="iframe-content"
+        [src]="filmUrl"
+        title="YouTube video player"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+      }@else{
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden" i18n>Loading...</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="col my-5">
+    <div class="section-title mb-4">
+      <img src="../../../../../assets/film.svg" alt="" class="film-icon" />
+      <h2 i18n>Information</h2>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <img
+          class="img-fluid film-cover"
+          [src]="film?.cover"
+          alt="{{ film?.title }} Cover"
+        />
+      </div>
+      <div class="col-md-8 film-details">
+        <div class="mb-4">
+          <h3>{{ film?.title }}</h3>
+        </div>
+        <p>
+          <strong i18n>Platforms:</strong>
+          {{ film?.platforms?.replaceAll(",", ", ") }}
+        </p>
+        <p><strong i18n>Director:</strong> {{ film?.director }}</p>
+        <p><strong i18n>Year:</strong> {{ film?.year }}</p>
+        <p>
+          <strong i18n>Genres:</strong>
+          {{ film?.genres?.replaceAll(",", ", ") }}
+        </p>
+        <p>
+          <strong i18n>Actors:</strong>
+          {{ film?.actors?.replaceAll(",", ", ") }}
+        </p>
+        <p><strong i18n>Description:</strong> {{ film?.description }}</p>
+      </div>
+    </div>
+  </div>
+</app-advertising-frame>

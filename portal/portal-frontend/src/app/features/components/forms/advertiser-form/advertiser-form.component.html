@@ -1,0 +1,175 @@
+<form [formGroup]="advertiserFormGroup">
+  @if (error) {
+  <div
+    class="p-3 mb-2 border rounded border-danger-subtle bg-danger-subtle text-danger-emphasis"
+  >
+    {{ error }}
+  </div>
+  }
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="companyName" class="form-label" i18n>Company name</label>
+      <input
+        formControlName="companyName"
+        class="form-control"
+        id="companyName"
+        placeholder="My Company"
+        autocomplete="true"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="bussinesName" class="form-label" i18n>Bussines name</label>
+      <input
+        formControlName="bussinesName"
+        class="form-control"
+        id="bussinesName"
+        placeholder="Bussines, S.L."
+        autocomplete="true"
+      />
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="agentFirstname" class="form-label" i18n
+        >Agent Firtsname</label
+      >
+      <input
+        formControlName="agentFirstname"
+        class="form-control"
+        id="agentFirstname"
+        placeholder="John"
+        autocomplete="true"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="agentLastname" class="form-label" i18n>Agent Lastname</label>
+      <input
+        formControlName="agentLastname"
+        class="form-control"
+        id="agentLastname"
+        placeholder="Doe"
+        autocomplete="true"
+      />
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-7">
+      <label for="email" class="form-label" i18n>Email</label>
+      <input
+        formControlName="email"
+        type="email"
+        class="form-control"
+        id="email"
+        aria-describedby="email"
+        placeholder="example@email.com"
+        autocomplete="true"
+      />
+    </div>
+    <div class="col-md-5">
+      <label for="phone" class="form-label" i18n>Phone</label>
+      <input
+        formControlName="phone"
+        class="form-control"
+        id="phone"
+        placeholder="(11) 1234-5678"
+        autocomplete="true"
+      />
+    </div>
+  </div>
+  @if(!userForm()){
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <label for="serviceType" class="form-label" i18n>Service type</label>
+      <select
+        formControlName="serviceType"
+        class="form-select"
+        id="serviceType"
+        (change)="onServiceTypeChange()"
+      >
+        <option value="" disabled selected hidden i18n>Service type</option>
+        <option value="REST">REST</option>
+        <option value="SOAP">SOAP</option>
+        <option value="ACCOUNT" i18n>Account</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label for="password" class="form-label" i18n>Password</label>
+      <input
+        formControlName="password"
+        type="password"
+        class="form-control"
+        id="password"
+        placeholder="********"
+        autocomplete="true"
+      />
+    </div>
+
+    <div class="col">
+      <label for="apiUrl" class="form-label">API URL</label>
+      <input
+        formControlName="apiUrl"
+        class="form-control"
+        id="apiUrl"
+        i18n-placeholder
+        placeholder="https://www.example.com/api/v1"
+        autocomplete="true"
+      />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="mb-3">
+      <label for="authToken" class="form-label" i18n
+        >Authentication Token</label
+      >
+      <input
+        formControlName="authToken"
+        class="form-control"
+        id="authToken"
+        i18n-placeholder
+        placeholder="SECRET_TOKEN"
+        autocomplete="true"
+      />
+    </div>
+  </div>
+  }
+  <div class="mt-3 row justify-content-end">
+    <div class="d-grid gap-2 mt-4">
+      @if(editMode){
+
+      <button
+        type="submit"
+        class="btn btn-light btn-lg"
+        (click)="submit()"
+        i18n
+      >
+        Submit
+      </button>
+
+      @if(userForm()){
+
+      <button
+        class="btn btn-outline-light btn-lg"
+        (click)="toggleEditMode()"
+        i18n
+      >
+        Cancel
+      </button>
+
+      } }@else{
+
+      <button
+        class="btn btn-outline-light btn-lg"
+        (click)="toggleEditMode()"
+        i18n
+      >
+        Edit
+      </button>
+
+      }
+    </div>
+  </div>
+</form>

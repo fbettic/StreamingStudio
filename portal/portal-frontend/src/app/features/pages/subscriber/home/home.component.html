@@ -1,0 +1,111 @@
+<app-splash-screen></app-splash-screen>
+
+<app-custom-modal [modalTitle]="film?.title!" [showButton]="false">
+  <app-film-info [film]="film" (onPlayClick)="onPlayClick($event)" />
+</app-custom-modal>
+
+<app-advertising-frame [home]="true">
+  <div class="search mb-5">
+    <div class="row mx-2 my-3">
+      <div class="col-md-7">
+        <input
+          type="text"
+          class="form-control bd-search"
+          (input)="filterFilms(filter.value)"
+          (keyup.enter)="onSearchClick()"
+          i18n-placeholder
+          placeholder="Search..."
+          #filter
+        />
+      </div>
+  
+      <div class="col input-group">
+        <div class="input-group-text" i18n>By</div>
+        <select
+          class="form-select"
+          id="searchBy"
+          (change)="searchBy(by.value)"
+          #by
+        >
+          <option value="all" selected i18n>All</option>
+          <option value="title" i18n>Title</option>
+          <option value="director" i18n>Director</option>
+          <option value="actors" i18n>Actor</option>
+          <option value="genres" i18n>Genres</option>
+          <option value="description" i18n>Description</option>
+          <option value="year" i18n>Year</option>
+        </select>
+      </div>
+      <div class="col-2">
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-outline-light "
+            (click)="onSearchClick()"
+            type="button"
+            i18n
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+
+  @if(showPrefilteredFilms){
+
+  <section id="top">
+    <div class="section-title mb-4">
+      <img src="../../../../../assets/film.svg" alt="" class="film-icon" />
+      <h2 i18n>Top 10</h2>
+    </div>
+    <div class="row mb-5">
+      <app-film-list
+        [films]="mostViewedFilms"
+        (onFilmClick)="onFilmClick($event)"
+        type="carousel"
+      />
+    </div>
+  </section>
+
+  <section id="highlighted">
+    <div class="section-title mb-4">
+      <img src="../../../../../assets/film.svg" alt="" class="film-icon" />
+      <h2 i18n>Highlighted</h2>
+    </div>
+    <div class="row mb-5">
+      <app-film-list
+        [films]="highlightedFilms"
+        (onFilmClick)="onFilmClick($event)"
+        type="carousel"
+      />
+    </div>
+  </section>
+
+  <section id="new">
+    <div class="section-title mb-4">
+      <img src="../../../../../assets/film.svg" alt="" class="film-icon" />
+      <h2 i18n>New</h2>
+    </div>
+
+    <div class="row mb-5">
+      <app-film-list
+        [films]="newFilms"
+        (onFilmClick)="onFilmClick($event)"
+        type="carousel"
+      />
+    </div>
+  </section>
+
+  }
+  <section id="all">
+    <div class="section-title mb-4">
+      <img src="../../../../../assets/film.svg" alt="" class="film-icon" />
+      <h2 i18n>All</h2>
+      <h2>&nbsp;({{ films.length }})</h2>
+    </div>
+    <div class="row mb-5">
+      <app-film-list [films]="films" (onFilmClick)="onFilmClick($event)" />
+    </div>
+  </section>
+</app-advertising-frame>

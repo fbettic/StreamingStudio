@@ -1,0 +1,28 @@
+<div class="table-container">
+  <div class="row">
+    <div class="col">
+      <div class="section-title mb-4">
+        <h2 i18n>Streaming Platform</h2>
+      </div>
+    </div>
+    <app-table
+      [headers]="headers"
+      [items]="filteredList"
+      (onEdit)="onEditItem($event)"
+      (onDelete)="onDeleteItem($event)"
+      (onFilterInput)="filterStreamingPlatforms($event)"
+    />
+  </div>
+
+  <div class="row">
+    <app-custom-modal
+      [modalTitle]="modalTitle"
+      (onClose)="onModalClose()"
+    >
+      <app-platform-form
+        [streamingPlatform]="itemSelected"
+        (doRefresh)="refreshList()"
+      />
+    </app-custom-modal>
+  </div>
+</div>

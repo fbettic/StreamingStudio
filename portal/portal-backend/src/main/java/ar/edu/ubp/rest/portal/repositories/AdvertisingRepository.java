@@ -191,8 +191,7 @@ public class AdvertisingRepository implements IAdvertisingRepository {
 
     SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
         .withProcedureName("CreateSubscriberAdvertisingClick")
-        .withSchemaName("dbo")
-        .returningResultSet("advertisings", BeanPropertyRowMapper.newInstance(SubscriberAdvertisingDTO.class));
+        .withSchemaName("dbo");
 
     jdbcCall.execute(input);
     return "Success";

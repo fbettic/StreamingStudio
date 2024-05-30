@@ -18,8 +18,9 @@ public class ReportManager {
             stmt.setString(1, reportJson);
 
             try (ResultSet result = stmt.executeQuery()) {
+                
                 if (result.next()) {
-                    return result.getString("result");
+                    return result.getString("response");
                 } else {
                     throw new Fault(new Exception("Invalid user token"));
                 }

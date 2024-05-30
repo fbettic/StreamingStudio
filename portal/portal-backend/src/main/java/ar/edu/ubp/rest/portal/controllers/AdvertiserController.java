@@ -20,6 +20,7 @@ import ar.edu.ubp.rest.portal.dto.AdvertiserDTO;
 import ar.edu.ubp.rest.portal.dto.AdvertisingDTO;
 import ar.edu.ubp.rest.portal.dto.request.AdvertiserRequestDTO;
 import ar.edu.ubp.rest.portal.dto.response.AuthResponseDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.services.AdvertiserService;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
 import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
@@ -38,8 +39,10 @@ public class AdvertiserController {
     private final CustomUserDetailsService userService;
 
     @PostMapping("/ping")
-    public ResponseEntity<String> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser) throws Exception {
-        return new ResponseEntity<String>(advertiserService.pingAdvertiser(advertiser), HttpStatus.OK);
+    public ResponseEntity<MessageResponseDTO> pingAdvertiser(@RequestBody AdvertiserRequestDTO advertiser)
+            throws Exception {
+        return new ResponseEntity<MessageResponseDTO>(
+                new MessageResponseDTO(advertiserService.pingAdvertiser(advertiser)), HttpStatus.OK);
     }
 
     @PostMapping("")
@@ -52,7 +55,9 @@ public class AdvertiserController {
     public ResponseEntity<AdvertiserDTO> updateAdvertiserById(@PathVariable Integer id,
             @RequestBody AdvertiserRequestDTO advertiserData) {
 
-        if (!userService.getCurrentRole().name().equals("ADMINISTRATOR") && id != userService.getCurrentUserId()) {
+        if (!userService.getCurrentRole().name().equals("ADMINISTRATOR")
+                && !id.equals(userService.getCurrentUserId())) {
+
             return ResponseEntity.notFound().build();
         }
 

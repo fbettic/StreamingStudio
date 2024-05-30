@@ -1,0 +1,74 @@
+<div class="container-fluid d-flex justify-content-center align-items-center">
+  <div class="row card-container">
+    <div class="col">
+      <div class="card p-4">
+        <div class="row">
+          <div class="col d-flex justify-content-center align-items-center">
+            <img
+              class="mb-5 mt-3"
+              src="../../../../../assets/ss-name.svg"
+              style="width: 250px"
+              alt="logo"
+            />
+          </div>
+        </div>
+
+        @if (loginError !== '') {
+        <span class="text-danger" i18n>Login error</span>
+        }
+
+        <form [formGroup]="loginFormGroup">
+          <div class="mb-3">
+            <label for="email" class="form-label" i18n>Email</label>
+            <input
+              formControlName="email"
+              type="email"
+              class="form-control"
+              id="email"
+              aria-describedby="email"
+              placeholder="example@email.com"
+              autocomplete="true"
+            />
+
+            @if (email.invalid && (email.dirty || email.touched)) {
+            <span *ngIf="email.errors?.['required']" class="text-danger" i18n
+              >Email is required.</span
+            >
+            <span *ngIf="email.errors?.['email']" class="text-danger" i18n
+              >Email is invalid.</span
+            >
+            }
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label" i18n>Password</label>
+            <input
+              formControlName="password"
+              type="password"
+              class="form-control"
+              id="password"
+              i18n-placeholder
+              placeholder="Password"
+              autocomplete="true"
+            />
+
+            @if (password.invalid && (password.dirty || password.touched)) {
+            <span *ngIf="password.errors?.['required']" class="text-danger" i18n
+              >Password is required.</span
+            >
+            }
+          </div>
+          <div class="d-grid gap-2 mt-4">
+            <button
+              type="submit"
+              class="btn btn-light btn-lg"
+              (click)="login()"
+              i18n
+            >
+              Sign in
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

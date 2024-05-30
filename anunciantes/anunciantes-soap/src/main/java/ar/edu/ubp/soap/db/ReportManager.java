@@ -19,7 +19,11 @@ public class ReportManager {
 
             try (ResultSet result = stmt.executeQuery()) {
                 if (result.next()) {
-                    return result.getString("result");
+                    System.out.println(result.toString());
+
+                    System.out.println(result.getString("response"));
+                    
+                    return result.getString("response");
                 } else {
                     throw new Fault(new Exception("Invalid user token"));
                 }

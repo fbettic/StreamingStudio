@@ -1,0 +1,21 @@
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="form-modal">{{ modalTitle }}</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="onCloseButtonClick(modal)"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <ng-content />
+  </div>
+</ng-template>
+
+@if(showButton()){
+<div class="d-grid gap-2">
+  <button class="btn btn-light" (click)="open()" i18n>Add</button>
+</div>
+
+}

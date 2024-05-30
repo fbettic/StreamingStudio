@@ -3,11 +3,9 @@ package servlets;
 import java.io.IOException;
 
 import ar.edu.ubp.soap.ws.AssociationRequestBean;
-import ar.edu.ubp.soap.ws.Exception_Exception;
 import ar.edu.ubp.soap.ws.NewPlatformUserBean;
 import ar.edu.ubp.soap.ws.PlataformasWS;
 import ar.edu.ubp.soap.ws.PlataformasWSService;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -44,19 +42,26 @@ public class SignupServlet extends HttpServlet {
 
 			request.setAttribute("id", result.getUserId());
 			this.gotoExternalPage(result.getRedirectUrl(), response);
-		} catch (WebServiceException | Exception_Exception ex) {
-			response.setStatus(400);
-			request.setAttribute("error", ex.getMessage());
-			this.gotoPage("/error.jsp", request, response);
-		}
+		} catch (WebServiceException ex) {
+            request.setAttribute("error", ex.getMessage());
+            request.getRequestDispatcher("/signup.jsp").forward(request, response);
+        } catch (Exception ex) {
+            request.setAttribute("error", "Internal server error. Please try again later.");
+            request.getRequestDispatcher("/signup.jsp").forward(request, response);
+        }
+
 	}
 
-	private void gotoPage(String address, HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(address);
-		dispatcher.forward(request, response);
-	}
-
+	/*
+	 * 
+	 * private void gotoPage(String address, HttpServletRequest request,
+	 * HttpServletResponse response)
+	 * throws ServletException, IOException {
+	 * RequestDispatcher dispatcher =
+	 * this.getServletContext().getRequestDispatcher(address);
+	 * dispatcher.forward(request, response);
+	 * }
+	 */
 	private void gotoExternalPage(String address, HttpServletResponse response)
 			throws IOException {
 		response.sendRedirect(address);

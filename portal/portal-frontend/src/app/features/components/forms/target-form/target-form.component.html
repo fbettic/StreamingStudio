@@ -1,0 +1,30 @@
+<form [formGroup]="targetFormGroup">
+  @if (error) {
+  <div
+    class="p-3 mb-2 border rounded border-danger-subtle bg-danger-subtle text-danger-emphasis"
+  >
+    {{ error }}
+  </div>
+  }
+
+  <div class="row mb-3">
+    <div class="col">
+      <label for="targetTitle" class="form-label" i18n>Target Title</label>
+      <input
+        formControlName="targetTitle"
+        class="form-control"
+        id="targetTitle"
+        placeholder="Autos"
+        autocomplete="true"
+      />
+    </div>
+  </div>
+
+  <div class="mt-3 row justify-content-end">
+    <div class="d-grid gap-2 mt-4">
+      <button type="submit" class="btn btn-light" (click)="submit()" i18n>
+        Create
+      </button>
+    </div>
+  </div>
+</form>

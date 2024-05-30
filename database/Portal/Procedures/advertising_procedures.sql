@@ -259,13 +259,12 @@ BEGIN
         sizeType,
         height,
         width,
-        (SELECT
-            CASE 
-        WHEN a.allPagesFeeId IS NULL 
+        CASE 
+            WHEN a.allPagesFeeId IS NULL 
             THEN 0 
             ELSE 1 
-        END) AS allPages,
-        COUNT(mt.targetId) + priorityValue AS points
+        END AS allPages,
+        b_p.priorityValue + ISNULL(COUNT(DISTINCT mp.targetId), 0) AS points
     FROM
         Advertising a
         LEFT JOIN
@@ -273,16 +272,24 @@ BEGIN
         LEFT JOIN
         MarketingPreferences mp ON at.targetId = mp.targetId
             AND mp.subscriberId = @subscriberId
-        LEFT JOIN
-        MarketingPreferences mt ON a.advertisingId = mt.targetId
-            AND mt.subscriberId = @subscriberId
-        INNER JOIN BannerPriority b_p ON a.priorityId = b_p.priorityId
-        INNER JOIN SizeType s_t ON a.sizeId = s_t.sizeId
+        INNER JOIN
+        BannerPriority b_p ON a.priorityId = b_p.priorityId
+        INNER JOIN
+        SizeType s_t ON a.sizeId = s_t.sizeId
     WHERE 
-    a.deletedAt IS NULL
+        a.deletedAt IS NULL
     GROUP BY 
-    a.advertisingId, allPagesFeeId, priorityValue,
-    redirectUrl,imageUrl,bannerText, height, width, sizeType
+        a.advertisingId,
+        redirectUrl,
+        imageUrl,
+        bannerText,
+        sizeType,
+        height,
+        width,
+        a.allPagesFeeId, 
+        b_p.priorityValue
 END
 GO
+
+
 

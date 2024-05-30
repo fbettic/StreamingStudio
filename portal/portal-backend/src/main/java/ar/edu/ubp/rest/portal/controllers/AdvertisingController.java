@@ -26,6 +26,7 @@ import ar.edu.ubp.rest.portal.dto.request.AdvertisingRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.BannerPriorityRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SizeTypeRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SubscriberAdvertisingRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.dto.response.SubscriberAdvertisingResponseDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.services.AdvertisingService;
@@ -133,7 +134,7 @@ public class AdvertisingController {
     }
 
     @PostMapping("/track")
-    public ResponseEntity<String> createSubscriberAdvertisingClick(
+    public ResponseEntity<MessageResponseDTO> createSubscriberAdvertisingClick(
             @RequestBody AdvertisingClickRequestDTO request) throws Exception {
 
         return ResponseEntity

@@ -103,7 +103,7 @@ BEGIN
     SELECT 'success' AS message
     END TRY
   BEGIN CATCH
-    SELECT ERROR_MESSAGE() AS Result;
+    SELECT ERROR_MESSAGE() AS message;
   END CATCH
 END;
 GO
@@ -167,10 +167,11 @@ BEGIN
     DROP TABLE #TempTargets;
 
 
+    SELECT 'success' AS message
     END TRY
   BEGIN CATCH
-    SELECT ERROR_MESSAGE() AS Result;
-    END CATCH
+    SELECT ERROR_MESSAGE() AS message;
+  END CATCH
 END;
 GO
 

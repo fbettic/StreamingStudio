@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="platform-list">
+    <div class="col"></div>
+
+    <ul class="list-group">
+      @for (platform of platforms; track platform.platformId) {
+      <li class="list-group-item">
+        <div class="row">
+          <div class="col">
+            <img [src]="platform.imageUrl" alt="" class="platform-logo me-4" />
+            <span>{{ platform.platformName }}</span>
+          </div>
+          <div class="col-md-5">
+            <div class="row justify-content-end">
+              @if(platform.linked){
+              <div class="col-md-6 col-sm-6">
+                <div class="d-grid gap-2">
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="unlink(platform)"
+                    i18n
+                  >
+                    Unlink
+                  </button>
+                </div>
+              </div>
+              }@else{
+              <div class="col-md-6 col-sm-6">
+                <div class="d-grid gap-2">
+                  <button
+                    class="btn btn-light btn-sm"
+                    (click)="link(platform, 'SIGNUP')"
+                    i18n
+                  >
+                    Sign up
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6">
+                <div class="d-grid gap-2">
+                  <button
+                    class="btn btn-outline-light btn-sm"
+                    (click)="link(platform, 'LOGIN')"
+                    i18n
+                  >
+                    Login
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </li>
+      }
+    </ul>
+  </div>
+</div>

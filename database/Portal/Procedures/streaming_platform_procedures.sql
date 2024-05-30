@@ -161,6 +161,7 @@ BEGIN
         FROM Association a
         WHERE a.platformId = sp.platformId
             AND a.subscriberId = @subscriberId
+            AND a.leavingDate IS NULL
             ) 
             THEN CAST(1 AS BIT)
             ELSE CAST(0 AS BIT)
@@ -170,5 +171,3 @@ BEGIN
     WHERE sp.deletedAt IS NULL
 END
 GO
-
-select * from Sessions

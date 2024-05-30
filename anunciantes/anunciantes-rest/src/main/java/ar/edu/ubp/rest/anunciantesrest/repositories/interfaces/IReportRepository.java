@@ -1,5 +1,7 @@
 package ar.edu.ubp.rest.anunciantesrest.repositories.interfaces;
 
+import ar.edu.ubp.rest.anunciantesrest.beans.BasicResponseBean;
+
 public interface IReportRepository {
-    public String createWeekleyReport(String reportJson);
+    public BasicResponseBean createWeekleyReport(String reportJson);
 }

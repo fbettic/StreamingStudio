@@ -1,0 +1,20 @@
+<div class="container mb-5 ">
+  <div class="row justify-content-center">
+    <div class="text">
+      <h2 class="text-center" i18n>Available Platforms</h2>
+      <p class="text-center" i18n>
+        The following platforms are available to be linked to your Streaming
+        Studio account. If you already have an account on one of these
+        platforms, you can link it by clicking the "<strong>Login</strong>" button. If you do not
+        have an account on the desired platform and wish to create one, click
+        "<strong>Sign up</strong>". Once the account is created, it will automatically be linked
+        to your Streaming Studio account. You can unlink a linked account at any
+        time by clicking the "<strong>Unlink</strong>" button, which will appear after the
+        account is linked.
+      </p>
+    </div>
+  </div>
+  <div class="row platforms">
+    <app-platform-list [subscriberId]="user!.id" />
+  </div>
+</div>

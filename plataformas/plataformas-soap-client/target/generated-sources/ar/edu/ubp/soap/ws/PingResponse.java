@@ -16,7 +16,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   <complexContent>
  *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       <sequence>
- *         <element name="pong" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="pong" type="{http://ws.soap.ubp.edu.ar/}basicResponseBean" minOccurs="0"/>
  *       </sequence>
  *     </restriction>
  *   </complexContent>
@@ -31,17 +31,17 @@ import jakarta.xml.bind.annotation.XmlType;
 })
 public class PingResponse {
 
-    protected String pong;
+    protected BasicResponseBean pong;
 
     /**
      * Obtiene el valor de la propiedad pong.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link BasicResponseBean }
      *     
      */
-    public String getPong() {
+    public BasicResponseBean getPong() {
         return pong;
     }
 
@@ -50,10 +50,10 @@ public class PingResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link BasicResponseBean }
      *     
      */
-    public void setPong(String value) {
+    public void setPong(BasicResponseBean value) {
         this.pong = value;
     }
 

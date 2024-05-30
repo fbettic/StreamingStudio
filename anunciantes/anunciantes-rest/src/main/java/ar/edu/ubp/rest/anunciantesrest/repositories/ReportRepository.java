@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import ar.edu.ubp.rest.anunciantesrest.beans.BasicResponseBean;
 import ar.edu.ubp.rest.anunciantesrest.repositories.interfaces.IReportRepository;
 
 @Repository
@@ -21,7 +22,7 @@ public class ReportRepository implements IReportRepository {
 
     @SuppressWarnings("unchecked")
     @Override
-    public String createWeekleyReport(String reportJson) {
+    public BasicResponseBean createWeekleyReport(String reportJson) {
         System.out.println("---------->" + reportJson);
         SqlParameterSource input = new MapSqlParameterSource()
                 .addValue("json", reportJson);
@@ -29,10 +30,10 @@ public class ReportRepository implements IReportRepository {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("CreateWeeklyReportFromJson")
                 .withSchemaName("dbo")
-                .returningResultSet("message", BeanPropertyRowMapper.newInstance(String.class));
+                .returningResultSet("message", BeanPropertyRowMapper.newInstance(BasicResponseBean.class));
 
         Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<String>) output.get("message")).get(0);
+        return ((List<BasicResponseBean>) output.get("message")).get(0);
     }
 
 }

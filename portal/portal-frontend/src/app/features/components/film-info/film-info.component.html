@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="col-md-4">
+    <img
+      class="img-fluid film-cover"
+      [src]="film()?.cover"
+      alt="{{ film()?.title }} Cover"
+    />
+  </div>
+  <div class="col-md-8 film-details">
+    <p><strong i18n>Platforms:</strong> {{ film()?.platforms?.replaceAll(",", ", ") }}</p>
+    <p><strong i18n>Director:</strong> {{ film()?.director }}</p>
+    <p><strong i18n>Year:</strong> {{ film()?.year }}</p>
+    <p><strong i18n>Genres:</strong> {{ film()?.genres?.replaceAll(",", ", ") }}</p>
+    <p><strong i18n>Actors:</strong> {{ film()?.actors?.replaceAll(",", ", ") }}</p>
+    <p><strong i18n>Description:</strong> {{ film()?.description }}</p>
+    <p><strong i18n>View in:</strong></p>
+    <div>
+      <div class="row">
+        @for (platform of filteredPlatforms; track platform.platformId) {
+        <div class="col-md-3 col-sm-6 mb-4">
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-outline-light"
+              (click)="onPlatformSelect(platform.platformId)"
+            >
+              {{ platform.platformName }}
+            </button>
+          </div>
+        </div>
+
+        }
+      </div>
+    </div>
+  </div>
+</div>

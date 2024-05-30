@@ -20,7 +20,6 @@ CREATE OR ALTER PROCEDURE UpdateAdvertiser
     @bussinesName VARCHAR(255),
     @email VARCHAR(255),
     @phone VARCHAR(255),
-    @password VARCHAR(255),
     @apiUrl VARCHAR(255),
     @authToken VARCHAR(MAX),
     @serviceType VARCHAR(255)
@@ -43,7 +42,6 @@ BEGIN
         bussinesName = @bussinesName,
         email = @email,
         phone = @phone,
-        password = @password,
         apiUrl = @apiUrl,
         authToken = @authToken,
         serviceType = @serviceType

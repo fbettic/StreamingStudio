@@ -80,7 +80,7 @@ public class AdvertiserServices {
             throw e;
         }
 
-        return new BasicResponseBean(reportRepository.createWeekleyReport(jsonString));
+        return reportRepository.createWeekleyReport(jsonString);
     }
 
     public BasicResponseBean ping(AuthTokenRequestBean authToken) throws Exception {

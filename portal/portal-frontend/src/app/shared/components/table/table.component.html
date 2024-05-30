@@ -1,0 +1,82 @@
+<div class="custom-table-container">
+  <div class="row">
+    <div class="col">
+      <div class="input-group">
+        <div class="input-group-text" i18n>Filter</div>
+        <input
+          type="text"
+          class="form-control bd-search"
+          (input)="filterInput(filter.value)"
+          i18n-placeholder
+          placeholder="Search..."
+          #filter
+        />
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped border rounded">
+    <thead>
+      <tr>
+        @for(header of headers; track header ){
+        <th>{{ header.label }}</th>
+        }
+        <th i18n>Actions</th>
+      </tr>
+    </thead>
+    @if(items.length !== 0){
+    <tbody>
+      @for(item of items; track item.id ){
+
+      <tr>
+        <td *ngFor="let header of headers">{{ item[header.key] }}</td>
+
+        <td>
+          <div class="row justify-content-start">
+            <div class="col-auto">
+              <button
+                class="btn btn-sm"
+                [ngClass]="{
+                  'btn-primary': isEditable(item),
+                  'btn-secondary': !isEditable(item)
+                }"
+                (click)="editClicked(item)"
+                [disabled]="!isEditable(item)"
+              >
+                Edit
+              </button>
+            </div>
+            <div class="col-auto">
+              <button
+                class="btn btn-danger btn-sm"
+                (click)="deleteClicked(item)"
+              >
+                Delete
+              </button>
+            </div>
+            @if(extraButton){
+
+            <div class="col-auto">
+              <button
+                class="btn btn-light btn-sm"
+                (click)="extraButtonClicked(item)"
+              >
+                {{extraButton}}
+              </button>
+            </div>
+            }
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+    }
+  </table>
+  @if(items.length === 0){
+
+  <div class="row justify-content-center">
+    <div class="col">
+      <h3 class="text-center" i18n>Nothing to see here</h3>
+    </div>
+  </div>
+  }
+</div>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.services.BatchService;
 import ar.edu.ubp.rest.portal.services.FilmService;
 import lombok.RequiredArgsConstructor;
@@ -30,25 +31,26 @@ public class BatchController {
     private final BatchService batchService;
 
     @GetMapping("advertisings")
-    public ResponseEntity<String> getAllAdvertisingsFromAdvertisers() throws Exception {
-        return new ResponseEntity<String>(batchService.updateAdvertisings(),
+    public ResponseEntity<MessageResponseDTO> getAllAdvertisingsFromAdvertisers() throws Exception {
+        return new ResponseEntity<MessageResponseDTO>(new MessageResponseDTO(batchService.updateAdvertisings()),
                 HttpStatus.CREATED);
     }
 
     @GetMapping("films")
-    public ResponseEntity<String> getAllFilmsFromPlatforms() throws Exception {
-        return new ResponseEntity<String>(filmServices.getAllFilmsFromPlatforms(),
+    public ResponseEntity<MessageResponseDTO> getAllFilmsFromPlatforms() throws Exception {
+        return new ResponseEntity<MessageResponseDTO>(new MessageResponseDTO(filmServices.getAllFilmsFromPlatforms()),
                 HttpStatus.CREATED);
     }
 
     @PostMapping("countries")
-    public ResponseEntity<String> loadAllCountries(@RequestBody List<CountryDTO> countries) {
-        return new ResponseEntity<String>(filmServices.loadAllCountries(countries), HttpStatus.CREATED);
+    public ResponseEntity<MessageResponseDTO> loadAllCountries(@RequestBody List<CountryDTO> countries) {
+        return new ResponseEntity<MessageResponseDTO>(new MessageResponseDTO(filmServices.loadAllCountries(countries)),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("reports")
-    public ResponseEntity<String> sendWeeklyReport() throws Exception {
-        return new ResponseEntity<String>(batchService.sendWeeklyReport(),
+    public ResponseEntity<MessageResponseDTO> sendWeeklyReport() throws Exception {
+        return new ResponseEntity<MessageResponseDTO>(new MessageResponseDTO(batchService.sendWeeklyReport()),
                 HttpStatus.CREATED);
     }
 

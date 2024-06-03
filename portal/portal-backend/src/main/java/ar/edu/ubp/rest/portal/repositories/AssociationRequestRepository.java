@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.AssociationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.NewAssociationRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IAssociationRequestRepository;
 
 @Repository
@@ -100,5 +101,22 @@ public class AssociationRequestRepository implements IAssociationRequestReposito
 		Map<String, Object> output = jdbcCall.execute(input);
 		return ((List<AssociationRequestDTO>) output.get("association")).get(0);
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String cancelAllAssociationRequest() {
+		SqlParameterSource input = new MapSqlParameterSource();
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("CancelAllAssociationsRequest")
+				.withSchemaName("dbo")
+				.returningResultSet("message",
+						BeanPropertyRowMapper.newInstance(MessageResponseDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<MessageResponseDTO>) output.get("message")).get(0).getMessage();
+	}
+
+	
 
 }

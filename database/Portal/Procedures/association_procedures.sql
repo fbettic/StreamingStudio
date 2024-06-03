@@ -68,6 +68,8 @@ BEGIN
     UPDATE AssociationRequest
     SET state = 'CANCELED', closedAt = GETDATE()
     WHERE (state = 'OPEN')
+
+    SELECT 'Success' AS message
 END
 GO
 

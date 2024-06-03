@@ -2,6 +2,7 @@ export interface IAdvertising {
     advertisingId:number;
     advertiserId:number;
     sizeId: number;
+    size?: string;
     sizeType:string;
     sizeValue:number;
     sizeFee: number;
@@ -10,6 +11,7 @@ export interface IAdvertising {
     allPagesFeeId: number;
     allPagesFee: number;
     priorityId: number;
+    priority?:string
     priorityType: string;
     priorityValue: number;
     priorityFee: number;

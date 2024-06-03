@@ -17,7 +17,9 @@ import org.springframework.stereotype.Repository;
 import ar.edu.ubp.rest.portal.dto.CountryDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.response.FilmSubscriberResponseDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IFilmRepository;
+import io.jsonwebtoken.security.Message;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -96,10 +98,10 @@ public class FilmRepository implements IFilmRepository {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("UpdatePlatformFilmFromJson")
                 .withSchemaName("dbo")
-                .returningResultSet("message", BeanPropertyRowMapper.newInstance(String.class));
+                .returningResultSet("message", BeanPropertyRowMapper.newInstance(MessageResponseDTO.class));
 
         Map<String, Object> output = jdbcCall.execute(input);
-        return ((List<String>) output.get("message")).get(0);
+        return ((List<MessageResponseDTO>) output.get("message")).get(0).getMessage();
     }
 
     @Override

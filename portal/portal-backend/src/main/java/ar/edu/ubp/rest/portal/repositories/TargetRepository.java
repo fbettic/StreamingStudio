@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.TargetCategoryDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.ITargetRepository;
 
 @Repository
@@ -95,10 +96,10 @@ public class TargetRepository implements ITargetRepository {
 				.withProcedureName("UpdateAdvertisingTargetsFromJson")
 				.withSchemaName("dbo")
 				.returningResultSet("message",
-						BeanPropertyRowMapper.newInstance(String.class));
+						BeanPropertyRowMapper.newInstance(MessageResponseDTO.class));
 
 		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<String>) output.get("message")).get(0);
+		return ((List<MessageResponseDTO>) output.get("message")).get(0).getMessage();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,10 +128,10 @@ public class TargetRepository implements ITargetRepository {
 				.withProcedureName("UpdateMarketingPreferencesFromJson")
 				.withSchemaName("dbo")
 				.returningResultSet("message",
-						BeanPropertyRowMapper.newInstance(String.class));
+						BeanPropertyRowMapper.newInstance(MessageResponseDTO.class));
 
 		Map<String, Object> output = jdbcCall.execute(input);
-		return ((List<String>) output.get("message")).get(0);
+		return ((List<MessageResponseDTO>) output.get("message")).get(0).getMessage();
 	}
 
 	@SuppressWarnings("unchecked")

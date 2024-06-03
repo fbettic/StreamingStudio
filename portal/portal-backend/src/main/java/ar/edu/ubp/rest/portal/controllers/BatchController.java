@@ -54,4 +54,10 @@ public class BatchController {
                 HttpStatus.CREATED);
     }
 
+    @GetMapping("associations")
+    public ResponseEntity<MessageResponseDTO> cancelAllOpenAssociationRequests() throws Exception {
+        return new ResponseEntity<MessageResponseDTO>(new MessageResponseDTO(batchService.cancelAllOpenAssociationRequests()),
+                HttpStatus.CREATED);
+    }
+
 }

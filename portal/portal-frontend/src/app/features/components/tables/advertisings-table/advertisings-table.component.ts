@@ -97,7 +97,23 @@ export class AdvertisingsTableComponent {
     this.itemSelected = null;
   }
 
-  filterAdvertisings(filter: string) {}
+  filterAdvertisings(filter: string) {
+    filter = filter.toLowerCase();
+    if (filter == '') {
+      this.filteredList = this._list;
+      return;
+    }
+
+    this.filteredList = this._list.filter((advertising) => {
+      return (
+        advertising.advertisingId.toString().toLowerCase().includes(filter) ||
+        advertising.advertiserId.toString().toLowerCase().includes(filter) ||
+        advertising.size?.toLowerCase().includes(filter) ||
+        advertising.priority?.toLowerCase().includes(filter)
+      );
+    });
+  }
+  
 
   refreshList(): void {
     this.modal.close();

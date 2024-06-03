@@ -22,6 +22,7 @@ import ar.edu.ubp.rest.portal.dto.BannerDTO;
 import ar.edu.ubp.rest.portal.dto.FilmDTO;
 import ar.edu.ubp.rest.portal.dto.PlatformFilmDTO;
 import ar.edu.ubp.rest.portal.repositories.AdvertisingRepository;
+import ar.edu.ubp.rest.portal.repositories.AssociationRequestRepository;
 import ar.edu.ubp.rest.portal.repositories.FilmRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,9 @@ public class BatchService {
 
     @Autowired
     private final AdvertisingRepository advertisingRepository;
+
+    @Autowired
+    private final AssociationRequestRepository associationRequestRepository;
 
     @Autowired
     private final PlatformApiClientService platformApiClientService;
@@ -141,6 +145,10 @@ public class BatchService {
         Map<Integer, String> advertisersResult = advertiserApiClientService.sendWeeklyReport(fromDate, toDate);
 
         return platformsResult.toString() + advertisersResult.toString();
+    }
+
+    public String cancelAllOpenAssociationRequests(){
+        return associationRequestRepository.cancelAllAssociationRequest();
     }
 
 }

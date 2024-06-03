@@ -8,5 +8,6 @@ public interface IAssociationRequestRepository {
     public AssociationRequestDTO getLastOpenAssociationRequest(NewAssociationRequestDTO association);
     public AssociationRequestDTO getAssociationRequestByUuid(String uuid);
     public AssociationRequestDTO cancelAssociationRequest(Integer platformId, Integer subscriberId, Integer transactionId);
+    public String cancelAllAssociationRequest();
     
 }

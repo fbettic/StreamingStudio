@@ -13,11 +13,32 @@ public class BatchConfiguration {
     @Autowired
     private BatchService batchService;
 
-    @Scheduled(cron = "0 0 3 * * ?")
-    public void executeBatchTask() throws Exception {
-        // Llama a los métodos de actualización de películas y anuncios
-        batchService.updateAdvertisings();
-        batchService.updateFilms();
+    // Ejecutar updateAdvertisings cada 24 horas
+    @Scheduled(fixedRate = 86400000)
+    public void updateAdvertisings() throws Exception {
+        String response = batchService.updateAdvertisings();
+        System.out.println("updateAdvertisings()-executed; Result: " + response);
+    }
+
+    // Ejecutar updateFilms cada 7 días
+    @Scheduled(fixedRate = 604800000)
+    public void updateFilms() throws Exception {
+        String response = batchService.updateFilms();
+        System.out.println("updateFilms()-executed; Result: " + response);
+    }
+
+    // Ejecutar sendWeeklyReport cada 7 días
+    @Scheduled(fixedRate = 604800000)
+    public void sendWeeklyReport() throws Exception {
+        String response = batchService.sendWeeklyReport();
+        System.out.println("sendWeeklyReport()-executed; Result: " + response);
+    }
+
+    // Ejecutar cancelAllOpenAssociationRequests cada 3 segundos
+    @Scheduled(fixedRate = 86400000)
+    public void cancelAllOpenAssociationRequests() {
+        String response = batchService.cancelAllOpenAssociationRequests();
+        System.out.println("cancelAllOpenAssociationRequests()-executed; Result: " + response);
     }
 
 }

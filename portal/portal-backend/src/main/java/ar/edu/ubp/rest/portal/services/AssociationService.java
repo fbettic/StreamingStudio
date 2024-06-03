@@ -42,6 +42,7 @@ public class AssociationService {
 				.getLastOpenAssociationRequest(newAssociationRequest);
 
 		if (!Objects.isNull(association)) {
+			System.out.println(association.toString());
 			return association;
 		}
 
@@ -63,7 +64,9 @@ public class AssociationService {
 				.requestAt(response.getRequestedAt())
 				.build();
 
-		return associationRequestRepository.createAssociationRequest(associationRequest);
+		AssociationRequestDTO result = associationRequestRepository.createAssociationRequest(associationRequest);
+		System.out.println(result.toString());
+		return result;
 	}
 
 	public AssociationDTO getAssociationData(String uuid) {

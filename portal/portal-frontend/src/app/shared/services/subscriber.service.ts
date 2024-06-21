@@ -8,6 +8,8 @@ import { IAssociation } from '../../core/models/association.model';
 import { ISessionRequest } from '../../core/models/session-request.model';
 import { ISession } from '../../core/models/session.model';
 import { ISubscriber } from '../../core/models/subscriber.model';
+import { IObvservation } from '../../core/models/obvservation.model';
+import { IBasicResponse } from '../../core/models/basic-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -62,6 +64,13 @@ export class SubscriberService {
   markSessionAsUsed(id: number): Observable<ISession> {
     return this.http.get<ISession>(
       environment.urlApi + 'associations/sessions/' + id
+    );
+  }
+
+  updateObvservation(data: IObvservation): Observable<IBasicResponse> {
+    return this.http.post<IBasicResponse>(
+      environment.urlApi + 'associations/obvservation',
+      data
     );
   }
 

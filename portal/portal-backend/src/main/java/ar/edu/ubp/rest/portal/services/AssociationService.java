@@ -14,7 +14,9 @@ import ar.edu.ubp.rest.portal.dto.AssociationDTO;
 import ar.edu.ubp.rest.portal.dto.AssociationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.SessionDTO;
 import ar.edu.ubp.rest.portal.dto.request.NewAssociationRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.ObvservationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SessionRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.AssociationRepository;
 import ar.edu.ubp.rest.portal.repositories.AssociationRequestRepository;
 import ar.edu.ubp.rest.portal.repositories.SessionRepository;
@@ -129,6 +131,10 @@ public class AssociationService {
 
 	public SessionDTO getSessionById(Integer Id) {
 		return sessionRepository.getSessionById(Id);
+	}
+
+	public MessageResponseDTO updateObvservation(ObvservationRequestDTO request){
+		return associationRepository.updateObvservation(request);
 	}
 
 }

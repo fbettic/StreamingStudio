@@ -17,10 +17,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   );
 };
 
-export const associationGuard: CanActivateFn = (route, state) => {
-  return route.queryParams.hasOwnProperty('uuid');
-};
-
 export const subscriberGuard: CanActivateFn = (route, state) => {
   const loginService: LoginService = inject(LoginService);
   const router: Router = inject(Router);
@@ -63,4 +59,13 @@ export const advertiserGuard: CanMatchFn = (route, state) => {
       }
     })
   );
+};
+
+export const associationGuard: CanActivateFn = (route, state) => {
+  const router: Router = inject(Router);
+  if (route.queryParams.hasOwnProperty('uuid')) {
+    return true;
+  } else {
+    return router.createUrlTree(['/home']);
+  }
 };

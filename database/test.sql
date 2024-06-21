@@ -24,3 +24,5 @@ select * from PlayRegisterReport
 
 USE portal_db
 select * From AssociationRequest WHERE [state] = 'OPEN'
+
+

@@ -19,7 +19,9 @@ import ar.edu.ubp.rest.portal.dto.AssociationDTO;
 import ar.edu.ubp.rest.portal.dto.AssociationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.SessionDTO;
 import ar.edu.ubp.rest.portal.dto.request.NewAssociationRequestDTO;
+import ar.edu.ubp.rest.portal.dto.request.ObvservationRequestDTO;
 import ar.edu.ubp.rest.portal.dto.request.SessionRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.enums.Role;
 import ar.edu.ubp.rest.portal.services.AssociationService;
 import ar.edu.ubp.rest.portal.services.CustomUserDetailsService;
@@ -85,6 +87,13 @@ public class AssociationController {
         }
 
         return ResponseEntity.ok(associationService.markSessionAsUsed(id));
+    }
+
+    @PostMapping("/obvservation")
+    public ResponseEntity<MessageResponseDTO> createAssociationRequest(
+            @RequestBody ObvservationRequestDTO request)
+            throws Exception {
+        return ResponseEntity.ok(associationService.updateObvservation(request));
     }
 
 }

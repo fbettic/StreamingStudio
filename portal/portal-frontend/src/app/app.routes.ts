@@ -12,32 +12,28 @@ export const routes: Routes = [
   {
     path: '',
     title: 'StreamingStudio',
-    loadComponent: () => import('./features/pages/others/landing/landing.component'),
+    loadComponent: () =>
+      import('./features/pages/others/landing/landing.component'),
   },
   {
     path: 'login',
     title: 'Login',
-    loadComponent: () => import('./features/pages/others/login/login.component'),
+    loadComponent: () =>
+      import('./features/pages/others/login/login.component'),
   },
 
   {
     path: 'signup',
     title: 'Signup',
-    loadComponent: () => import('./features/pages/subscriber/signup/signup.component'),
-  },
-  {
-    path: 'link',
-    title: 'Association Processing',
     loadComponent: () =>
-      import(
-        './features/pages/subscriber/association-processing/association-processing.component'
-      ),
-    canActivate: [associationGuard],
+      import('./features/pages/subscriber/signup/signup.component'),
   },
+
   {
     path: 'admin',
     title: 'Dashboard',
-    loadComponent: () => import('./features/pages/admin/dashboard/dashboard.component'),
+    loadComponent: () =>
+      import('./features/pages/admin/dashboard/dashboard.component'),
     canActivate: [authGuard, administratorGuard],
   },
   {
@@ -51,9 +47,19 @@ export const routes: Routes = [
   {
     path: 'home',
     title: 'Home',
-    loadComponent: () => import('./features/pages/subscriber/home/home.component'),
+    loadComponent: () =>
+      import('./features/pages/subscriber/home/home.component'),
 
     canActivate: [authGuard, subscriberGuard],
+  },
+  {
+    path: 'link',
+    title: 'Association Processing',
+    loadComponent: () =>
+      import(
+        './features/pages/subscriber/association-processing/association-processing.component'
+      ),
+    canActivate: [associationGuard],
   },
   {
     path: 'platforms',
@@ -74,12 +80,14 @@ export const routes: Routes = [
   {
     path: 'profile',
     title: 'Profile',
-    loadComponent: () => import('./features/pages/subscriber/profile/profile.component'),
+    loadComponent: () =>
+      import('./features/pages/subscriber/profile/profile.component'),
     canActivate: [authGuard, subscriberGuard],
   },
   {
     path: '**',
     title: 'Not Found',
-    loadComponent: () => import('./features/pages/others/not-found/not-found.component'),
+    loadComponent: () =>
+      import('./features/pages/others/not-found/not-found.component'),
   },
 ];

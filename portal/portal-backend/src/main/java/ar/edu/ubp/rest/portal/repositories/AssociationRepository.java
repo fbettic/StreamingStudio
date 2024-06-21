@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import ar.edu.ubp.rest.portal.dto.AssociationDTO;
+import ar.edu.ubp.rest.portal.dto.request.ObvservationRequestDTO;
+import ar.edu.ubp.rest.portal.dto.response.MessageResponseDTO;
 import ar.edu.ubp.rest.portal.repositories.interfaces.IAssociationRepository;
 
 @Repository
@@ -96,6 +98,26 @@ public class AssociationRepository implements IAssociationRepository {
 
 		Map<String, Object> output = jdbcCall.execute(input);
 		return (List<AssociationDTO>) output.get("associations");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public MessageResponseDTO updateObvservation(ObvservationRequestDTO request) {
+		SqlParameterSource input = new MapSqlParameterSource()
+				.addValue("subscriberId", request.getSubscriberId())
+				.addValue("platformId", request.getPlatformId())
+				.addValue("transactionId", request.getTransactionId())
+				.addValue("obvservation", request.getObvservation());
+				
+
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName("UpdateObvservation")
+				.withSchemaName("dbo")
+				.returningResultSet("message",
+						BeanPropertyRowMapper.newInstance(MessageResponseDTO.class));
+
+		Map<String, Object> output = jdbcCall.execute(input);
+		return ((List<MessageResponseDTO>) output.get("message")).get(0);
 	}
 
 }

@@ -47,7 +47,7 @@ Esta plataforma permite a los usuarios crear una cuenta y asociar sus diversas p
 
 ## Proyecto en funcionamiento
 
-![landing-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\landing-page.png)
+![landing-page](.\documentacion\Maqueta\landing-page.png)
 
 ![signup-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\signup-page.png)
 

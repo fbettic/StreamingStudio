@@ -49,38 +49,38 @@ Esta plataforma permite a los usuarios crear una cuenta y asociar sus diversas p
 
 ![landing-page](./documentacion/Maqueta/landing-page.png)
 
-![signup-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\signup-page.png)
+![signup-page](./documentacion/Maqueta/signup-page.png)
 
-![login-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\login-page.png)
+![login-page](./documentacion/Maqueta/login-page.png)
 
-![splash-screen](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\splash-screen.png)
+![splash-screen](./documentacion/Maqueta/splash-screen.png)
 
-![home-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\home-page.png)
+![home-page](./documentacion/Maqueta/home-page.png)
 
-![film-info-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\film-info-modal.png)
+![film-info-modal](./documentacion/Maqueta/film-info-modal.png)
 
-![play-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\play-page.png)
+![play-page](./documentacion/Maqueta/play-page.png)
 
-![platform-management-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\platform-management-page.png)
+![platform-management-page](./documentacion/Maqueta/platform-management-page.png)
 
-![profile-page](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\profile-page.png)
+![profile-page](./documentacion/Maqueta/profile-page.png)
 
-![admin-dashboard](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\admin-dashboard.png)
+![admin-dashboard](./documentacion/Maqueta/admin-dashboard.png)
 
-![target-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\target-modal.png)
+![target-modal](./documentacion/Maqueta/target-modal.png)
 
-![fee-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\fee-modal.png)
+![fee-modal](./documentacion/Maqueta/fee-modal.png)
 
-![size-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\size-modal.png)
+![size-modal](./documentacion/Maqueta/size-modal.png)
 
-![priority-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\priority-modal.png)
+![priority-modal](./documentacion/Maqueta/priority-modal.png)
 
-![platform-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\platform-modal.png)
+![platform-modal](./documentacion/Maqueta/platform-modal.png)
 
-![advertiser-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\advertiser-modal.png)
+![advertiser-modal](./documentacion/Maqueta/advertiser-modal.png)
 
-![advertising-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\advertising-modal.png)
+![advertising-modal](./documentacion/Maqueta/advertising-modal.png)
 
-![advertiser-dashboard](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\advertiser-dashboard.png)
+![advertiser-dashboard](./documentacion/Maqueta/advertiser-dashboard.png)
 
-![error-modal](D:\DAS\Final\Proyecto\StreamingStudio\documentacion\Maqueta\error-modal.png)
+![error-modal](./documentacion/Maqueta/error-modal.png)
